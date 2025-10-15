@@ -1,0 +1,99 @@
+<!--
+/* background: url('../../../../../../public/fondo-login.jpg') no-repeat center center; 🔹 Imagen de fondo */
+    background-size: cover; /* Ajusta la imagen al tamaño de pantalla */
+    transition: background 0.5s ease;
+
+-->
+
+<style>
+  .login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Caja a la derecha */
+    padding-right: 12%;
+    background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+  }
+
+  .login-box {
+    width: 380px;
+    max-width: 420px;
+    padding: 3rem 3.5rem;
+    background-color: #f8f9fa;
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+
+  .img-logo {
+    width: 120px;
+    border-radius: 20%;
+  }
+
+  .login-box h4 {
+    color: #007bff;
+    font-weight: bold;
+  }
+
+  .btn-success {
+    background-color: #198754;
+    border: none;
+  }
+
+  .btn-success:hover {
+    background-color: #157347;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* 🔹 RESPONSIVE: cambia el fondo y centra la caja */
+  @media (max-width: 768px) {
+    .login-container {
+      justify-content: center;
+      padding-right: 0;
+      padding: 2rem;
+      background: linear-gradient(135deg, #000000, #1a1a1a); /* 🔹 Fondo negro en móvil */
+      background-size: cover;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 360px;
+      padding: 2rem;
+    }
+
+    .img-logo {
+      width: 100px;
+    }
+  }
+</style>
+
+<div class="login-container">
+  <div class="login-box">
+
+    <img src="intrachat.png" alt="logo-intrachat" class="img-logo mb-4">
+
+    <h4 class="mb-2">¡Bienvenido!</h4>
+    <h6 class="mb-4">Ingrese sus datos para acceder</h6>
+
+    <form>
+      <div class="mb-3 text-start">
+        <input type="email" class="form-control" id="email" placeholder="Email">
+      </div>
+
+      <div class="mb-4 text-start">
+        <input type="password" class="form-control" id="password" placeholder="Contraseña">
+      </div>
+
+      <button type="submit" class="btn btn-success w-100 mb-3">Ingresar</button>
+      <span>¿Olvidó su contraseña? <a href="#">Acceda aquí</a></span>
+    </form>
+
+  </div>
+</div>

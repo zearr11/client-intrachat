@@ -1,0 +1,17 @@
+<!-- Contenido general de barra superior -->
+<div class="d-flex align-items-center justify-content-between bg-dark general-topbar">
+  <div class="content-top">
+    <div class="d-flex align-items-center">
+
+      <!-- Imagen del contacto y/o grupo -->
+      <img [src]="infoContact().icon" [alt]="infoContact().name" class="rounded-circle me-3 img-top-contact">
+
+      <!-- Contenido -->
+      <div class="text-start">
+        <h6 class="mb-0 text-white fw-bold">{{infoContact().name}}</h6>
+        <small class="text-info">{{infoContact().subText}}</small>
+      </div>
+
+    </div>
+  </div>
+</div>

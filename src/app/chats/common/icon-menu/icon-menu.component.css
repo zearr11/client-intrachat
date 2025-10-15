@@ -1,0 +1,11 @@
+.icon-theme {
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.rounded-circle:hover {
+  background-color: #6c757d;
+  transform: scale(1.1);
+}

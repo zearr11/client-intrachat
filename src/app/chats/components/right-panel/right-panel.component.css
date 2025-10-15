@@ -1,0 +1,13 @@
+.list-chats {
+  max-height: 75vh;
+  position: relative;
+}
+
+.search-input::placeholder {
+  color: #e0e0e0;
+  opacity: 1;
+}
+
+.right-body {
+  height: 95vh;
+}

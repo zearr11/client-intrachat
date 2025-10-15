@@ -1,0 +1,15 @@
+.general-topbar {
+  height: 10vh;
+  border-bottom: 1px solid #adadad5e;
+}
+
+.content-top {
+  margin-right: 130px;
+  margin-left: 130px;
+}
+
+.img-top-contact {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+}

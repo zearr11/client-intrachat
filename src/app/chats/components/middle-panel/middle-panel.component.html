@@ -1,0 +1,18 @@
+<!-- Parte superior - Info del contacto -->
+<chat-topbar [infoContact]="header()" />
+
+<!-- Parte media - Contenido del chat -->
+<div class="middle-chat-general">
+  <div class="flex-grow-1 overflow-auto pe-2 middle-chat-content">
+    @for (messageBody of messages(); track $index) {
+      <chat-message
+        [messageBody]="messageBody"
+        [isFirst]="$first"
+        [isLast]="$last"
+      />
+    }
+  </div>
+</div>
+
+<!-- Parte baja - Input de mensaje -->
+<chat-input-message />
