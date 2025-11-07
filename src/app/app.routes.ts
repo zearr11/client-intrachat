@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LoginPageComponent } from './auth/pages/login-page/login-page.component';
-import { MainChatPageComponent } from './chats/pages/main-chat-page/main-chat-page.component';
 
 export const routes: Routes = [
   {
@@ -9,7 +8,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: MainChatPageComponent
+    loadComponent: () => import('./chats/pages/main-chat-page/main-chat-page.component')
   },
   {
     path: '**',

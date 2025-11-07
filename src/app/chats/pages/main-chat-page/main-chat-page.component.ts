@@ -15,7 +15,7 @@ import { InfoContact } from '../../interfaces/info.contact.interface';
   templateUrl: './main-chat-page.component.html',
   styleUrl: './main-chat-page.component.css'
 })
-export class MainChatPageComponent {
+export default class MainChatPageComponent {
 
   idValue = signal<number>(0);
 
