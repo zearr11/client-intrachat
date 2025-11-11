@@ -1,0 +1,25 @@
+<style>
+  .icons-btn {
+    margin-right: 15px;
+  }
+  .btn-actions {
+    color: white;
+    background: #272c2f;
+    margin: 5px 15px 10px 15px;
+    padding: 10px 20px 10px 20px;
+    border-radius: 10px;
+    font-size: 17px;
+  }
+  .btn-actions:hover {
+    background: #3f484d;
+  }
+
+  .active {
+    background: #3f484d;
+  }
+
+</style>
+
+<a [routerLink]="[route()]" [routerLinkActive]="'active'" class="list-group-item btn-actions">
+  <i class="icons-btn" [class]="iconNameClass()"></i> {{ nameItem() }}
+</a>

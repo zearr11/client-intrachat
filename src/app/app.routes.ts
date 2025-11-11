@@ -7,8 +7,12 @@ export const routes: Routes = [
     component: LoginPageComponent
   },
   {
-    path: '',
+    path: 'chats',
     loadComponent: () => import('./chats/pages/main-chat-page/main-chat-page.component')
+  },
+  {
+    path: '',
+    loadChildren: () => import('./admin/admin.routes')
   },
   {
     path: '**',

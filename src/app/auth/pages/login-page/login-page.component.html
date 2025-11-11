@@ -6,11 +6,41 @@
 -->
 
 <style>
+  .custom-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #dc3545;
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 1050;
+  }
+
+  .custom-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  /* ------------- */
+
   .login-container {
     height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: flex-end; /* Caja a la derecha */
+    justify-content: flex-end;
+    /* Caja a la derecha */
     padding-right: 12%;
     background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
   }
@@ -58,7 +88,8 @@
       justify-content: center;
       padding-right: 0;
       padding: 2rem;
-      background: linear-gradient(135deg, #000000, #1a1a1a); /* 🔹 Fondo negro en móvil */
+      background: linear-gradient(135deg, #000000, #1a1a1a);
+      /* 🔹 Fondo negro en móvil */
       background-size: cover;
     }
 
@@ -82,13 +113,13 @@
     <h4 class="mb-2">¡Bienvenido!</h4>
     <h6 class="mb-4">Ingrese sus datos para acceder</h6>
 
-    <form>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="mb-3 text-start">
-        <input type="email" class="form-control" id="email" placeholder="Email">
+        <input type="email" class="form-control" formControlName="email" id="email" placeholder="Email">
       </div>
 
       <div class="mb-4 text-start">
-        <input type="password" class="form-control" id="password" placeholder="Contraseña">
+        <input type="password" class="form-control" formControlName="password" id="password" placeholder="Contraseña">
       </div>
 
       <button type="submit" class="btn btn-success w-100 mb-3">Ingresar</button>
@@ -96,4 +127,12 @@
     </form>
 
   </div>
+
+  @if (hasError()) {
+  <div class="custom-toast" [class.show]="hasError()">
+    <div class="toast-content">
+      {{ messageError() }}
+    </div>
+  </div>
+  }
 </div>

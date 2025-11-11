@@ -20,7 +20,7 @@ export default class MainChatPageComponent {
   idValue = signal<number>(0);
 
   @HostListener('document:keydown.escape', ['$event'])
-  onEscPress(event: KeyboardEvent) {
+  onEscPress(event: Event) {
     this.idValue.set(0);
   }
 
