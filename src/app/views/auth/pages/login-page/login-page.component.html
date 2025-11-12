@@ -1,0 +1,40 @@
+<!--
+/* background: url('../../../../../../public/fondo-login.jpg') no-repeat center center; 🔹 Imagen de fondo */
+    background-size: cover; /* Ajusta la imagen al tamaño de pantalla */
+    transition: background 0.5s ease;
+
+-->
+
+<div class="login-container">
+  <div class="login-box">
+
+    <img src="intrachat.png" alt="logo-intrachat" class="img-logo mb-4">
+
+    <h4 class="mb-2">¡Bienvenido!</h4>
+    <h6 class="mb-4">Ingrese sus datos para acceder</h6>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3 text-start">
+        <input type="email" class="form-control" formControlName="email" id="email" placeholder="Email">
+      </div>
+
+      <div class="mb-4 text-start">
+        <input type="password" class="form-control" formControlName="password" id="password" placeholder="Contraseña">
+      </div>
+
+      <button type="submit" class="btn btn-success w-100 mb-3">Ingresar</button>
+      <span>¿Olvidó su contraseña?
+        <a routerLink="/forgot-password">Acceda aquí</a>
+      </span>
+    </form>
+
+  </div>
+
+  @if (hasError()) {
+  <div class="custom-toast" [class.show]="hasError()">
+    <div class="toast-content">
+      {{ messageError() }}
+    </div>
+  </div>
+  }
+</div>

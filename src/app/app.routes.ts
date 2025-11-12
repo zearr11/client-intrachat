@@ -1,21 +1,21 @@
 import { Routes } from '@angular/router';
-import { LoginPageComponent } from './auth/pages/login-page/login-page.component';
 
 export const routes: Routes = [
   {
-    path: 'login',
-    component: LoginPageComponent
+    path: '',
+    loadChildren: () => import('./views/auth/auth.routes')
   },
   {
     path: 'chats',
-    loadComponent: () => import('./chats/pages/main-chat-page/main-chat-page.component')
+    loadComponent: () => import('./views/chat/pages/main-chat-page/main-chat-page.component')
   },
   {
     path: '',
-    loadChildren: () => import('./admin/admin.routes')
+    loadChildren: () => import('./views/admin/admin.routes')
   },
   {
-    path: '**',
-    redirectTo: "login"
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'login'
   }
 ];

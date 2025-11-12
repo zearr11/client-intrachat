@@ -1,0 +1,39 @@
+.icons-btn {
+  margin-right: 15px;
+}
+
+.btn-account {
+  color: white;
+  background: #0d6efd;
+  margin: 5px 15px 10px 15px;
+  padding: 10px 20px 10px 20px;
+  border-radius: 10px;
+  font-size: 17px;
+}
+
+.btn-account:hover {
+  background: #0c58cb;
+}
+
+.active {
+  background: #0c58cb;
+}
+
+.btn-logout {
+  color: white;
+  background: #dc3545;
+  margin: 5px 15px 10px 15px;
+  padding: 10px 20px 10px 20px;
+  border-radius: 10px;
+  font-size: 17px;
+}
+
+.btn-logout:hover {
+  background: #a82734;
+}
+
+.content-menu {
+  height: 50vh;
+  overflow-y: auto;
+}
+
