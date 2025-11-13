@@ -22,7 +22,7 @@ export class AuthService {
 
   login(email: string, password: string): Observable<boolean> {
     return this.http
-      .post<ResponseGeneric>(`${baseUrl}/auth`, {
+      .post<ResponseGeneric<InfoAcces>>(`${baseUrl}/auth`, {
         email: email,
         password: password,
       })
@@ -38,19 +38,17 @@ export class AuthService {
     localStorage.removeItem('token');
   }
 
-  private handleAuthSuccess({ data }: ResponseGeneric) {
-
-    const token = data as InfoAcces;
+  private handleAuthSuccess({ data }: ResponseGeneric<InfoAcces>) {
 
     this._message.set(null);
-    this._token.set(token.accessToken);
-    localStorage.setItem('token', token.accessToken);
+    this._token.set(data!.accessToken);
+    localStorage.setItem('token', data!.accessToken);
 
     return true;
   }
 
   private handleAuthError(error: any) {
-    const errorBody = error.error as ResponseGeneric;
+    const errorBody = error.error as ResponseGeneric<null>;
     this.logout(errorBody.message!);
     return of(false);
   }

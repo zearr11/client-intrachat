@@ -7,6 +7,7 @@ import { ResponseGeneric } from '../../../shared/interfaces/general-response.int
 import { RoleMapper } from '../mapper/role.mapper';
 import { Role } from '../interfaces/role-user.interface';
 import { UserMapper } from '../mapper/user.mapper';
+import { PaginatedResponse } from '../../../shared/interfaces/paginated-response.interface';
 
 const baseUrl = environment.baseUrl;
 
@@ -34,12 +35,20 @@ export class UserService {
 
   loadDataCurrentUser() : Observable<boolean> {
     const url = `${baseUrl}/usuarios/actual`;
-    return this.http.get<ResponseGeneric>(url).pipe(
+    return this.http.get<ResponseGeneric<UserResponse>>(url).pipe(
       map(resp => {
-        this._userData.set(resp.data as UserResponse)
+        this._userData.set(resp.data)
         return true;
       }),
       catchError(resp => of(false))
+    );
+  }
+
+  getUsersPaginated() : Observable<PaginatedResponse<UserResponse>> {
+    const url = `${baseUrl}/usuarios/paginacion`;
+    return this.http.get<ResponseGeneric<PaginatedResponse<UserResponse>>>(url)
+    .pipe(
+      map(resp => resp.data!)
     );
   }
 
