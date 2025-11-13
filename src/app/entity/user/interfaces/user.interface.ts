@@ -1,6 +1,6 @@
-import { Gender } from "./gender-user.interface";
-import { Role } from "./role-user.interface";
-import { TipoDoc } from "./tipo-doc-user.interface";
+import { Gender } from "../enums/gender-user.enum";
+import { RoleRegular } from "../enums/role-regular.enum";
+import { TipoDoc } from "../enums/tipo-doc-user.enum";
 
 export interface UserResponse {
   id:                 number;
@@ -12,7 +12,7 @@ export interface UserResponse {
   genero:             Gender;
   celular:            string;
   email:              string;
-  rol:                string;
+  rol:                RoleRegular;
   fechaCreacion:      Date;
   ultimaModificacion: Date;
   estado:             boolean;

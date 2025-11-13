@@ -1,24 +1,25 @@
-import { Role } from "../interfaces/role-user.interface";
+import { RoleComplete } from "../enums/role-complete.enum";
+import { RoleRegular } from "../enums/role-regular.enum";
 
 export class RoleMapper {
 
-  static rolToRolUser(role: string) : Role {
-    if (role === 'ADMIN')
-      return Role.ROLE_ADMIN;
+  static rolToRolUser(role: RoleRegular) : RoleComplete {
+    if (role === RoleRegular.ADMIN)
+      return RoleComplete.ROLE_ADMIN;
 
-    if (role === 'SUPERVISOR_TI')
-      return Role.ROLE_SUPERVISOR_TI;
+    if (role === RoleRegular.SUPERVISOR_TI)
+      return RoleComplete.ROLE_SUPERVISOR_TI;
 
-    if (role === 'AGENTE_TI')
-      return Role.ROLE_AGENTE_TI;
+    if (role === RoleRegular.AGENTE_TI)
+      return RoleComplete.ROLE_AGENTE_TI;
 
-    if (role === 'JEFE_OPERACION')
-      return Role.ROLE_JEFE_OPERACION;
+    if (role === RoleRegular.JEFE_OPERACION)
+      return RoleComplete.ROLE_JEFE_OPERACION;
 
-    if (role === 'SUPERVISOR')
-      return Role.ROLE_SUPERVISOR;
+    if (role === RoleRegular.SUPERVISOR)
+      return RoleComplete.ROLE_SUPERVISOR;
 
-    return Role.ROLE_COLABORADOR;
+    return RoleComplete.ROLE_COLABORADOR;
   }
 
 }

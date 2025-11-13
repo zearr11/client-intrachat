@@ -1,4 +1,4 @@
-export enum Role {
+export enum RoleComplete {
   ROLE_ADMIN = 'ROLE_ADMIN',
   ROLE_SUPERVISOR_TI = 'ROLE_SUPERVISOR_TI',
   ROLE_AGENTE_TI = 'ROLE_AGENTE_TI',

@@ -90,18 +90,59 @@
     color: #dc3545;
     /* rojo Bootstrap */
   }
+
+  /* Contenedor general */
+  .layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* Sección del encabezado */
+  .encabezado {
+    padding: 15px;
+    text-align: center;
+    flex: 0 0 auto; /* NO crece, NO se mueve */
+    background: rgba(141, 141, 141, 0.05);
+  }
+
+  /* Sección central (tabla) */
+  .tabla {
+    flex: 1 1 auto; /* ocupa todo el espacio disponible */
+    display: flex;
+    justify-content: center; /* centra horizontal */
+    align-items: flex-start; /* centra vertical */
+    padding: 20px 10px;
+    overflow: auto; /* scroll solo para la tabla si hay muchos datos */
+    min-height: 250px;
+  }
+
+  .tabla > table {
+    min-width: 30%; /* la tabla no se reduce demasiado */
+    max-width: 95%;
+  }
+
+  /* Sección inferior */
+  .nav-paginacion {
+    flex: 0 0 auto; /* NO crece */
+    padding: 10px 0;
+    background: rgba(141, 141, 141, 0.05);
+  }
 </style>
+<!--  ms-5 me-5 -->
+<article class="layout">
 
-<article class="ms-5 me-5 mt-4">
-
-  <h3 class="mt-2">Gestionar Usuarios</h3>
-
-  <hr>
-
-  <div class="row">
-    <section class="col-4">
-      <div class="input-group">
-        <input
+  <div class="encabezado">
+    <hr>
+    <h3 style="text-align: left;">Gestionar Usuarios</h3>
+    <hr>
+    <div class="row">
+      <section class="col-4">
+        <div
+          class="input-group"
+          >
+          <input
+            #txtFilter
             class="form-control input-personalized"
             type="text"
             name="filtro"
@@ -109,95 +150,177 @@
             [value]="filter()"
             (input)="filter.set(txtFilter.value)"
             (keydown.enter)="setFilterPaginated()"
-            #txtFilter>
-        <button class="btn btn-success" (click)="setFilterPaginated()" type="button">Buscar</button>
-      </div>
-    </section>
+            >
+          <button
+            class="btn btn-success"
+            (click)="setFilterPaginated()"
+            type="button">
+            Buscar
+          </button>
+        </div>
+      </section>
 
-    <section class="col-2">
-      <button class="btn btn-secondary" (click)="clearFilters()" type="button">Quitar filtros</button>
-    </section>
+      <section class="col-5 d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="clearFilters()">
+          Quitar filtros
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary">
+          Nuevo Usuario
+        </button>
+      </section>
 
-    <section class="col-3 d-flex justify-content-end">
-      <button type="button" class="btn btn-primary">Nuevo Usuario</button>
-    </section>
-
-    <section class="col-3 d-flex justify-content-end gap-2">
-      <select #dpState class="form-select select-personalized" (change)="changeState(dpState.value)">
-        <option value="1" selected>Mostrar activos</option>
-        <option value="2">Mostrar inactivos</option>
-      </select>
-      <div class="rounded-circle" [class.bg-success]="showActives()" [class.bg-danger]="!showActives()"
-        style="width: 45px; height: 40px;"></div>
-    </section>
+      <section class="col-3 d-flex justify-content-end gap-2">
+        <select
+          #dpState
+          class="form-select select-personalized"
+          (change)="changeState(dpState.value)"
+          >
+          <option
+            value="1"
+            selected>
+            Mostrar activos
+          </option>
+          <option
+            value="2">
+            Mostrar inactivos
+          </option>
+        </select>
+        <div
+          class="rounded-circle"
+          [class.bg-success]="showActives()"
+          [class.bg-danger]="!showActives()"
+          style="width: 45px; height: 40px;">
+        </div>
+      </section>
+    </div>
+    <hr>
   </div>
 
-  <hr>
+  <div class="tabla">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th scope="col">N°</th>
+          <th scope="col">Usuario</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Identificación</th>
+          <th scope="col">Email</th>
+          <th scope="col">Celular</th>
+          <th scope="col">Creación</th>
+          <th scope="col">Modificación</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- (page - 1) * size + índice_local + 1  -->
+        @for (user of dataPaginated()?.result; track user.id) {
+        <tr>
+          <th scope="row">
+            {{
+              ((dataPaginated()?.page ?? 1) - 1) *
+              (dataPaginated()?.size ?? 1) + $index + 1
+            }}
+          </th>
+          <td>
+            {{ `${user.nombres} ${user.apellidos}` | titlecase }}
+          </td>
+          <td>{{ user.tipoDoc }}</td>
+          <td>{{ user.numeroDoc }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.celular }}</td>
+          <td>{{ user.fechaCreacion | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ user.ultimaModificacion | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <div class="d-flex justify-content-center gap-3 action-icons">
+              <i
+                class="bi bi-eye-fill text-info"
+                title="Ver detalles"
+                (click)="showInfo(user.id)">
+              </i>
+              <i
+                class="bi bi-pencil text-warning"
+                title="Editar usuario"
+                (click)="showModalEdit(user.id)">
+              </i>
+              <i
+                class="bi bi-trash-fill text-danger"
+                title="Eliminar usuario"
+                (click)="showModalDelete(user.id)">
+              </i>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 
-  <table class="table table-dark table-striped">
-    <thead>
-      <tr>
-        <th scope="col">N°</th>
-        <th scope="col">Usuario</th>
-        <th scope="col">Tipo</th>
-        <th scope="col">Identificación</th>
-        <th scope="col">Email</th>
-        <th scope="col">Celular</th>
-        <th scope="col">Creación</th>
-        <th scope="col">Modificación</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (user of dataPaginated()?.result; track user.id) {
-      <tr> <!-- (page - 1) * size + índice_local + 1  -->
-        <th scope="row">{{
-          ((dataPaginated()?.page ?? 1) - 1) * (dataPaginated()?.size ?? 1) + $index + 1
-        }}</th>
-        <td>{{ `${user.nombres} ${user.apellidos}` | titlecase }}</td>
-        <td>{{ user.tipoDoc }}</td>
-        <td>{{ user.numeroDoc }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.celular }}</td>
-        <td>{{ user.fechaCreacion | date: 'dd/MM/yyyy' }}</td>
-        <td>{{ user.ultimaModificacion | date: 'dd/MM/yyyy' }}</td>
-        <td>
-          <div class="d-flex justify-content-center gap-3 action-icons">
-            <i class="bi bi-eye-fill text-info" title="Ver detalles" (click)="showInfo(user.id)"></i>
-            <i class="bi bi-pencil text-warning" title="Editar usuario" (click)="showModalEdit(user.id)"></i>
-            <i class="bi bi-trash-fill text-danger" title="Eliminar usuario" (click)="showModalDelete(user.id)"></i>
-          </div>
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table>
+  <div class="nav-paginacion">
+    <hr>
+    <nav>
+      <ul class="pagination justify-content-center pagination-dark">
+        <li class="page-item">
+          <a
+            style="cursor: pointer;"
+            class="page-link"
+            aria-label="Previous"
+            [class.disabled]="dataPaginated()?.page == 1"
+            (click)="changePage(false)"
+            >
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
 
-  <hr>
-
-  <nav>
-    <ul class="pagination justify-content-center pagination-dark">
-      <li class="page-item">
-        <a href="#" class="page-link" aria-label="Previous" [class.disabled]="dataPaginated()?.page == 1">
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-      @for (num of [].constructor(dataPaginated()?.totalPages); track $index) {
-      <li class="page-item"
+        @for (num of [].constructor(dataPaginated()?.totalPages); track $index) {
+        <li
+          class="page-item"
           [class.active]="$index + 1 == dataPaginated()?.page"
-          (click)="nextPage($index + 1)">
-        <a style="cursor: pointer;" class="page-link">{{ $index + 1 }}</a>
-      </li>
-      }
-      <li class="page-item">
-        <a style="cursor: pointer;" class="page-link" aria-label="Next" [class.disabled]="nothingShowInTable()">
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+          (click)="nextPage($index + 1)"
+          >
+          <a
+            style="cursor: pointer;"
+            class="page-link">
+            {{ $index + 1 }}
+          </a>
+        </li>
+        }
 
-
-  <hr>
+        <li class="page-item">
+          <a
+            style="cursor: pointer;"
+            class="page-link"
+            aria-label="Next"
+            [class.disabled]="nothingShowInTable()"
+            (click)="changePage(true)"
+            >
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <hr>
+  </div>
 
 </article>
+
+<!--
+
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .ignore-contenedor {
+    width: 100%;
+    text-align: left;
+  }
+
+-->

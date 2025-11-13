@@ -75,6 +75,15 @@ export class UserPageComponent implements OnInit {
     });
   }
 
+  changePage(isNext: boolean) {
+    if (isNext) {
+      this.nextPage((this.pageCurrent()! + 1))
+      return;
+    }
+
+    this.nextPage((this.pageCurrent()! - 1))
+  }
+
   setFilterPaginated() {
     this.pageCurrent.set(null);
     this.userService.getUsersPaginated(

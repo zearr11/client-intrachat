@@ -5,9 +5,9 @@ import { UserResponse } from '../interfaces/user.interface';
 import { catchError, map, Observable, of } from 'rxjs';
 import { ResponseGeneric } from '../../../shared/interfaces/general-response.interface';
 import { RoleMapper } from '../mapper/role.mapper';
-import { Role } from '../interfaces/role-user.interface';
 import { UserMapper } from '../mapper/user.mapper';
 import { PaginatedResponse } from '../../../shared/interfaces/paginated-response.interface';
+import { RoleComplete } from '../enums/role-complete.enum';
 
 const baseUrl = environment.baseUrl;
 
@@ -20,18 +20,32 @@ export class UserService {
   dataUser = computed(() => this._userData());
 
   isAdmin = computed(() => {
-    const roleUser = RoleMapper.rolToRolUser(this.dataUser()?.rol ?? '');
-    return roleUser === Role.ROLE_ADMIN;
+    const userData = this.dataUser()?.rol;
+
+    if (userData) {
+      const roleUser = RoleMapper.rolToRolUser(this.dataUser()!.rol);
+      return roleUser === RoleComplete.ROLE_ADMIN;
+    }
+
+    return false;
   });
 
   isSupervisorTI = computed(() => {
-    const roleUser = RoleMapper.rolToRolUser(this.dataUser()?.rol ?? '');
-    return roleUser === Role.ROLE_SUPERVISOR_TI;
+    const userData = this.dataUser()?.rol;
+
+    if (userData) {
+      const roleUser = RoleMapper.rolToRolUser(this.dataUser()!.rol);
+      return roleUser === RoleComplete.ROLE_SUPERVISOR_TI;
+    }
+
+    return false;
   });
 
-  getNameAccount = computed(() => UserMapper.userToFirstNameAndLastname(
-    this.dataUser()!.nombres, this.dataUser()!.apellidos
-  ));
+  getNameAccount = computed(() =>
+    UserMapper.userToFirstNameAndLastname(
+      this.dataUser()!.nombres, this.dataUser()!.apellidos
+    )
+  );
 
   loadDataCurrentUser(): Observable<boolean> {
     const url = `${baseUrl}/usuarios/actual`;

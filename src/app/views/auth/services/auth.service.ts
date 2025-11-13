@@ -3,7 +3,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { ResponseGeneric } from '../../../shared/interfaces/general-response.interface';
-import { InfoAcces } from '../../../entity/user/interfaces/info-access.interface';
+import { InfoAccess } from '../interfaces/info-access.interface';
 
 const baseUrl = environment.baseUrl;
 
@@ -22,7 +22,7 @@ export class AuthService {
 
   login(email: string, password: string): Observable<boolean> {
     return this.http
-      .post<ResponseGeneric<InfoAcces>>(`${baseUrl}/auth`, {
+      .post<ResponseGeneric<InfoAccess>>(`${baseUrl}/auth`, {
         email: email,
         password: password,
       })
@@ -38,7 +38,7 @@ export class AuthService {
     localStorage.removeItem('token');
   }
 
-  private handleAuthSuccess({ data }: ResponseGeneric<InfoAcces>) {
+  private handleAuthSuccess({ data }: ResponseGeneric<InfoAccess>) {
 
     this._message.set(null);
     this._token.set(data!.accessToken);

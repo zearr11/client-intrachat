@@ -33,8 +33,37 @@
   background: #a82734;
 }
 
+
+/* INIT */
+.nav-route {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.logo-title-app {
+  margin-top: 30px;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.menu-complete {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: auto;
+  min-height: 250px;
+}
+
+.footer-user {
+  flex: 0 0 auto;
+  padding-bottom: 15px;
+}
+
+/*
 .content-menu {
   height: 50vh;
   overflow-y: auto;
 }
-
+*/
