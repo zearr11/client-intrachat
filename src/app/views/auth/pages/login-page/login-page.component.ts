@@ -1,41 +1,31 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { UserService } from '../../../../entity/user/services/user.service';
-import { Role } from '../../../../entity/user/interfaces/role-user.interface';
-import { AuthService } from '../../../../entity/user/services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { PanelAccessService } from '../../services/panel-access.service';
-declare var bootstrap: any;
+import { ToastMessageService } from '../../../../shared/services/toast-message.service';
 
 @Component({
   selector: 'app-login',
   imports: [
     ReactiveFormsModule,
     RouterLink
-],
+  ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.css'
 })
 export default class LoginPageComponent {
 
   fb = inject(FormBuilder);
-  hasError = signal(false);
-  messageError = signal<string|null>(null);
-  router = inject(Router)
 
   authService = inject(AuthService);
   userService = inject(UserService);
   panelAccessService = inject(PanelAccessService);
+  toastService = inject(ToastMessageService);
 
-  ngAfterViewChecked() {
-    // Solo inicializa cuando el toast aparece
-    if (this.hasError()) {
-      const toastEl = document.getElementById('errorToast');
-      if (toastEl) {
-        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-        toast.show();
-      }
-    }
+  showToastMessage(message: string, colorMessage: string) {
+    this.toastService.show(message, colorMessage)
   }
 
   loginForm = this.fb.group({
@@ -45,29 +35,31 @@ export default class LoginPageComponent {
 
   onSubmit() {
     if (this.loginForm.invalid) {
-      this.hasError.set(true);
-      this.messageError.set('Verifica la información ingresada e intente nuevamente.')
-      setTimeout(() => {
-        this.hasError.set(false);
-        this.messageError.set(null);
-      }, 3000);
+      this.showToastMessage(
+        'Verifica la información ingresada e intente nuevamente.',
+        'text-bg-danger'
+      );
       return;
     }
 
-    const { email = '', password = '' } = this.loginForm.value;
+    const { email, password } = this.loginForm.value;
 
     this.authService.login(email!, password!).subscribe((isSuccessAccess) => {
+
+      // Acceso correcto
       if (isSuccessAccess) {
         this.panelAccessService.showPanelByRole();
+        this.showToastMessage(
+          `Bienvenido ${this.userService.getNameAccount()}`, 'text-bg-success'
+        );
         return;
       }
 
-      this.hasError.set(true);
-      this.messageError.set(this.authService.message());
-      setTimeout(() => {
-        this.hasError.set(false);
-        this.messageError.set(null);
-      }, 3000);
+      // Error en bd
+      this.showToastMessage(
+        this.authService.message() ?? 'Error en acceso.',
+        'text-bg-danger'
+      );
     });
   }
 

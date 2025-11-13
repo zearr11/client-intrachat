@@ -2,9 +2,8 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Role } from '../interfaces/role-user.interface';
 import { ResponseGeneric } from '../../../shared/interfaces/general-response.interface';
-import { InfoAcces } from '../interfaces/info-access.interface';
+import { InfoAcces } from '../../../entity/user/interfaces/info-access.interface';
 
 const baseUrl = environment.baseUrl;
 
@@ -16,13 +15,10 @@ export class AuthService {
   private http = inject(HttpClient);
 
   private _message = signal<string | null>(null);
-  private _isMessageError = signal<boolean>(false);
   private _token = signal<string | null>(localStorage.getItem('token'));
 
   accessToken = computed(() => this._token());
-
   message = computed<string|null>(() => this._message());
-  isMessageError = computed<boolean>(() => this._isMessageError());
 
   login(email: string, password: string): Observable<boolean> {
     return this.http
@@ -36,10 +32,8 @@ export class AuthService {
       );
   }
 
-  logout(message: string, isError: boolean) {
+  logout(message: string | null = null) {
     this._message.set(message);
-    this._isMessageError.set(isError);
-
     this._token.set(null);
     localStorage.removeItem('token');
   }
@@ -57,7 +51,7 @@ export class AuthService {
 
   private handleAuthError(error: any) {
     const errorBody = error.error as ResponseGeneric;
-    this.logout(errorBody.message!, true);
+    this.logout(errorBody.message!);
     return of(false);
   }
 

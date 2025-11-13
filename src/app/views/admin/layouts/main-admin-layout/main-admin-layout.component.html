@@ -30,9 +30,7 @@
           Mi cuenta
         </a>
 
-        <a [routerLink]="['/login']"
-           [queryParams]="{ logout: true }"
-           class="list-group-item btn-logout">
+        <a class="list-group-item btn-logout" (click)="finishSession()">
           <i class="icons-btn bi bi-box-arrow-right"></i>
           Cerrar sesión
         </a>
@@ -42,6 +40,7 @@
   </section>
 
   <section class="bg-dark col-10 p-0">
+
     <nav class="navbar navbar-dark" style="background-color: #16191B;">
       <div class="container-fluid">
         <button class="navbar-toggler" type="button">
@@ -51,6 +50,7 @@
     </nav>
 
     <router-outlet />
+
   </section>
 
 </main>

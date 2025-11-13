@@ -7,7 +7,6 @@ import { ResponseGeneric } from '../../../shared/interfaces/general-response.int
 import { RoleMapper } from '../mapper/role.mapper';
 import { Role } from '../interfaces/role-user.interface';
 import { UserMapper } from '../mapper/user.mapper';
-import { AuthService } from './auth.service';
 
 const baseUrl = environment.baseUrl;
 
@@ -27,11 +26,11 @@ export class UserService {
   isSupervisorTI = computed(() => {
     const roleUser = RoleMapper.rolToRolUser(this.dataUser()?.rol ?? '');
     return roleUser === Role.ROLE_SUPERVISOR_TI;
-  })
+  });
 
   getNameAccount = computed(() => UserMapper.userToFirstNameAndLastname(
-    this.dataUser()?.nombres ?? '', this.dataUser()?.apellidos ?? ''
-  ))
+    this.dataUser()!.nombres, this.dataUser()!.apellidos
+  ));
 
   loadDataCurrentUser() : Observable<boolean> {
     const url = `${baseUrl}/usuarios/actual`;
