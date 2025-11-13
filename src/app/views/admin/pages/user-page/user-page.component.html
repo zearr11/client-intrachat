@@ -1,3 +1,97 @@
+<style>
+  /* Input style */
+  .input-personalized {
+    background-color: #1e1f22 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #424a51 !important;
+  }
+
+  .input-personalized::placeholder {
+    color: #a1aeba;
+  }
+
+  .input-personalized:focus {
+    background-color: #2b2d31;
+    color: #fff;
+    border-color: #198754;
+    /* Verde Bootstrap */
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+  }
+
+  /* Select style */
+  .select-personalized {
+    background-color: #1e1f22 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #343a40 !important;
+    cursor: pointer;
+  }
+
+  .select-personalized option {
+    background-color: #1e1f22;
+    color: #e0e0e0;
+  }
+
+  /* Paginacion style */
+  .pagination-dark .page-link {
+    background-color: #1e1f22;
+    color: #e0e0e0;
+    border: 1px solid #343a40;
+    transition: all 0.2s ease;
+  }
+
+  .pagination-dark .page-link:hover {
+    background-color: #0d6efd;
+    color: #ffffff;
+    border-color: #0d6efd;
+  }
+
+  .pagination-dark .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+  }
+
+  .pagination-dark .page-item.disabled .page-link {
+    background-color: #121315;
+    color: #6c757d;
+    border-color: #343a40;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .pagination-dark .page-link:focus {
+    box-shadow: 0 0 0 0.25rem #062248;
+  }
+
+  /* Acciones tabla */
+  .action-icons i {
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: transform 0.15s ease, opacity 0.15s ease, color 0.15s ease;
+  }
+
+  .action-icons i:hover {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+
+  .action-icons .bi-eye-fill:hover {
+    color: #0dcaf0;
+    /* azul Bootstrap */
+  }
+
+  .action-icons .bi-pencil:hover {
+    color: #ffc107;
+    /* amarillo Bootstrap */
+  }
+
+  .action-icons .bi-trash-fill:hover {
+    color: #dc3545;
+    /* rojo Bootstrap */
+  }
+</style>
+
 <article class="ms-5 me-5 mt-4">
 
   <h3 class="mt-2">Gestionar Usuarios</h3>
@@ -7,13 +101,21 @@
   <div class="row">
     <section class="col-4">
       <div class="input-group">
-        <input class="form-control" type="text" name="filtro" placeholder="Filtro de búsqueda">
-        <button class="btn btn-success" type="button">Buscar</button>
+        <input
+            class="form-control input-personalized"
+            type="text"
+            name="filtro"
+            placeholder="Filtro de búsqueda"
+            [value]="filter()"
+            (input)="filter.set(txtFilter.value)"
+            (keydown.enter)="setFilterPaginated()"
+            #txtFilter>
+        <button class="btn btn-success" (click)="setFilterPaginated()" type="button">Buscar</button>
       </div>
     </section>
 
     <section class="col-2">
-      <button class="btn btn-secondary" type="button">Quitar filtros</button>
+      <button class="btn btn-secondary" (click)="clearFilters()" type="button">Quitar filtros</button>
     </section>
 
     <section class="col-3 d-flex justify-content-end">
@@ -21,44 +123,50 @@
     </section>
 
     <section class="col-3 d-flex justify-content-end gap-2">
-      <select #dpState class="form-select" id="view-filter-lst" (change)="changeState(dpState.value)">
+      <select #dpState class="form-select select-personalized" (change)="changeState(dpState.value)">
         <option value="1" selected>Mostrar activos</option>
         <option value="2">Mostrar inactivos</option>
       </select>
-      <div class="rounded-circle" [class.bg-success]="showActives()" [class.bg-danger]="!showActives()"style="width: 45px; height: 40px;"></div>
+      <div class="rounded-circle" [class.bg-success]="showActives()" [class.bg-danger]="!showActives()"
+        style="width: 45px; height: 40px;"></div>
     </section>
   </div>
 
-
   <hr>
 
-  <table class="table text-center">
-    <thead class="table-light">
+  <table class="table table-dark table-striped">
+    <thead>
       <tr>
         <th scope="col">N°</th>
         <th scope="col">Usuario</th>
         <th scope="col">Tipo</th>
-        <th scope="col">Numero de documento</th>
-        <th scope="col">Correo electrónico</th>
+        <th scope="col">Identificación</th>
+        <th scope="col">Email</th>
         <th scope="col">Celular</th>
-        <th scope="col">Ultima modificación</th>
+        <th scope="col">Creación</th>
+        <th scope="col">Modificación</th>
         <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
       @for (user of dataPaginated()?.result; track user.id) {
-      <tr>
-        <th scope="row">{{ $index + 1 }}</th>
-        <td>{{ `${user.nombres} ${user.apellidos}` }}</td>
+      <tr> <!-- (page - 1) * size + índice_local + 1  -->
+        <th scope="row">{{
+          ((dataPaginated()?.page ?? 1) - 1) * (dataPaginated()?.size ?? 1) + $index + 1
+        }}</th>
+        <td>{{ `${user.nombres} ${user.apellidos}` | titlecase }}</td>
         <td>{{ user.tipoDoc }}</td>
         <td>{{ user.numeroDoc }}</td>
         <td>{{ user.email }}</td>
         <td>{{ user.celular }}</td>
+        <td>{{ user.fechaCreacion | date: 'dd/MM/yyyy' }}</td>
         <td>{{ user.ultimaModificacion | date: 'dd/MM/yyyy' }}</td>
         <td>
-          <i class="bi bi-eye-fill" (click)="showInfo(user.id)"></i>
-          <i class="bi bi-pencil" (click)="showModalEdit(user.id)"></i>
-          <i class="bi bi-trash-fill" (click)="showModalDelete(user.id)"></i>
+          <div class="d-flex justify-content-center gap-3 action-icons">
+            <i class="bi bi-eye-fill text-info" title="Ver detalles" (click)="showInfo(user.id)"></i>
+            <i class="bi bi-pencil text-warning" title="Editar usuario" (click)="showModalEdit(user.id)"></i>
+            <i class="bi bi-trash-fill text-danger" title="Eliminar usuario" (click)="showModalDelete(user.id)"></i>
+          </div>
         </td>
       </tr>
       }
@@ -68,25 +176,27 @@
   <hr>
 
   <nav>
-    <ul class="pagination justify-content-center">
+    <ul class="pagination justify-content-center pagination-dark">
       <li class="page-item">
         <a href="#" class="page-link" aria-label="Previous" [class.disabled]="dataPaginated()?.page == 1">
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
       @for (num of [].constructor(dataPaginated()?.totalPages); track $index) {
-      <li class="page-item" [class.active]="$index + 1 == dataPaginated()?.page">
-        <a href="#" class="page-link">{{ $index + 1 }}</a>
+      <li class="page-item"
+          [class.active]="$index + 1 == dataPaginated()?.page"
+          (click)="nextPage($index + 1)">
+        <a style="cursor: pointer;" class="page-link">{{ $index + 1 }}</a>
       </li>
       }
       <li class="page-item">
-        <a href="#" class="page-link" aria-label="Next"
-          [class.disabled]="dataPaginated()?.totalPages == dataPaginated()?.page">
+        <a style="cursor: pointer;" class="page-link" aria-label="Next" [class.disabled]="nothingShowInTable()">
           <span aria-hidden="true">&raquo;</span>
         </a>
       </li>
     </ul>
   </nav>
+
 
   <hr>
 

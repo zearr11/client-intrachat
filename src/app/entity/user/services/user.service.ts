@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { UserResponse } from '../interfaces/user.interface';
 import { catchError, map, Observable, of } from 'rxjs';
 import { ResponseGeneric } from '../../../shared/interfaces/general-response.interface';
@@ -33,7 +33,7 @@ export class UserService {
     this.dataUser()!.nombres, this.dataUser()!.apellidos
   ));
 
-  loadDataCurrentUser() : Observable<boolean> {
+  loadDataCurrentUser(): Observable<boolean> {
     const url = `${baseUrl}/usuarios/actual`;
     return this.http.get<ResponseGeneric<UserResponse>>(url).pipe(
       map(resp => {
@@ -44,12 +44,28 @@ export class UserService {
     );
   }
 
-  getUsersPaginated() : Observable<PaginatedResponse<UserResponse>> {
+  getUsersPaginated(
+    options?: {
+      page?: number, size?: number,
+      state?: boolean, filter?: string
+    }
+  ): Observable<PaginatedResponse<UserResponse>> {
+
     const url = `${baseUrl}/usuarios/paginacion`;
-    return this.http.get<ResponseGeneric<PaginatedResponse<UserResponse>>>(url)
-    .pipe(
-      map(resp => resp.data!)
-    );
+    let params = new HttpParams();
+
+    if (options?.page) params = params.set('page', options.page);
+    if (options?.size) params = params.set('size', options.size);
+    if (options?.state != undefined) params = params.set('estado', options.state);
+    if (options?.filter) params = params.set('filtro', options.filter);
+
+    // console.log(params);
+
+    return this.http.get<ResponseGeneric<PaginatedResponse<UserResponse>>>
+      (url, { params })
+      .pipe(
+        map(resp => resp.data!)
+      );
   }
 
 }
