@@ -10,8 +10,8 @@ export class TeamPageComponent {
 
   private modalService = inject(ModalPersonalizedService);
 
-  apertureModal() {
-    this.modalService.show();
-  }
+  // apertureModal() {
+  //   this.modalService.show();
+  // }
 
 }

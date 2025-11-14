@@ -21,9 +21,56 @@
       </div>
 
       <div class="modal-body">
-        Este es el contenido del modal.
+        @switch (typeModal()) {
+          @case ('get') {
+
+            @switch (typeEntity()) {
+              @case ('user') {
+
+              }
+            }
+
+          }
+          @case ('edit') {
+
+            @switch (typeEntity()) {
+              @case ('user') {
+
+              }
+            }
+
+          }
+          @case ('delete') {
+
+            @switch (typeEntity()) {
+              @case ('user') {
+                SE BORRARA AL USUARIO
+
+              }
+            }
+
+          }
+        }
       </div>
 
+      @if (typeModal() == 'delete') {
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          (click)="changeStateDeleteValue()"
+          >
+          Si, quiero deshabilitarlo
+        </button>
+      </div>
+      }
     </div>
   </div>
 </div>
