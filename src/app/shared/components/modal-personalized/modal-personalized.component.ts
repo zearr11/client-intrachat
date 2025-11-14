@@ -1,4 +1,4 @@
-import { Component, ElementRef, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, input, output, signal, ViewChild } from '@angular/core';
 import { Modal } from 'bootstrap';
 import { entity, modalType } from '../../types/modal.types';
 
@@ -9,19 +9,23 @@ import { entity, modalType } from '../../types/modal.types';
 })
 export class ModalPersonalizedComponent {
 
-  isSizeXL = signal<boolean>(false);
-  isSizeLg = signal<boolean>(false);
-  isFullScreenInXXL = signal<boolean>(false);
+  // Aplicacion de tamaños <opcionales>
+  isSizeXL = input<boolean>(false);
+  isSizeLg = input<boolean>(false);
+  isFullScreenInXXL = input<boolean>(false);
 
-  titleModal = signal<string>('');
-  typeEntity = signal<entity | null>(null);
-  typeModal = signal<modalType | null>(null);
+  // Elementos necesarios
+  titleModal = input.required<string>();
+  typeEntity = input.required<entity>();
+  typeModal = input.required<modalType>();
 
-  deleteElement = signal<boolean>(false);
+  // En caso de actualizar estado de entidad es requerido
+  messageModal = input<string>('');
+  objectToAction = input<string>('');
+  messageSecondaryModal = input<string>('');
 
-  changeStateDeleteValue() {
-    this.deleteElement.update((v) => !v);
-  }
+  // Emision al cerrar el modal (true: confirma, false: nada)
+  realizedAction = output<boolean>();
 
   @ViewChild('modalElement') modalElement!: ElementRef;
   private modalInstance!: Modal;
@@ -30,10 +34,13 @@ export class ModalPersonalizedComponent {
     this.modalInstance = new Modal(this.modalElement.nativeElement);
   }
 
-  openModal() {
-    if (this.modalElement) {
-      this.modalInstance.show();
-    }
+  show() {
+    this.modalInstance.show();
+  }
+
+  close(state: boolean) {
+    this.realizedAction.emit(state);
+    this.modalInstance.hide();
   }
 
 }

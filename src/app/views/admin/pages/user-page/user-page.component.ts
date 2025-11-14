@@ -1,15 +1,16 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ViewChild } from '@angular/core';
 import { PaginatedResponse } from '../../../../shared/interfaces/paginated-response.interface';
 import { UserService } from '../../../../entity/user/services/user.service';
 import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { SearchInputDarkComponent } from "../../common/search-input-dark/search-input-dark.component";
 import { rxResource } from '@angular/core/rxjs-interop';
-import { map, of, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { ActivesInactivesSelectDarkComponent } from "../../common/actives-inactives-select-dark/actives-inactives-select-dark.component";
 import { NavTableDarkComponent } from "../../common/nav-table-dark/nav-table-dark.component";
-import { ModalPersonalizedService } from '../../../../shared/services/modal-personalized.service';
 import { ToastMessageService } from '../../../../shared/services/toast-message.service';
+import { ModalPersonalizedComponent } from '../../../../shared/components/modal-personalized/modal-personalized.component';
+import { modalType, entity } from '../../../../shared/types/modal.types';
 
 @Component({
   selector: 'user-page',
@@ -18,14 +19,14 @@ import { ToastMessageService } from '../../../../shared/services/toast-message.s
     ActivesInactivesSelectDarkComponent,
     TitleCasePipe,
     DatePipe,
-    NavTableDarkComponent
+    NavTableDarkComponent,
+    ModalPersonalizedComponent
   ],
   templateUrl: './user-page.component.html',
   styleUrl: './user-page.component.css'
 })
 export class UserPageComponent {
 
-  private modalService = inject(ModalPersonalizedService);
   private toastService = inject(ToastMessageService);
 
   usersElementsTable: string[] = [
@@ -41,7 +42,7 @@ export class UserPageComponent {
     || this.dataPaginated()?.totalPages == this.dataPaginated()?.page
   );
 
-  private idUserManagement = signal<number | null>(null);
+  // private idUserManagement = signal<number | null>(null);
 
   // parametros de consulta http
   showActives = signal<boolean>(true);
@@ -104,6 +105,68 @@ export class UserPageComponent {
     this.pageCurrent.set(null);
   }
 
+  // ------------------------- MODAL -------------------------
+
+  @ViewChild('modalRef') modalRef!: ModalPersonalizedComponent;
+
+  idUserManagement = signal<number | null>(null);
+  titleModal = signal<string>('');
+  typeModal = signal<modalType | null>(null);
+
+  messageModal = signal<string>('');
+  entityToAction = signal<string>('');
+  messageSecondary = signal<string>('');
+
+  openModal(id: number, modalTitle: string, type: modalType, fullName?: string) {
+    // Establecimiento de parametros
+    this.idUserManagement.set(id);
+    this.titleModal.set(modalTitle);
+    this.typeModal.set(type);
+
+    if (['delete', 'restore'].includes(type)) {
+      this.entityToAction.set(`${fullName} ?`);
+      const msg = type == 'delete'
+        ? '¿Estás seguro de querer deshabilitar la cuenta del usuario '
+        : '¿Estás seguro de querer habilitar la cuenta del usuario ';
+      const textSecondary = type == 'delete'
+        ? 'Nota: El usuario dejará de tener acceso a la plataforma.'
+        : 'Nota: El usuario podrá acceder nuevamente a la plataforma.'
+
+      this.messageModal.set(msg);
+      this.messageSecondary.set(textSecondary);
+    }
+
+    // Mostrar modal
+    this.modalRef.show();
+  }
+
+  realizedActionModal(isActive: boolean) {
+    if (!isActive) {
+      this.idUserManagement.set(null);
+      return;
+    }
+
+    if (this.typeModal() == 'delete' || this.typeModal() == 'restore') {
+      const newState = this.typeModal() == 'delete' ? false : true;
+      this.userService.updateDataUser(
+        this.idUserManagement()!, { estado: newState }
+      ).pipe(
+        tap(() => {
+          const msg = !newState
+            ? 'Usuario deshabilitado satisfactoriamente.'
+            : 'Usuario habilitado satisfactoriamente.';
+          const color = !newState ? 'text-bg-danger' : 'text-bg-primary';
+
+          this.toastService.show(msg, color);
+          this.httpUsersPaginated.reload()
+        })
+      ).subscribe();
+    }
+  }
+
+  // ---------------------------------------------------------
+
+  /*
   showModalDelete(id: number) {
     this.idUserManagement.set(id);
     this.modalService.show({
@@ -141,5 +204,5 @@ export class UserPageComponent {
         )
     }
   }));
-
+  */
 }

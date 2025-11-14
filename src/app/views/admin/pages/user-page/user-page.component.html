@@ -74,12 +74,29 @@
                 title="Modificar"
                 >
               </i>
-              <i
-                class="bi bi-trash-fill text-danger"
-                title="Deshabilitar"
-                (click)="showModalDelete(user.id)"
-                >
-              </i>
+              @if (user.estado) {
+                <i
+                  class="bi bi-trash-fill text-danger"
+                  title="Deshabilitar"
+                  (click)="openModal(
+                    user.id,
+                    'Deshabilitar usuario', 'delete',
+                    user.nombres + ' ' + user.apellidos
+                    )"
+                  >
+                </i>
+              } @else {
+                <i
+                  class="bi bi-arrow-up-circle-fill text-success"
+                  title="Habilitar"
+                  (click)="openModal(
+                    user.id,
+                    'Habilitar usuario', 'restore',
+                    user.nombres + ' ' + user.apellidos
+                    )"
+                  >
+                </i>
+              }
             </div>
           </td>
         </tr>
@@ -97,6 +114,17 @@
       />
   </div>
 </article>
+
+<modal-personalized
+  #modalRef
+  [titleModal]="titleModal()"
+  typeEntity="user"
+  [messageModal]="messageModal()"
+  [objectToAction]="entityToAction()"
+  [messageSecondaryModal]="messageSecondary()"
+  [typeModal]="typeModal()!"
+  (realizedAction)="realizedActionModal($event)"
+  />
 
 <!--
 

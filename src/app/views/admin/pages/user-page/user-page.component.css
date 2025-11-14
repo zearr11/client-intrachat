@@ -62,3 +62,7 @@
   color: #dc3545;
   /* rojo Bootstrap */
 }
+
+.action-icons .bi-arrow-up-circle-fill:hover {
+  color: #198754
+}

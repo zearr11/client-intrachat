@@ -1,7 +1,13 @@
 <!-- Modal -->
 <div
   #modalElement
-  class="modal fade">
+  class="modal fade"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+  >
   <div
     class="modal-dialog modal-dialog-centered"
     [class.modal-lg]="false"
@@ -12,12 +18,6 @@
 
       <div class="modal-header">
         <h5 class="modal-title">{{ titleModal() }}</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Cerrar">
-        </button>
       </div>
 
       <div class="modal-body">
@@ -40,35 +40,45 @@
             }
 
           }
-          @case ('delete') {
-
-            @switch (typeEntity()) {
-              @case ('user') {
-                SE BORRARA AL USUARIO
-
-              }
-            }
-
+          @default {
+            <p>
+              {{ messageModal() }}
+              <strong>
+                {{ objectToAction() }}
+              </strong>
+            </p>
+            <p class="text-muted">
+              {{ messageSecondaryModal() }}
+            </p>
           }
         }
       </div>
 
-      @if (typeModal() == 'delete') {
+      @if (typeModal() == 'delete' || typeModal() == 'restore') {
       <div class="modal-footer">
         <button
           type="button"
           class="btn btn-secondary"
-          data-bs-dismiss="modal">
+          (click)="close(false)">
           Cancelar
         </button>
-        <button
-          type="button"
-          class="btn btn-danger"
-          data-bs-dismiss="modal"
-          (click)="changeStateDeleteValue()"
-          >
-          Si, quiero deshabilitarlo
-        </button>
+        @if (typeModal() == 'delete') {
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="close(true)"
+            >
+            Si, quiero deshabilitarlo
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="close(true)"
+            >
+            Si, quiero habilitarlo
+          </button>
+        }
       </div>
       }
     </div>
@@ -83,6 +93,12 @@ data-bs-backdrop="static"
   aria-labelledby="staticBackdropLabel"
   aria-hidden="true"
 
+          <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar">
+        </button>
 
   <div class="modal-footer">
         <button

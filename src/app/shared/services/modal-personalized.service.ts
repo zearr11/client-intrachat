@@ -4,7 +4,7 @@ import { entity, modalType } from '../types/modal.types';
 
 @Injectable({providedIn: 'root'})
 export class ModalPersonalizedService {
-
+  /*
   private modalRef?: ModalPersonalizedComponent;
 
   register(modal: ModalPersonalizedComponent) {
@@ -49,5 +49,5 @@ export class ModalPersonalizedService {
 
     this.modalRef.openModal();
   }
-
+  */
 }
