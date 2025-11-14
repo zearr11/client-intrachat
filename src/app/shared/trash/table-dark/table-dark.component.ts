@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { PaginatedResponse } from '../../interfaces/paginated-response.interface';
 import { UserResponse } from '../../../entity/user/interfaces/user.interface';
-import { UserValidateInterface } from '../../validators/user-validate-interface.class';
+import { UserValidateInterface } from '../../../entity/user/validators/user-validate-interface.class';
 
 @Component({
   selector: 'table-dark',
