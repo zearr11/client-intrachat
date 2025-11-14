@@ -1,0 +1,51 @@
+
+<!--
+<div class="nav-paginacion">
+  <hr>
+  <nav>
+    <ul class="pagination justify-content-center pagination-dark">
+      <li class="page-item">
+        <a
+          style="cursor: pointer;"
+          class="page-link"
+          aria-label="Previous"
+          [class.disabled]="paginatedGeneric()?.page == 1"
+          (click)="changePage(false)"
+          >
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      @for (num of [].constructor(dataPaginated()?.totalPages); track $index) {
+      <li
+        class="page-item"
+        [class.active]="$index + 1 == dataPaginated()?.page"
+        (click)="nextPage($index + 1)"
+        >
+        <a
+          style="cursor: pointer;"
+          class="page-link">
+          {{ $index + 1 }}
+        </a>
+      </li>
+      }
+
+      <li class="page-item">
+        <a
+          style="cursor: pointer;"
+          class="page-link"
+          aria-label="Next"
+          [class.disabled]="nothingShowInTable()"
+          (click)="changePage(true)"
+          >
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <hr>
+</div>
+-->
+
+
+<!-- (page - 1) * size + índice_local + 1  -->

@@ -1,0 +1,39 @@
+<style>
+  /* Select style */
+  .select-personalized {
+    background-color: #1e1f22 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #343a40 !important;
+    cursor: pointer;
+  }
+
+  .select-personalized option {
+    background-color: #1e1f22;
+    color: #e0e0e0;
+  }
+</style>
+
+<div class="d-flex justify-content-end gap-2">
+  <select
+    #dpState
+    class="form-select select-personalized"
+    (change)="stateEmited.emit(dpState.value)"
+    >
+    <option
+      value="1"
+      selected>
+      Mostrar activos
+    </option>
+    <option
+      value="2">
+      Mostrar inactivos
+    </option>
+  </select>
+
+  <div
+    class="rounded-circle"
+    [class.bg-success]="showActives()"
+    [class.bg-danger]="!showActives()"
+    style="width: 45px; height: 40px;">
+  </div>
+</div>

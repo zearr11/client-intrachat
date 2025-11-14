@@ -1,6 +1,6 @@
-import { AfterContentInit, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLinkWithHref, RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { ItemMenuComponent } from "../../components/item-menu/item-menu.component";
+import { ItemMenuComponent } from "../../common/item-menu/item-menu.component";
 import { UserService } from '../../../../entity/user/services/user.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ToastMessageService } from '../../../../shared/services/toast-message.service';

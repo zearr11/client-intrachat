@@ -1,0 +1,84 @@
+<style>
+  /* Sección inferior */
+  .nav-paginacion {
+    flex: 0 0 auto; /* NO crece */
+    padding: 10px 0;
+    background: rgba(141, 141, 141, 0.05);
+  }
+
+  /* Paginacion style */
+  .pagination-dark .page-link {
+    background-color: #1e1f22;
+    color: #e0e0e0;
+    border: 1px solid #343a40;
+    transition: all 0.2s ease;
+  }
+
+  .pagination-dark .page-link:hover {
+    background-color: #0d6efd;
+    color: #ffffff;
+    border-color: #0d6efd;
+  }
+
+  .pagination-dark .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+  }
+
+  .pagination-dark .page-item.disabled .page-link {
+    background-color: #121315;
+    color: #6c757d;
+    border-color: #343a40;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .pagination-dark .page-link:focus {
+    box-shadow: 0 0 0 0.25rem #062248;
+  }
+</style>
+
+<hr>
+<nav>
+  <ul class="pagination justify-content-center pagination-dark">
+    <li class="page-item">
+      <a
+        style="cursor: pointer;"
+        class="page-link"
+        aria-label="Previous"
+        [class.disabled]="dataPaginated()?.page == 1"
+        (click)="changePage.emit(false)"
+        >
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+
+    @for (num of [].constructor(dataPaginated()?.totalPages); track $index) {
+    <li
+      class="page-item"
+      [class.active]="$index + 1 == dataPaginated()?.page"
+      (click)="nextPage.emit($index + 1)"
+      >
+      <a
+        style="cursor: pointer;"
+        class="page-link">
+        {{ $index + 1 }}
+      </a>
+    </li>
+    }
+
+    <li class="page-item">
+      <a
+        style="cursor: pointer;"
+        class="page-link"
+        aria-label="Next"
+        [class.disabled]="isTableWithoutData()"
+        (click)="changePage.emit(true)"
+        >
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+<hr>
