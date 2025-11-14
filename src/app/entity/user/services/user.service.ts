@@ -47,7 +47,7 @@ export class UserService {
         this._userData()!.nombres, this.dataUser()!.apellidos
       )
     }
-    return 'usuario!';
+    return 'de nuevo.';
   });
 
   // Usuario Actual
@@ -70,9 +70,7 @@ export class UserService {
       map(resp => resp.data!),
       catchError((err: HttpErrorResponse) => {
         const messageError = err.error?.message ?? 'Error inesperado, inténtelo mas tarde.';
-        return throwError(() => {
-          new Error(messageError)
-        });
+        return throwError(() => new Error(messageError));
       })
     );
   }
@@ -107,9 +105,7 @@ export class UserService {
       map(resp => resp.message!),
       catchError((err: HttpErrorResponse) => {
         const messageError = err.error?.message ?? 'Error inesperado, inténtelo mas tarde.';
-        return throwError(() => {
-          new Error(messageError)
-        });
+        return throwError(() => new Error(messageError));
       })
     );
   }
@@ -120,9 +116,7 @@ export class UserService {
       map(resp => resp.message!),
       catchError((err: HttpErrorResponse) => {
         const messageError = err.error?.message ?? 'Error inesperado, inténtelo mas tarde.';
-        return throwError(() => {
-          new Error(messageError)
-        });
+        return throwError(() => new Error(messageError));
       })
     );
   }
@@ -138,9 +132,7 @@ export class UserService {
       map(resp => resp.message!),
       catchError((err: HttpErrorResponse) => {
         const messageError = err.error?.message ?? 'Error inesperado, inténtelo mas tarde.';
-        return throwError(() => {
-          new Error(messageError)
-        });
+        return throwError(() => new Error(messageError));
       })
     );
   }

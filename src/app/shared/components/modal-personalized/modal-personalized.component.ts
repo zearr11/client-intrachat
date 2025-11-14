@@ -1,10 +1,14 @@
 import { Component, ElementRef, input, output, signal, ViewChild } from '@angular/core';
 import { Modal } from 'bootstrap';
 import { entity, modalType } from '../../types/modal.types';
+import { UserAddLayoutComponent } from "../../../entity/user/layouts/user-add-layout/user-add-layout.component";
+import { UserRequest, UserResponse } from '../../../entity/user/interfaces/user.interface';
 
 @Component({
   selector: 'modal-personalized',
-  imports: [],
+  imports: [
+    UserAddLayoutComponent
+  ],
   templateUrl: './modal-personalized.component.html',
 })
 export class ModalPersonalizedComponent {
@@ -26,6 +30,8 @@ export class ModalPersonalizedComponent {
 
   // Emision al cerrar el modal (true: confirma, false: nada)
   realizedAction = output<boolean>();
+
+  dataForm = output<UserRequest>();
 
   @ViewChild('modalElement') modalElement!: ElementRef;
   private modalInstance!: Modal;

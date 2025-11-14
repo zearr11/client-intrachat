@@ -10,9 +10,9 @@
   >
   <div
     class="modal-dialog modal-dialog-centered"
-    [class.modal-lg]="false"
-    [class.modal-xl]="false"
-    [class.modal-fullscreen-xxl-down]="true"
+    [class.modal-lg]="isSizeLg()"
+    [class.modal-xl]="isSizeXL()"
+    [class.modal-fullscreen-xxl-down]="isFullScreenInXXL()"
     >
     <div class="modal-content">
 
@@ -22,11 +22,14 @@
 
       <div class="modal-body">
         @switch (typeModal()) {
-          @case ('get') {
+          @case ('post') {
 
             @switch (typeEntity()) {
               @case ('user') {
-
+                <user-add-layout
+                  (closeModal)="close(!$event)"
+                  (dataForm)="dataForm.emit($event)"
+                  />
               }
             }
 

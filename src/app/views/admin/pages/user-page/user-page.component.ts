@@ -1,11 +1,11 @@
 import { Component, computed, inject, signal, ViewChild } from '@angular/core';
 import { PaginatedResponse } from '../../../../shared/interfaces/paginated-response.interface';
 import { UserService } from '../../../../entity/user/services/user.service';
-import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
+import { UserRequest, UserResponse } from '../../../../entity/user/interfaces/user.interface';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { SearchInputDarkComponent } from "../../common/search-input-dark/search-input-dark.component";
 import { rxResource } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
+import { catchError, map, of, tap, throwError } from 'rxjs';
 import { ActivesInactivesSelectDarkComponent } from "../../common/actives-inactives-select-dark/actives-inactives-select-dark.component";
 import { NavTableDarkComponent } from "../../common/nav-table-dark/nav-table-dark.component";
 import { ToastMessageService } from '../../../../shared/services/toast-message.service';
@@ -117,11 +117,51 @@ export class UserPageComponent {
   entityToAction = signal<string>('');
   messageSecondary = signal<string>('');
 
-  openModal(id: number, modalTitle: string, type: modalType, fullName?: string) {
-    // Establecimiento de parametros
-    this.idUserManagement.set(id);
+  isSizeLg = signal<boolean>(false);
+
+  openModalNewUser(modalTitle: string, type: modalType) {
     this.titleModal.set(modalTitle);
     this.typeModal.set(type);
+    this.isSizeLg.set(true);
+
+    // Mostrar modal
+    this.modalRef.show();
+  }
+
+  dataFormNewUser = signal<UserRequest | null>(null);
+
+  httpCreateNewUser = rxResource(({
+    request: () => ({ dataUser: this.dataFormNewUser() }),
+    loader: ({ request }) => {
+
+      if (!request.dataUser) return of({ error: true });
+
+      return this.userService.registerNewUser(request.dataUser).pipe(
+        tap((msg) => {
+          this.modalRef.close(false);
+          this.dataFormNewUser.set(null);
+          this.toastService.show(msg, 'text-bg-success');
+          this.httpUsersPaginated.reload();
+        }),
+        map((msg) => ({ error: false, message: msg })),  // éxito coherente
+        catchError(err => {
+          const message = err.message ?? 'Error.';
+          this.toastService.show(message, 'text-bg-danger');
+          return of({ error: true, message }); // error coherente
+        })
+      );
+    }
+  }));
+
+
+  openModal(modalTitle: string, type: modalType, id?: number, fullName?: string) {
+    // Establecimiento de parametros
+    if (id) {
+      this.idUserManagement.set(id);
+    }
+    this.titleModal.set(modalTitle);
+    this.typeModal.set(type);
+    this.isSizeLg.set(false);
 
     if (['delete', 'restore'].includes(type)) {
       this.entityToAction.set(`${fullName} ?`);

@@ -1,4 +1,4 @@
 export enum TipoDoc {
-  DNI,
-  CE
+  DNI = 'DNI',
+  CE = 'CE'
 }

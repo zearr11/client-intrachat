@@ -20,7 +20,9 @@
         </button>
         <button
           type="button"
-          class="btn btn-primary">
+          class="btn btn-primary"
+          (click)="openModalNewUser('Nuevo usuario', 'post')"
+          >
           Nuevo Usuario
         </button>
       </section>
@@ -79,9 +81,8 @@
                   class="bi bi-trash-fill text-danger"
                   title="Deshabilitar"
                   (click)="openModal(
-                    user.id,
                     'Deshabilitar usuario', 'delete',
-                    user.nombres + ' ' + user.apellidos
+                    user.id, user.nombres + ' ' + user.apellidos
                     )"
                   >
                 </i>
@@ -90,9 +91,8 @@
                   class="bi bi-arrow-up-circle-fill text-success"
                   title="Habilitar"
                   (click)="openModal(
-                    user.id,
                     'Habilitar usuario', 'restore',
-                    user.nombres + ' ' + user.apellidos
+                    user.id, user.nombres + ' ' + user.apellidos
                     )"
                   >
                 </i>
@@ -118,12 +118,14 @@
 <modal-personalized
   #modalRef
   [titleModal]="titleModal()"
-  typeEntity="user"
+  [typeEntity]="'user'"
   [messageModal]="messageModal()"
   [objectToAction]="entityToAction()"
   [messageSecondaryModal]="messageSecondary()"
   [typeModal]="typeModal()!"
   (realizedAction)="realizedActionModal($event)"
+  [isSizeLg]="isSizeLg()"
+  (dataForm)="dataFormNewUser.set($event)"
   />
 
 <!--
