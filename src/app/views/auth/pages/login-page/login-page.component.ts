@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { UserService } from '../../../../entity/user/services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { PanelAccessService } from '../../services/panel-access.service';
@@ -9,8 +8,7 @@ import { ToastMessageService } from '../../../../shared/services/toast-message.s
 @Component({
   selector: 'app-login',
   imports: [
-    ReactiveFormsModule,
-    RouterLink
+    ReactiveFormsModule
   ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.css'

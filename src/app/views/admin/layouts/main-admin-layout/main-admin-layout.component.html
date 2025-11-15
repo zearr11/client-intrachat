@@ -33,7 +33,6 @@
             [nameItem]="'Equipos'"
             [route]="'equipos'"
             />
-          @if (userService.isAdmin() || userService.isSupervisorTI()) {
           <item-menu
             [iconNameClass]="'bi bi-diagram-3-fill'"
             [nameItem]="'Operaciones'"
@@ -45,28 +44,10 @@
             [route]="'campanias'"
             />
           <item-menu
-            [iconNameClass]="'bi bi-archive'"
-            [nameItem]="'Áreas'"
-            [route]="'areas'" />
-          }
-
-          @if (userService.isAdmin()) {
-          <item-menu
             [iconNameClass]="'bi bi-building-fill'"
             [nameItem]="'Clientes'"
             [route]="'clientes'"
             />
-          <item-menu
-            [iconNameClass]="'bi bi-geo-alt-fill'"
-            [nameItem]="'Sedes'"
-            [route]="'sedes'"
-            />
-          <item-menu
-            [iconNameClass]="'bi bi-globe-americas'"
-            [nameItem]="'Países'"
-            [route]="'paises'"
-            />
-          }
         </div>
       </div>
 

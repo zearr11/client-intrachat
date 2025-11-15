@@ -1,8 +1,5 @@
 import { Routes } from '@angular/router';
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component';
-import { AreaPageComponent } from './pages/area-page/area-page.component';
-import { CountryPageComponent } from './pages/country-page/country-page.component';
-import { HeadquartersPageComponent } from './pages/headquarters-page/headquarters-page.component';
 import { CustomerPageComponet } from './pages/customer-page/customer-page.componet';
 import { CampaignPageComponent } from './pages/campaign-page/campaign-page.component';
 import { OperationPageComponent } from './pages/operation-page/operation-page.component';
@@ -20,20 +17,8 @@ export const adminRoutes: Routes = [
         component: DashboardPageComponent
       },
       {
-        path: 'paises',
-        component: CountryPageComponent
-      },
-      {
-        path: 'sedes',
-        component: HeadquartersPageComponent
-      },
-      {
         path: 'clientes',
         component: CustomerPageComponet
-      },
-      {
-        path: 'areas',
-        component: AreaPageComponent
       },
       {
         path: 'campanias',

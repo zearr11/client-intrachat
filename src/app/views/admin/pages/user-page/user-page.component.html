@@ -21,7 +21,7 @@
         <button
           type="button"
           class="btn btn-primary"
-          (click)="openModalNewUser('Nuevo usuario', 'post')"
+          (click)="openModalNewUser()"
           >
           Nuevo Usuario
         </button>
@@ -80,20 +80,14 @@
                 <i
                   class="bi bi-trash-fill text-danger"
                   title="Deshabilitar"
-                  (click)="openModal(
-                    'Deshabilitar usuario', 'delete',
-                    user.id, user.nombres + ' ' + user.apellidos
-                    )"
+                  (click)="openModalChangeState(user.id, true)"
                   >
                 </i>
               } @else {
                 <i
                   class="bi bi-arrow-up-circle-fill text-success"
                   title="Habilitar"
-                  (click)="openModal(
-                    'Habilitar usuario', 'restore',
-                    user.id, user.nombres + ' ' + user.apellidos
-                    )"
+                  (click)="openModalChangeState(user.id, false)"
                   >
                 </i>
               }
@@ -115,52 +109,18 @@
   </div>
 </article>
 
-<modal-personalized
-  #modalRef
-  [titleModal]="titleModal()"
-  [typeEntity]="'user'"
-  [messageModal]="messageModal()"
-  [objectToAction]="entityToAction()"
-  [messageSecondaryModal]="messageSecondary()"
-  [typeModal]="typeModal()!"
-  (realizedAction)="realizedActionModal($event)"
-  [isSizeLg]="isSizeLg()"
-  (dataForm)="dataFormNewUser.set($event)"
-  />
+<user-modal-add
+  (updateTable)="reloadTable($event)"
+  #modalNewUser
+/>
 
-<!--
+<user-modal-edit
+  #modalEditUser
+/>
 
-.contenedor {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
-
-  .ignore-contenedor {
-    width: 100%;
-    text-align: left;
-  }
-
-  <td>
-            <div class="d-flex justify-content-center gap-3 action-icons">
-              <i
-                class="bi bi-eye-fill text-info"
-                title="Ver detalles"
-                (click)="showInfo(user.id)">
-              </i>
-              <i
-                class="bi bi-pencil text-warning"
-                title="Modificar"
-                (click)="showModalEdit(user.id)">
-              </i>
-              <i
-                class="bi bi-trash-fill text-danger"
-                title="Deshabilitar"
-                (click)="showModalDelete(user.id)">
-              </i>
-            </div>
-          </td>
-
--->
+<user-modal-change-state
+  #modalChangeStateUser
+  [idUser]="idUserToChangeState()!"
+  [isDelete]="isDelete()"
+  (updateTable)="reloadTable($event)"
+/>

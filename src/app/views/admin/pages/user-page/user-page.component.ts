@@ -5,12 +5,13 @@ import { UserRequest, UserResponse } from '../../../../entity/user/interfaces/us
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { SearchInputDarkComponent } from "../../common/search-input-dark/search-input-dark.component";
 import { rxResource } from '@angular/core/rxjs-interop';
-import { catchError, map, of, tap, throwError } from 'rxjs';
+import { map, tap } from 'rxjs';
 import { ActivesInactivesSelectDarkComponent } from "../../common/actives-inactives-select-dark/actives-inactives-select-dark.component";
 import { NavTableDarkComponent } from "../../common/nav-table-dark/nav-table-dark.component";
 import { ToastMessageService } from '../../../../shared/services/toast-message.service';
-import { ModalPersonalizedComponent } from '../../../../shared/components/modal-personalized/modal-personalized.component';
-import { modalType, entity } from '../../../../shared/types/modal.types';
+import { UserModalAddComponent } from '../../../../entity/user/modals/user-modal-add/user-modal-add.component';
+import { UserModalChangeStateComponent } from '../../../../entity/user/modals/user-modal-change-state/user-modal-change-state.component';
+import { UserModalEditComponent } from '../../../../entity/user/modals/user-modal-edit/user-modal-edit.component';
 
 @Component({
   selector: 'user-page',
@@ -20,7 +21,9 @@ import { modalType, entity } from '../../../../shared/types/modal.types';
     TitleCasePipe,
     DatePipe,
     NavTableDarkComponent,
-    ModalPersonalizedComponent
+    UserModalAddComponent,
+    UserModalEditComponent,
+    UserModalChangeStateComponent
   ],
   templateUrl: './user-page.component.html',
   styleUrl: './user-page.component.css'
@@ -28,28 +31,67 @@ import { modalType, entity } from '../../../../shared/types/modal.types';
 export class UserPageComponent {
 
   private toastService = inject(ToastMessageService);
+  private userService = inject(UserService);
 
   usersElementsTable: string[] = [
     'N°', 'Usuario', 'Tipo', 'Identificación',
     'Email', 'Celular', 'Creación', 'Modificación', ''
-  ]
+  ];
 
-  userService = inject(UserService);
+  // ------------------- HTTP Listado --------------------------
+
+  /* Parametros iniciales listado */
+  filter = signal<string>('');
+  pageCurrent = signal<number | null>(null);
+  showActives = signal<boolean>(true);
+
+  /* Data paginada de usuarios */
   dataPaginated = signal<PaginatedResponse<UserResponse> | null>(null);
 
+  /* Buscar por filtro en la tabla usuario */
+  setFilterPaginated(txtFilter: string) {
+    this.filter.set(txtFilter)
+    this.pageCurrent.set(null);
+  }
+
+  /* Limpiar filtros de busqueda */
+  clearFilters() {
+    this.filter.set('');
+    this.pageCurrent.set(null);
+  }
+
+  /* Cambiar estados entre activos e inactivos */
+  changeState(number: string) {
+    if (number == '1')
+      this.showActives.set(true);
+    else
+      this.showActives.set(false);
+
+    this.pageCurrent.set(null);
+    this.filter.set('');
+  }
+
+  /* Para saber si hay elementos en el paginado */
   nothingShowInTable = computed<boolean>(() =>
     this.dataPaginated()?.totalPages == 0
     || this.dataPaginated()?.totalPages == this.dataPaginated()?.page
   );
 
-  // private idUserManagement = signal<number | null>(null);
+  /* Cambiar pagina */
+  nextPage(page: number) {
+    this.pageCurrent.set(page);
+  }
 
-  // parametros de consulta http
-  showActives = signal<boolean>(true);
-  pageCurrent = signal<number | null>(null);
-  filter = signal<string>('');
+  /* Al avanzar o retroceder con los laterales */
+  changePage(isNext: boolean) {
+    if (isNext) {
+      this.nextPage((this.pageCurrent()! + 1))
+      return;
+    }
+    this.nextPage((this.pageCurrent()! - 1))
+  }
 
-  // Peticion http paginada
+  /* Peticion HTTP Paginada y asignacion a un signal */
   httpUsersPaginated = rxResource(({
     request: () => (
       {
@@ -63,186 +105,48 @@ export class UserPageComponent {
         state: request.state,
         filter: request.filter
       }).pipe(
-        tap(resp => this.dataPaginated.set(resp))
-      );
-    }
-  }));
-
-  // Al cambiar de estado en el dropdown
-  changeState(number: string) {
-    if (number == '1')
-      this.showActives.set(true);
-    else
-      this.showActives.set(false);
-
-    this.pageCurrent.set(null);
-    this.filter.set('');
-  }
-
-  // Siguiente pagina al presionar un elememento page
-  nextPage(page: number) {
-    this.pageCurrent.set(page);
-  }
-
-  // Al avanzar o retroceder en el paginado
-  changePage(isNext: boolean) {
-    if (isNext) {
-      this.nextPage((this.pageCurrent()! + 1))
-      return;
-    }
-    this.nextPage((this.pageCurrent()! - 1))
-  }
-
-  // Al buscar por filtro y dar click en buscar o enter
-  setFilterPaginated(txtFilter: string) {
-    this.filter.set(txtFilter)
-    this.pageCurrent.set(null);
-  }
-
-  // Boton Limipiar filtros
-  clearFilters() {
-    this.filter.set('');
-    this.pageCurrent.set(null);
-  }
-
-  // ------------------------- MODAL -------------------------
-
-  @ViewChild('modalRef') modalRef!: ModalPersonalizedComponent;
-
-  idUserManagement = signal<number | null>(null);
-  titleModal = signal<string>('');
-  typeModal = signal<modalType | null>(null);
-
-  messageModal = signal<string>('');
-  entityToAction = signal<string>('');
-  messageSecondary = signal<string>('');
-
-  isSizeLg = signal<boolean>(false);
-
-  openModalNewUser(modalTitle: string, type: modalType) {
-    this.titleModal.set(modalTitle);
-    this.typeModal.set(type);
-    this.isSizeLg.set(true);
-
-    // Mostrar modal
-    this.modalRef.show();
-  }
-
-  dataFormNewUser = signal<UserRequest | null>(null);
-
-  httpCreateNewUser = rxResource(({
-    request: () => ({ dataUser: this.dataFormNewUser() }),
-    loader: ({ request }) => {
-
-      if (!request.dataUser) return of({ error: true });
-
-      return this.userService.registerNewUser(request.dataUser).pipe(
-        tap((msg) => {
-          this.modalRef.close(false);
-          this.dataFormNewUser.set(null);
-          this.toastService.show(msg, 'text-bg-success');
-          this.httpUsersPaginated.reload();
-        }),
-        map((msg) => ({ error: false, message: msg })),  // éxito coherente
-        catchError(err => {
-          const message = err.message ?? 'Error.';
-          this.toastService.show(message, 'text-bg-danger');
-          return of({ error: true, message }); // error coherente
-        })
-      );
-    }
-  }));
-
-
-  openModal(modalTitle: string, type: modalType, id?: number, fullName?: string) {
-    // Establecimiento de parametros
-    if (id) {
-      this.idUserManagement.set(id);
-    }
-    this.titleModal.set(modalTitle);
-    this.typeModal.set(type);
-    this.isSizeLg.set(false);
-
-    if (['delete', 'restore'].includes(type)) {
-      this.entityToAction.set(`${fullName} ?`);
-      const msg = type == 'delete'
-        ? '¿Estás seguro de querer deshabilitar la cuenta del usuario '
-        : '¿Estás seguro de querer habilitar la cuenta del usuario ';
-      const textSecondary = type == 'delete'
-        ? 'Nota: El usuario dejará de tener acceso a la plataforma.'
-        : 'Nota: El usuario podrá acceder nuevamente a la plataforma.'
-
-      this.messageModal.set(msg);
-      this.messageSecondary.set(textSecondary);
-    }
-
-    // Mostrar modal
-    this.modalRef.show();
-  }
-
-  realizedActionModal(isActive: boolean) {
-    if (!isActive) {
-      this.idUserManagement.set(null);
-      return;
-    }
-
-    if (this.typeModal() == 'delete' || this.typeModal() == 'restore') {
-      const newState = this.typeModal() == 'delete' ? false : true;
-      this.userService.updateDataUser(
-        this.idUserManagement()!, { estado: newState }
-      ).pipe(
-        tap(() => {
-          const msg = !newState
-            ? 'Usuario deshabilitado satisfactoriamente.'
-            : 'Usuario habilitado satisfactoriamente.';
-          const color = !newState ? 'text-bg-danger' : 'text-bg-primary';
-
-          this.toastService.show(msg, color);
-          this.httpUsersPaginated.reload()
-        })
-      ).subscribe();
-    }
-  }
-
-  // ---------------------------------------------------------
-
-  /*
-  showModalDelete(id: number) {
-    this.idUserManagement.set(id);
-    this.modalService.show({
-      titleModal: 'Deshabilitar usuario',
-      typeEntity: 'user',
-      typeModal: 'delete'
-    });
-  }
-
-  httpDeleteUser = rxResource(({
-    request: () => ({
-      id: this.idUserManagement(),
-      isConfirm: this.modalService.stateDeleteElement()
-    }),
-    loader: ({ request }) => {
-
-      if (!request.id || !request.isConfirm) return of(false);
-
-      console.log(`id: ${request.id}`);
-      console.log(`Eliminar usuario: ${request.isConfirm}`);
-
-      return this.userService.updateDataUser(request.id,
-        {
-          estado: false
-        }).pipe(
-          tap(resp => {
+        tap(resp => this.dataPaginated.set(resp)),
+        map(resp => {
+          if (!resp.count)
             this.toastService.show(
-              resp, 'text-bg-primary'
+              'No se encontraron resultados.', 'text-bg-danger'
             )
-            this.idUserManagement.set(null);
-            this.modalService.changeStatetDeleteElement();
-            this.httpUsersPaginated.reload();
-          }),
-          map(() => true)
-        )
+        })
+      );
     }
   }));
-  */
+
+  // ------------------- Modales --------------------------------
+
+  /* Declaracion de modales */
+  @ViewChild('modalNewUser') modalNewUser!: UserModalAddComponent;
+  @ViewChild('modalEditUser') modalEditUser!: UserModalEditComponent;
+  @ViewChild('modalChangeStateUser') modalChangeStateUser!: UserModalChangeStateComponent;
+
+  /* Atributos de Change State */
+  idUserToChangeState = signal<number | null>(null);
+  isDelete = signal<boolean>(false);
+
+  /* Apertura de modal nuevo usario */
+  openModalNewUser() {
+    this.modalNewUser.show();
+  }
+
+  /* Apertura de modal modificar usario */
+  openModalEditUser() {
+    // this.modalEditUser.show();
+  }
+
+  /* Apertura de modal cambiar estado de usario */
+  openModalChangeState(id: number, isDelete: boolean) {
+    this.idUserToChangeState.set(id);
+    this.isDelete.set(isDelete);
+    this.modalChangeStateUser.show();
+  }
+
+  reloadTable(reload: boolean) {
+    if (!reload) return;
+    this.httpUsersPaginated.reload();
+  }
+
 }

@@ -1,0 +1,175 @@
+<!-- Modal -->
+<div #modalElement
+  class="modal fade"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-xxl-down">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Nuevo Usuario</h5>
+      </div>
+      <form autocomplete="off" [formGroup]="myForm" (ngSubmit)="submitForm()">
+        <div class="modal-body">
+
+          <section class="row mb-3">
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="nombres"
+                  class="form-control"
+                  required
+                  placeholder="nombres"
+                  maxlength="100">
+                <label>
+                  Nombres
+                </label>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="apellidos"
+                  class="form-control"
+                  required
+                  placeholder="apellidos"
+                  maxlength="100">
+                <label>
+                  Apellidos
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="row mb-3">
+            <div class="col-6">
+              <div class="form-floating">
+                <select
+                  class="form-select"
+                  formControlName="tipoDoc"
+                  >
+                  @for (item of typesDoc; track $index) {
+                    <option
+                      [value]="item == 'Seleccione' ? '' : item">
+                      {{ item }}
+                    </option>
+                  }
+                </select>
+                <label>Tipo de documento</label>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="numeroDoc"
+                  class="form-control"
+                  placeholder="numdoc"
+                  required
+                  minlength="8"
+                  maxlength="13"
+                  pattern="[0-9]{1,13}"
+                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 13);"
+                  >
+                <label>
+                  Numero de documento
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="row mb-3">
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="email"
+                  class="form-control"
+                  placeholder="email"
+                  required
+                  maxlength="100">
+                <label>
+                  Correo electrónico
+                </label>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="celular"
+                  class="form-control"
+                  placeholder="celular"
+                  required
+                  minlength="9"
+                  maxlength="9"
+                  pattern="[0-9]{1,9}"
+                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 9);"
+                  >
+                <label>
+                  Numero de celular
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="row">
+            <div class="col-6">
+              <div class="form-floating">
+                <select
+                  class="form-select"
+                  formControlName="genero"
+                  >
+                  @for (item of genders; track $index) {
+                    <option
+                      [selected]="$first"
+                      [value]="item == 'Seleccione' ? '' : item">
+                      {{ item | titlecase }}
+                    </option>
+                  }
+                </select>
+                <label>Género</label>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-floating">
+                <select
+                  class="form-select"
+                  formControlName="rol"
+                  >
+                  @for (item of roles; track $index) {
+                    <option
+                      [selected]="$first"
+                      [value]="item == 'Seleccione' ? '' : item">
+                      {{ item | titlecase }}
+                    </option>
+                  }
+                </select>
+                <label>Rol de usuario</label>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" (click)="close()" class="btn btn-danger" >
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-success" >
+            Registrar Usuario
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

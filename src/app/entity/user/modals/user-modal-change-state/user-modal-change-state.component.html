@@ -1,0 +1,37 @@
+<div #modalElement class="modal fade">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">{{ titleModal() }}</h5>
+      </div>
+
+      <div class="modal-body">
+        <p>
+          {{ messageModal() }}
+          <strong>
+            {{ fullNameUser() }}
+          </strong>
+          ?
+        </p>
+        <p class="text-muted">
+          {{ messageFooter() }}
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          Cancelar
+        </button>
+
+        <button type="button"
+          class="btn"
+          [class.btn-danger]="isDelete()"
+          [class.btn-primary]="!isDelete()"
+          (click)="confirmAction()">
+          {{ msgConfirmDelete() }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

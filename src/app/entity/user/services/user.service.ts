@@ -42,11 +42,11 @@ export class UserService {
   });
 
   getNameAccount = computed(() => {
-    if (this._userData()) {
-      return UserMapper.userToFirstNameAndLastname(
-        this._userData()!.nombres, this.dataUser()!.apellidos
-      )
-    }
+    // if (this._userData()) {
+    //   return UserMapper.userToFirstNameAndLastname(
+    //     this._userData()!.nombres, this.dataUser()!.apellidos
+    //   )
+    // }
     return 'de nuevo.';
   });
 

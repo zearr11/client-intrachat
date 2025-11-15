@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { ModalPersonalizedService } from '../../../../shared/services/modal-personalized.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'team-page',
@@ -7,11 +6,5 @@ import { ModalPersonalizedService } from '../../../../shared/services/modal-pers
   templateUrl: './team-page.component.html',
 })
 export class TeamPageComponent {
-
-  private modalService = inject(ModalPersonalizedService);
-
-  // apertureModal() {
-  //   this.modalService.show();
-  // }
 
 }
