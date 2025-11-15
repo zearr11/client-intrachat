@@ -11,9 +11,9 @@ import { CompanyService } from '../../../../entity/company/services/company.serv
 import { PaginatedResponse } from '../../../../shared/interfaces/paginated-response.interface';
 import { CompanyResponse } from '../../../../entity/company/interfaces/company.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { CompanyOptionsRequest } from '../../../../entity/company/interfaces/company-options-request';
 import { map, tap } from 'rxjs';
 import { TitleCasePipe } from '@angular/common';
+import { OptionsPaginated } from '../../../../shared/interfaces/options-paginated.interface';
 
 @Component({
   selector: 'company-page',
@@ -41,7 +41,7 @@ export class CompanyPageComponet {
 
   // ------------------- HTTP Listado --------------------------
 
-  optionsPaginated = signal<CompanyOptionsRequest>({ estado: true });
+  optionsPaginated = signal<OptionsPaginated>({ estado: true });
 
   /* Data paginada */
   dataPaginated = signal<PaginatedResponse<CompanyResponse> | null>(null);
