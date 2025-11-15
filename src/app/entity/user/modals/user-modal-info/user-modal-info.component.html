@@ -1,0 +1,107 @@
+<!-- Modal -->
+<div #modalElement class="modal fade" tabindex="-1" aria-labelledby="modalUserInfoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title d-flex align-items-center gap-2" id="modalUserInfoLabel">
+          <i class="bi bi-person-vcard"></i> Información del Usuario
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      @if (user()) {
+      <div class="modal-body">
+
+        <div class="container">
+
+          <div class="row g-4">
+
+            <!-- Foto -->
+            <div class="col-md-4 text-center">
+              <img [src]="user().urlFoto" class="img-fluid rounded shadow-sm border" alt="Foto del usuario"
+                style="max-height: 220px; object-fit: cover;" />
+
+              <div class="mt-3">
+                <span class="badge px-3 py-2" [ngClass]="user().estado ? 'bg-success' : 'bg-danger'">
+                  {{ user().estado ? 'Activo' : 'Inactivo' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Datos -->
+            <div class="col-md-8">
+
+              <div class="row">
+                <!-- Nombre -->
+                <div class="col-12 mb-3">
+                  <h5 class="fw-bold mb-1">
+                    <i class="bi bi-person-fill me-1"></i> {{ user().nombres }} {{ user().apellidos }}
+                  </h5>
+                </div>
+
+                <!-- Documento -->
+                <div class="col-sm-6 mb-3">
+                  <strong><i class="bi bi-credit-card me-1"></i> Documento</strong>
+                  <div>{{ user().tipoDoc }} - {{ user().numeroDoc }}</div>
+                </div>
+
+                <!-- Género -->
+                <div class="col-sm-6 mb-3">
+                  <strong><i class="bi bi-gender-ambiguous me-1"></i> Género</strong>
+                  <div>{{ user().genero }}</div>
+                </div>
+
+                <!-- Celular -->
+                <div class="col-sm-6 mb-3">
+                  <strong><i class="bi bi-phone me-1"></i> Celular</strong>
+                  <div>{{ user().celular }}</div>
+                </div>
+
+                <!-- Email -->
+                <div class="col-sm-6 mb-3">
+                  <strong><i class="bi bi-envelope-at me-1"></i> Email</strong>
+                  <div class="text-break">{{ user().email }}</div>
+                </div>
+
+                <!-- Rol -->
+                <div class="col-12 mb-3">
+                  <strong><i class="bi bi-person-check me-1"></i> Rol</strong>
+                  <div>
+                    <span class="badge bg-primary px-3 py-2">{{ user().rol }}</span>
+                  </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="col-sm-6 mb-3">
+                  <strong><i class="bi bi-calendar-check me-1"></i> Fecha creación</strong>
+                  <div>{{ user().fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</div>
+                </div>
+
+                <div class="col-sm-6 mb-3">
+                  <strong><i class="bi bi-clock-history me-1"></i> Última modificación</strong>
+                  <div>{{ user().ultimaModificacion | date: 'dd/MM/yyyy HH:mm' }}</div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+      }
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

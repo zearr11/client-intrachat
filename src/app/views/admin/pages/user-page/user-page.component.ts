@@ -12,6 +12,7 @@ import { ToastMessageService } from '../../../../shared/services/toast-message.s
 import { UserModalAddComponent } from '../../../../entity/user/modals/user-modal-add/user-modal-add.component';
 import { UserModalChangeStateComponent } from '../../../../entity/user/modals/user-modal-change-state/user-modal-change-state.component';
 import { UserModalEditComponent } from '../../../../entity/user/modals/user-modal-edit/user-modal-edit.component';
+import { UserModalInfoComponent } from '../../../../entity/user/modals/user-modal-info/user-modal-info.component';
 
 @Component({
   selector: 'user-page',
@@ -23,8 +24,9 @@ import { UserModalEditComponent } from '../../../../entity/user/modals/user-moda
     NavTableDarkComponent,
     UserModalAddComponent,
     UserModalEditComponent,
-    UserModalChangeStateComponent
-  ],
+    UserModalChangeStateComponent,
+    UserModalInfoComponent
+],
   templateUrl: './user-page.component.html',
   styleUrl: './user-page.component.css'
 })
@@ -119,13 +121,26 @@ export class UserPageComponent {
   // ------------------- Modales --------------------------------
 
   /* Declaracion de modales */
+  @ViewChild('modalInfoUser') modalInfoUser!: UserModalInfoComponent;
   @ViewChild('modalNewUser') modalNewUser!: UserModalAddComponent;
   @ViewChild('modalEditUser') modalEditUser!: UserModalEditComponent;
   @ViewChild('modalChangeStateUser') modalChangeStateUser!: UserModalChangeStateComponent;
 
+  /* Atributos de Info User */
+  dataInfoUser = signal<UserResponse | null>(null);
+
   /* Atributos de Change State */
   idUserToChangeState = signal<number | null>(null);
   isDelete = signal<boolean>(false);
+
+  /* Atributos de Edit User */
+  dataUserEdit = signal<UserResponse | null>(null);
+
+  /* Apertura de modal info usuario */
+  openModalInfoUser(user: UserResponse) {
+    this.dataInfoUser.set(user);
+    this.modalInfoUser.show();
+  }
 
   /* Apertura de modal nuevo usario */
   openModalNewUser() {
@@ -133,8 +148,9 @@ export class UserPageComponent {
   }
 
   /* Apertura de modal modificar usario */
-  openModalEditUser() {
-    // this.modalEditUser.show();
+  openModalEditUser(user: UserResponse) {
+    this.dataUserEdit.set(user);
+    this.modalEditUser.show();
   }
 
   /* Apertura de modal cambiar estado de usario */

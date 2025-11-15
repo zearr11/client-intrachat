@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, input, output, ResourceRef, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Modal } from 'bootstrap';
 import { UserService } from '../../services/user.service';

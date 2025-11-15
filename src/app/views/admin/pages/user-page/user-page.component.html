@@ -69,11 +69,13 @@
               <i
                 class="bi bi-eye-fill text-info"
                 title="Ver detalles"
+                (click)="openModalInfoUser(user)"
                 >
               </i>
               <i
                 class="bi bi-pencil text-warning"
                 title="Modificar"
+                (click)="openModalEditUser(user)"
                 >
               </i>
               @if (user.estado) {
@@ -109,13 +111,20 @@
   </div>
 </article>
 
+<user-modal-info
+  #modalInfoUser
+  [user]="dataInfoUser()!"
+/>
+
 <user-modal-add
-  (updateTable)="reloadTable($event)"
   #modalNewUser
+  (updateTable)="reloadTable($event)"
 />
 
 <user-modal-edit
   #modalEditUser
+  (updateTable)="reloadTable($event)"
+  [dataUser]="dataUserEdit()!"
 />
 
 <user-modal-change-state
