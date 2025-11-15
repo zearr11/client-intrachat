@@ -1,5 +1,5 @@
 import { Gender } from "../enums/gender-user.enum";
-import { RoleRegular } from "../enums/role-regular.enum";
+import { Role } from "../enums/role-user.enum";
 import { TipoDoc } from "../enums/tipo-doc-user.enum";
 
 export interface UserRequest {
@@ -10,7 +10,7 @@ export interface UserRequest {
   genero:             Gender;
   celular:            string;
   email:              string;
-  rol:                RoleRegular;
+  rol:                Role;
 }
 
 export interface UserRequest2 {
@@ -23,7 +23,7 @@ export interface UserRequest2 {
   informacion?:        string;
   email?:              string;
   password?:           string;
-  rol?:                RoleRegular;
+  rol?:                Role;
   estado?:             boolean;
 }
 
@@ -37,7 +37,7 @@ export interface UserResponse {
   genero:             Gender;
   celular:            string;
   email:              string;
-  rol:                RoleRegular;
+  rol:                Role;
   fechaCreacion:      Date;
   ultimaModificacion: Date;
   estado:             boolean;

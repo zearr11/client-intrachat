@@ -21,6 +21,7 @@ export class UserModalChangeStateComponent {
   updateTable = output<boolean>();
 
   dataUser = signal<UserResponse | null>(null);
+  newState = signal<boolean | null>(null);
 
   /* Referencia al modal actual */
   @ViewChild('modalElement') modalElement!: ElementRef;
@@ -45,9 +46,13 @@ export class UserModalChangeStateComponent {
   confirmAction() {
     if (!this.idUser() || !this.dataUser()) return;
 
-    this.httpChangeState().subscribe();
-    this.toastService.show(this.msgConfirmAction()!, this.colorActionToast()!);
-    this.close();
+    this.newState.set(!this.isDelete())
+
+    this.httpChangeState().subscribe(() => {
+      this.updateTable.emit(true);
+      this.toastService.show(this.msgConfirmAction()!, this.colorActionToast()!);
+      this.close();
+    });
   }
 
   /* -------------------------- HTTP Peticiones -------------------------- */
@@ -66,11 +71,7 @@ export class UserModalChangeStateComponent {
 
   httpChangeState() {
     return this.userService.updateDataUser(
-      this.idUser(), { estado: !this.dataUser()!.estado }
-    ).pipe(
-      tap(() => {
-        this.updateTable.emit(true);
-      })
+      this.idUser(), { estado: this.newState()! }
     );
   }
 

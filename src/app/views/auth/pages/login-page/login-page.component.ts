@@ -47,9 +47,6 @@ export default class LoginPageComponent {
       // Acceso correcto
       if (isSuccessAccess) {
         this.panelAccessService.showPanelByRole();
-        this.showToastMessage(
-          `Bienvenido ${this.userService.getNameAccount()}`, 'text-bg-success'
-        );
         return;
       }
 

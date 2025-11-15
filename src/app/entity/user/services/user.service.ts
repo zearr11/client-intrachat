@@ -4,10 +4,9 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { UserRequest, UserRequest2, UserResponse } from '../interfaces/user.interface';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { ResponseGeneric } from '../../../shared/interfaces/general-response.interface';
-import { RoleMapper } from '../mapper/role.mapper';
 import { UserMapper } from '../mapper/user.mapper';
 import { PaginatedResponse } from '../../../shared/interfaces/paginated-response.interface';
-import { RoleComplete } from '../enums/role-complete.enum';
+import { Role } from '../enums/role-user.enum';
 
 const baseUrlUser = `${environment.baseUrl}/usuarios`;
 
@@ -23,30 +22,18 @@ export class UserService {
     const userData = this.dataUser()?.rol;
 
     if (userData) {
-      const roleUser = RoleMapper.rolToRolUser(this.dataUser()!.rol);
-      return roleUser === RoleComplete.ROLE_ADMIN;
-    }
-
-    return false;
-  });
-
-  isSupervisorTI = computed(() => {
-    const userData = this.dataUser()?.rol;
-
-    if (userData) {
-      const roleUser = RoleMapper.rolToRolUser(this.dataUser()!.rol);
-      return roleUser === RoleComplete.ROLE_SUPERVISOR_TI;
+      return userData === Role.ADMIN;
     }
 
     return false;
   });
 
   getNameAccount = computed(() => {
-    // if (this._userData()) {
-    //   return UserMapper.userToFirstNameAndLastname(
-    //     this._userData()!.nombres, this.dataUser()!.apellidos
-    //   )
-    // }
+    if (this._userData()) {
+      return UserMapper.userToFirstNameAndLastname(
+        this._userData()!.nombres, this.dataUser()!.apellidos
+      )
+    }
     return 'de nuevo.';
   });
 

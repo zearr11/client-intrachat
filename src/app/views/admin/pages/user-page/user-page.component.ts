@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal, ViewChild } from '@angular/core';
 import { PaginatedResponse } from '../../../../shared/interfaces/paginated-response.interface';
 import { UserService } from '../../../../entity/user/services/user.service';
-import { UserRequest, UserResponse } from '../../../../entity/user/interfaces/user.interface';
+import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { SearchInputDarkComponent } from "../../common/search-input-dark/search-input-dark.component";
 import { rxResource } from '@angular/core/rxjs-interop';

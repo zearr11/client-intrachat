@@ -30,7 +30,7 @@ export function tokenInterceptor(req: HttpRequest<unknown>,next: HttpHandlerFn) 
         authService.logout();
         router.navigateByUrl('/login');
         toastService.show(
-          'La sesión expiró, vuelva a iniciar sesión.', 'text-bg-secondary'
+          'Inicie sesión nuevamente, por favor.', 'text-bg-secondary'
         );
       }
       return throwError(() => error);

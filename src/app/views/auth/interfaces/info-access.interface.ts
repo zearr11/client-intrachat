@@ -1,6 +1,6 @@
-import { RoleComplete } from "../../../entity/user/enums/role-complete.enum";
+import { Role } from "../../../entity/user/enums/role-user.enum";
 
 export interface InfoAccess {
   accessToken: string;
-  rol: RoleComplete;
+  rol: Role;
 }

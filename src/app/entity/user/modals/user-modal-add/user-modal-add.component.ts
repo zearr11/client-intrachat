@@ -6,10 +6,10 @@ import { UserService } from '../../services/user.service';
 import { TitleCasePipe } from '@angular/common';
 import { Patterns } from '../../utils/patterns.class';
 import { Modal } from 'bootstrap';
-import { RoleRegular } from '../../enums/role-regular.enum';
 import { UserRequest } from '../../interfaces/user.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of, tap } from 'rxjs';
+import { Role } from '../../enums/role-user.enum';
 
 @Component({
   selector: 'user-modal-add',
@@ -52,8 +52,7 @@ export class UserModalAddComponent {
   /* Carga de selects */
   typesDoc = EnumsList.tipoDocs;
   genders = EnumsList.genders;
-  // Temporal
-  roles = EnumsList.getRolesPermited(this.userService.dataUser()?.rol ?? RoleRegular.ADMIN);
+  roles = EnumsList.roles;
 
   /* Formulario reactivo */
   myForm: FormGroup = this.formGroup.group({

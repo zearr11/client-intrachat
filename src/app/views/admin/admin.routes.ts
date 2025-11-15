@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component';
-import { CustomerPageComponet } from './pages/customer-page/customer-page.componet';
 import { CampaignPageComponent } from './pages/campaign-page/campaign-page.component';
 import { OperationPageComponent } from './pages/operation-page/operation-page.component';
 import { TeamPageComponent } from './pages/team-page/team-page.component';
 import { UserPageComponent } from './pages/user-page/user-page.component';
 import { MainAdminLayoutComponent } from './layouts/main-admin-layout/main-admin-layout.component';
+import { CompanyPageComponet } from './pages/company-page/company-page.componet';
 
 export const adminRoutes: Routes = [
   {
@@ -17,8 +17,8 @@ export const adminRoutes: Routes = [
         component: DashboardPageComponent
       },
       {
-        path: 'clientes',
-        component: CustomerPageComponet
+        path: 'empresas',
+        component: CompanyPageComponet
       },
       {
         path: 'campanias',

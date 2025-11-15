@@ -4,7 +4,6 @@ import { ToastMessageService } from '../../../../shared/services/toast-message.s
 import { UserService } from '../../services/user.service';
 import { Modal } from 'bootstrap';
 import { EnumsList } from '../../utils/enums-list.class';
-import { RoleRegular } from '../../enums/role-regular.enum';
 import { TitleCasePipe } from '@angular/common';
 import { Patterns } from '../../utils/patterns.class';
 import { UserRequest2, UserResponse } from '../../interfaces/user.interface';
@@ -68,8 +67,7 @@ export class UserModalEditComponent {
 
   typesDoc = EnumsList.tipoDocs;
   genders = EnumsList.genders;
-  // Temporal
-  roles = EnumsList.getRolesPermited(this.userService.dataUser()?.rol ?? RoleRegular.ADMIN);
+  roles = EnumsList.roles;
 
   /* Formulario reactivo */
   myForm: FormGroup = this.formGroup.group({

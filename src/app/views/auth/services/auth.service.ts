@@ -39,7 +39,6 @@ export class AuthService {
   }
 
   private handleAuthSuccess({ data }: ResponseGeneric<InfoAccess>) {
-
     this._message.set(null);
     this._token.set(data!.accessToken);
     localStorage.setItem('token', data!.accessToken);
