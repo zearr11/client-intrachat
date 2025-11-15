@@ -1,1 +1,129 @@
-<p>customer-page.componet works!</p>,
+<article class="layout">
+  <div class="encabezado">
+    <hr>
+    <h3 style="text-align: left;">Gestionar Empresas</h3>
+    <hr>
+    <div class="row">
+      <section class="col-4">
+        <search-input
+          (emitValue)="setFilterPaginated($event)"
+          [initialValue]="optionsPaginated().filtro"
+          />
+      </section>
+
+      <section class="col-5 d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="clearFilters()"
+          >
+          Quitar filtros
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="openModalNew()"
+          >
+          Nueva Empresa
+        </button>
+      </section>
+
+      <section class="col-3">
+        <actives-inactives-select-dark
+          [showActives]="optionsPaginated().estado"
+          (stateEmited)="changeState($event)"
+          />
+      </section>
+    </div>
+    <hr>
+  </div>
+
+  <div class="tabla">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          @for (header of elementsTable; track $index) {
+            <th scope="col">{{ header }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (company of dataPaginated()?.result; track company.id) {
+        <tr>
+          <th scope="row">
+            {{
+              ( ( dataPaginated()?.page ?? 1 ) - 1 ) *
+              ( dataPaginated()?.size ?? 1 ) + $index + 1
+            }}
+          </th>
+          <td>{{ company.empresa | titlecase }}</td>
+          <td>{{ (company.estado) ? 'Activo' : 'Inactivo' }}</td>
+          <td>
+            <div class="d-flex justify-content-center gap-3 action-icons">
+              <i
+                class="bi bi-eye-fill text-info"
+                title="Ver detalles"
+                (click)="openModalInfo(company)"
+                >
+              </i>
+              <i
+                class="bi bi-pencil text-warning"
+                title="Modificar"
+                (click)="openModalEdit(company)"
+                >
+              </i>
+              @if (company.estado) {
+                <i
+                  class="bi bi-trash-fill text-danger"
+                  title="Deshabilitar"
+                  (click)="openModalChangeState(company.id, true)"
+                  >
+                </i>
+              } @else {
+                <i
+                  class="bi bi-arrow-up-circle-fill text-success"
+                  title="Habilitar"
+                  (click)="openModalChangeState(company.id, false)"
+                  >
+                </i>
+              }
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-paginacion">
+    <nav-table-dark
+      [dataPaginated]="dataPaginated()"
+      [isTableWithoutData]="nothingShowInTable()"
+      (nextPage)="nextPage($event)"
+      (changePage)="changePage($event)"
+      />
+  </div>
+</article>
+
+<!-- <company-modal-info
+  #modalInfoUser
+  [user]="dataInfoUser()!"
+/>
+
+<company-modal-add
+  #modalNewUser
+  (updateTable)="reloadTable($event)"
+/>
+
+<company-modal-edit
+  #modalEditUser
+  (updateTable)="reloadTable($event)"
+  [dataUser]="dataUserEdit()!"
+/>
+
+<company-modal-change-state
+  #modalChangeStateUser
+  [idUser]="idUserToChangeState()!"
+  [isDelete]="isDelete()"
+  (updateTable)="reloadTable($event)"
+/> -->

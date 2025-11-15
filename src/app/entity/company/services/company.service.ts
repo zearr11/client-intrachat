@@ -1,0 +1,61 @@
+import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
+import { CompanyRequest, CompanyRequest2, CompanyResponse } from '../interfaces/company.interface';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
+import { ResponseGeneric } from '../../../shared/interfaces/general-response.interface';
+import { CompanyOptionsRequest } from '../interfaces/company-options-request';
+import { PaginatedResponse } from '../../../shared/interfaces/paginated-response.interface';
+
+const baseUrl = `${environment.baseUrl}/empresas`;
+
+@Injectable({ providedIn: 'root' })
+export class CompanyService {
+
+  private http = inject(HttpClient);
+
+  getCompanyById = (id: number): Observable<ResponseGeneric<CompanyResponse>> => {
+    return this.http.get<ResponseGeneric<CompanyResponse>>(`${baseUrl}/id`);
+  }
+
+  getAllCompanys = (): Observable<ResponseGeneric<CompanyResponse[]>> => {
+    return this.http.get<ResponseGeneric<CompanyResponse[]>>(baseUrl);
+  }
+
+  getCompanysPaginated = (
+    options?: CompanyOptionsRequest
+  ): Observable<ResponseGeneric<PaginatedResponse<CompanyResponse>>> => {
+
+    const params = new HttpParams(
+      { fromObject: options as any }
+    );
+
+    return this.http.get<ResponseGeneric<PaginatedResponse<CompanyResponse>>>(
+      `${baseUrl}/paginacion`,
+      { params }
+    );
+  }
+
+  registerNewCompany = (newCompany: CompanyRequest): Observable<string> => {
+    return this.http.post<ResponseGeneric<null>>(baseUrl, newCompany).pipe(
+      map(resp => resp.message!),
+      catchError((err: HttpErrorResponse) => {
+        const messageError = err.error?.message
+          ?? 'Error inesperado, inténtelo mas tarde.';
+        return of(messageError);
+      })
+    )
+  }
+
+  updateCompany = (companyToUpdate: CompanyRequest2): Observable<string> => {
+    return this.http.put<ResponseGeneric<null>>(`${baseUrl}/id`, companyToUpdate).pipe(
+      map(resp => resp.message!),
+      catchError((err: HttpErrorResponse) => {
+        const messageError = err.error?.message
+          ?? 'Error inesperado, inténtelo mas tarde.';
+        return of(messageError);
+      })
+    )
+  }
+
+}
