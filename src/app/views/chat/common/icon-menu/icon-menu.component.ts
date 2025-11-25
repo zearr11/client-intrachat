@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'icon-menu',
@@ -9,5 +10,15 @@ import { Component, input } from '@angular/core';
 export class IconMenuComponent {
 
   iconName = input.required<string>();
+  description = input.required<string>();
+  isActive = input.required<boolean>();
+
+  ngAfterViewInit() {
+    const tooltipTriggerList = Array.from(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+
+    tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+  }
 
 }

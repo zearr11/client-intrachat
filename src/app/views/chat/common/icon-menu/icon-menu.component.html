@@ -1,4 +1,10 @@
 <!-- Icono -->
-<div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white icon-theme">
+<div
+  class="icon-theme"
+  [class.active]="isActive()"
+  data-bs-toggle="tooltip"
+  data-bs-placement="right"
+  [title]="description()"
+  >
   <i class="fa-solid" [class]="iconName()"></i>
 </div>

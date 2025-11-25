@@ -6,7 +6,8 @@ import { Component, input } from '@angular/core';
   templateUrl: './chip-menu.component.html',
   styles: `
     .border-chip {
-      border: 1px solid #adadad;
+      border: 1px solid #adadad5e;
+      border-radius: 12px;
     }
   `
 })

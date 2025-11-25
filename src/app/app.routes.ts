@@ -7,7 +7,7 @@ export const routes: Routes = [
   },
   {
     path: 'chats',
-    loadComponent: () => import('./views/chat/pages/main-chat-page/main-chat-page.component')
+    loadChildren: () => import('./views/chat/chat.routes')
   },
   {
     path: '',
