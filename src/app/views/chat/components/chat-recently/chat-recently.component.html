@@ -1,0 +1,86 @@
+<div
+  [routerLink]="['/chats', dataMessageRecently().id]"
+  routerLinkActive="active"
+  class="contact-element"
+  [class.separate]="!isLast()"
+>
+  @if (dataMessageRecently().unread > 0) {
+  <div class="notification-badge">
+    {{ dataMessageRecently().unread }}
+  </div>
+  }
+
+  <div class="row">
+    <div class="col-2">
+      <img
+        style="border-radius: 15px"
+        width="55px"
+        [src]="dataMessageRecently().avatar"
+        [alt]="dataMessageRecently().name"
+      />
+    </div>
+
+    <div class="col" #contenido>
+      <div class="row">
+        <div class="col-8" #nombre>{{ dataMessageRecently().name }}</div>
+        <div class="col txt-muted text-end" #hora>
+          {{ dataMessageRecently().time | date : "shortTime" }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 txt-muted">
+          {{ dataMessageRecently().content }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .contact-element {
+    position: relative;
+    background-color: #2d3134;
+    padding: 10px;
+    border-bottom: 1px solid #adadad5e;
+    border-radius: 8px;
+  }
+
+  .active {
+    background-color: rgba(118, 115, 115, 0.369);
+  }
+
+  .separate {
+    margin-bottom: 10px;
+  }
+
+  .contact-element:hover {
+    background-color: rgba(118, 115, 115, 0.369);
+    cursor: pointer;
+  }
+
+  .txt-muted {
+    color: #adadad;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+
+    background-color: #2ecc71;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  }
+</style>

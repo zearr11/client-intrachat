@@ -2,6 +2,7 @@ export interface Contact {
   id: number,
   avatar: string,
   name: string,
-  time: string,
+  time: Date,
   content: string
+  unread: number
 }

@@ -1,350 +1,109 @@
-<main class="row m-0 vh-100 text-white">
-
-  <section
-    class="col-auto d-flex flex-column align-items-center panel-left py-3 px-2"
-    style="width: 64px;">
-
+<main class="row layout">
+  <article class="col-auto panel-left py-3 px-2" style="width: 64px">
     <icon-menu
       [iconName]="'fa-message'"
       [description]="'Todos los mensajes'"
       [isActive]="true"
-      />
+    />
     <icon-menu
       class="mt-2"
       [iconName]="'fa-people-group'"
       [description]="'Mensajes de grupos'"
       [isActive]="false"
-      />
+    />
     <icon-menu
       class="mt-2"
       [iconName]="'fa-people-arrows'"
       [description]="'Mensajes privados'"
       [isActive]="false"
-      />
+    />
 
-    <div
-      class="mt-auto d-flex flex-column align-items-center"
-      >
+    <div class="mt-auto footer-icons">
       <icon-menu
         [iconName]="'fa-user'"
         [description]="'Mi cuenta'"
         [isActive]="false"
-        />
-      <icon-menu class="mt-2"
+      />
+      <icon-menu
+        class="mt-2"
         [iconName]="'fa-arrow-right-from-bracket'"
         [description]="'Cerrar sesión'"
         [isActive]="false"
-        />
+      />
     </div>
+  </article>
 
-  </section>
-
-  <section
-    class="col bg-dark panel-middle d-flex flex-column"
+  <article
+    class="col bg-dark panel-middle"
     [class.contacts]="true"
     [class.col-auto]="true"
     [class.col]="false"
-    >
-
-    <div>
-      <h4 class="header">Mensajes</h4>
-      <div class="search">
-        <input
-          #txtFilter
-          class="form-control input-personalized"
-          type="text"
-          name="filtro"
-          placeholder="Buscar chat o contacto">
-        <!--
-        <div class="mt-3">
-          <chip-menu [element]="'Todos'" [isActive]="true"/>
-          <chip-menu [element]="'Individuales'"/>
-          <chip-menu [element]="'Grupos'" [isLast]="true"/>
-        </div>
-        -->
-      </div>
-
-      <div class="content-chats">
-        <div class="contacts-recently">
-
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!--  -->
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row contact-element">
-          <div class="col-2">
-            <img
-              style="border-radius: 15px;"
-              width="55px"
-              src="intrachat.png"
-              alt="user-image"
-              >
-          </div>
-
-          <div class="col" #contenido>
-            <div class="row">
-              <div class="col-8" #nombre>
-                Juan Perez
-              </div>
-              <div class="col text-end" #hora>
-                11:52pm
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12">
-                oyee responde pzzz
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--  -->
-
-      </div>
-      </div>
+  >
+    <h4 class="header">Mensajes</h4>
+    <div class="search">
+      <input
+        #txtFilter
+        class="form-control input-personalized"
+        type="text"
+        name="filtro"
+        placeholder="Buscar chat o contacto"
+      />
     </div>
 
-  </section>
+    <div class="contacts-recently">
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory"/>
+      <chat-recently [dataMessageRecently]="dataMemory" [isLast]="true"/>
+    </div>
+  </article>
 
-  <section class="d-none d-lg-block col panel-right">
-    b
-  </section>
-
+  <article class="d-none d-lg-block col panel-right">
+    <router-outlet />
+  </article>
 </main>
 
 <style>
+  .layout {
+    margin: 0;
+    color: white;
+
+    display: flex;
+    height: 100vh;
+  }
+
   .panel-left {
     border-right: 1px solid #adadad5e;
     background-color: #1b1e22;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .footer-icons {
+    display: flex;
+    flex-direction: column;
   }
 
   .panel-right {
-    background: #212529
+    background: #212529;
   }
 
   .panel-middle {
     border-right: 1px solid #adadad5e;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
   }
 
   .contacts {
@@ -359,6 +118,8 @@
 
   .search {
     margin-top: 22px;
+    margin-bottom: 15px;
+
     padding-bottom: 22px;
     border-bottom: 1px solid #adadad5e;
   }
@@ -374,41 +135,28 @@
     color: #a1aeba;
   }
 
+  /*
   .content-chats {
     padding-top: 22px;
     padding-bottom: 22px;
   }
 
-  .contacts-recently {
-    flex: 1;
+  display: flex;
+    flex-direction: column;
     overflow-y: auto;
+
     max-height: calc(80vh - 60px);
     padding-right: 5px;
-  }
+  */
 
-  .contact-element {
-    background-color: #2d3134;
-
-    padding-top: 10px;
-    padding-bottom: 10px;
-
-    margin-right: 1px;
-    margin-left: 1px;
-
-    border-bottom: 1px solid #adadad5e;
-
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-
-    margin-bottom: 7px;
-  }
-
-  .contact-element:hover {
-    background-color: rgba(100, 100, 100, 0.369);
-    cursor: pointer;
+  .contacts-recently {
+    flex: 1;
+    padding-right: 6px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 15px;
   }
 </style>
-
 
 <!--
 <main class="row m-0 vh-100">
