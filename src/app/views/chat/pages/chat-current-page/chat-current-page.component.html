@@ -1,1 +1,106 @@
-<p>chat-current-page.component works!</p>,
+<section class="contenedor">
+  <div class="bg-dark cabecera">
+    <div class="d-flex align-items-center gap-3">
+      <img src="intrachat.png" class="icono-grupo" />
+      <h5 class="mb-0 nombre-grupo user-select-none">Quinto B-1</h5>
+    </div>
+
+    <div class="acciones d-flex align-items-center gap-4">
+      <i class="fa-solid fa-magnifying-glass accion-icon"></i>
+      <i class="fa-solid fa-circle-info accion-icon"></i>
+    </div>
+  </div>
+
+  <div class="content-messages">
+    <chat-message
+      [isMe]="false"
+      [isChatPrivate]="false"
+      [dataMessage]="data2"
+      [dataFile]="fileData"
+    />
+    <chat-message
+      [isMe]="false"
+      [isChatPrivate]="false"
+      [dataMessage]="data2"
+      [dataFile]="fileData"
+    />
+    <chat-message
+      [isMe]="false"
+      [isChatPrivate]="false"
+      [dataMessage]="data2"
+      [dataFile]="fileData"
+    />
+    <chat-message
+      [isMe]="false"
+      [isChatPrivate]="false"
+      [dataMessage]="data2"
+      [dataFile]="fileData"
+    />
+    <chat-message
+      [isMe]="true"
+      [isChatPrivate]="false"
+      [dataMessage]="data"
+      [dataText]="textData"
+    />
+  </div>
+
+  <div class="footer-messages">
+    <chat-input-message />
+  </div>
+</section>
+
+<style>
+  .contenedor {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 22px;
+    border-bottom: 1px solid #adadad5e;
+  }
+
+  .icono-grupo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+
+  .nombre-grupo {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .acciones .accion-icon {
+    font-size: 1.3rem;
+    color: #cfcfcf;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .acciones .accion-icon:hover {
+    color: #ffffff;
+    transform: scale(1.15);
+  }
+
+  .content-messages {
+    flex: 1 1 auto;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: auto;
+
+    padding: 0px 50px;
+  }
+
+  .footer-messages {
+    margin-top: auto;
+    padding-bottom: 10px;
+  }
+</style>
