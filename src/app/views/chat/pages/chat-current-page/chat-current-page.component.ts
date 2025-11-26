@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, viewChild } from '@angular/core';
 import { ChatInputMessageComponent } from '../../components/chat-input-message/chat-input-message.component';
 import { ChatMessageComponent } from '../../components/chat-message/chat-message.component';
 import { MessageResponse } from '../../../../entity/message/interfaces/message.interface';
@@ -17,6 +17,23 @@ import { TextResponse } from '../../../../entity/message/interfaces/text.interfa
 })
 export class ChatCurrentPageComponent {
 
+  scrollContainer = viewChild<ElementRef>('scrollContainer');
+
+  ngAfterViewInit() {
+    this.scrollToBottom();
+  }
+
+  ngOnChanges() {
+    this.scrollToBottom();
+  }
+
+  private scrollToBottom() {
+    if (!this.scrollContainer) return;
+
+    const el = this.scrollContainer()?.nativeElement;
+    el.scrollTop = el.scrollHeight;
+  }
+
   data: MessageResponse = {
     id: 1,
     fechaCreacion: new Date(),
@@ -29,8 +46,7 @@ export class ChatCurrentPageComponent {
     },
     usuario: {
       id: 101,
-      urlFoto:
-        'https://cdn-icons-png.flaticon.com/512/204/204191.png',
+      urlFoto: 'https://cdn-icons-png.flaticon.com/512/204/204191.png',
       nombres: 'Cesar Junior',
       apellidos: 'Gamarra Rivera',
       tipoDoc: TipoDoc.DNI,
@@ -87,5 +103,4 @@ export class ChatCurrentPageComponent {
     id: 1,
     contenido: 'Este es un mensaje de ejemplo para el chat.',
   };
-
 }

@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <div class="content-messages">
+  <div class="content-messages" #scrollContainer>
     <chat-message
       [isMe]="false"
       [isChatPrivate]="false"
@@ -92,12 +92,22 @@
 
   .content-messages {
     flex: 1 1 auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 0 50px;
+  }
+
+  /*
+  .content-messages {
+    flex: 1 1 auto;
     justify-content: center;
     align-items: flex-start;
     overflow: auto;
 
     padding: 0px 50px;
   }
+  */
 
   .footer-messages {
     margin-top: auto;

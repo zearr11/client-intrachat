@@ -1,5 +1,5 @@
 <div
-  [routerLink]="['/chats', dataMessageRecently().id]"
+  [routerLink]="['/chats', dataMessageRecently().type.toLowerCase(), dataMessageRecently().id]"
   routerLinkActive="active"
   class="contact-element"
   [class.separate]="!isLast()"

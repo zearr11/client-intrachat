@@ -8,7 +8,7 @@ export const chatRoutes: Routes = [
     component: MainChatLayoutComponent,
     children: [
       {
-        path: ':id',
+        path: ':type-chat/:id',
         component: ChatCurrentPageComponent
       }
     ]
