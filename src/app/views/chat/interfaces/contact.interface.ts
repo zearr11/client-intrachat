@@ -4,8 +4,7 @@ export interface Contact {
   id: number,
   avatar: string,
   name: string,
-  time: Date,
+  time: Date | string,
   content: string
-  unread: number,
   type: TypeRoom
 }

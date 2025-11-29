@@ -1,35 +1,33 @@
-import { Component, inject, input, signal } from '@angular/core';
-import { TypeMessage } from '../../../../entity/message/enums/type-message.enum';
+import { Component, computed, inject, input } from '@angular/core';
 import { MessageResponse } from '../../../../entity/message/interfaces/message.interface';
-import { TypeRoom } from '../../../../entity/room/enums/type-room.enum';
-import { UserService } from '../../../../entity/user/services/user.service';
 import { DatePipe } from '@angular/common';
-import { FileResponse } from '../../../../entity/message/interfaces/file.interface';
-import { TextResponse } from '../../../../entity/message/interfaces/text.interface';
+import { UserService } from '../../../../entity/user/services/user.service';
 
 @Component({
   selector: 'chat-message',
-  imports: [
-    DatePipe
-  ],
+  imports: [DatePipe],
   templateUrl: './chat-message.component.html',
 })
 export class ChatMessageComponent {
-
-  // true = Es un mensaje del usuario logeado, false = es cualquier otro usuario
-  isMe = input.required<boolean>();
-
-  // true = Es chat entre 2, false = es chat grupal
-  isChatPrivate = input.required<boolean>();
+  private userService = inject(UserService);
 
   // Entidad mensaje con mucha data
   dataMessage = input.required<MessageResponse>();
 
-  // Entidad archivo
-  dataFile = input<FileResponse>();
+  // true = Es un mensaje del usuario logeado, false = es cualquier otro usuario
+  isMe = computed(() => {
+    return (
+      this.userService.dataUser()?.id == this.dataMessage().remitente.idUsuario
+    );
+  });
 
+  // true = Es chat entre 2, false = es chat grupal
+  isChatPrivate = input.required<boolean>();
+
+  // Entidad archivo
+  // dataFile = input<FileResponse>();
   // Entidad texto
-  dataText = input<TextResponse>();
+  // dataText = input<TextResponse>();
 
   // Enum con tipo de mensaje
   /*
@@ -68,5 +66,4 @@ export class ChatMessageComponent {
   - Si es archivo, implementar diseño para mostrar el archivo, con un icono de descarga
     y al hacer click en ese icono se descargue el archivo: usar la propiedad this.dataMessage().archivo y su contenido
   */
-
 }

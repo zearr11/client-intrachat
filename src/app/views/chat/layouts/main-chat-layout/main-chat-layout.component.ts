@@ -1,39 +1,115 @@
-import { Component } from '@angular/core';
-import { IconMenuComponent } from "../../common/icon-menu/icon-menu.component";
-import { ChatRecentlyComponent } from "../../components/chat-recently/chat-recently.component";
-import { Contact } from '../../interfaces/contact.interface';
-import { RouterOutlet } from '@angular/router';
-import { TypeRoom } from '../../../../entity/room/enums/type-room.enum';
+import { Component, computed, inject, signal } from '@angular/core';
+import { IconMenuComponent } from '../../common/icon-menu/icon-menu.component';
+import { ChatRecentlyComponent } from '../../components/chat-recently/chat-recently.component';
+import { Router, RouterOutlet } from '@angular/router';
+import { ContactService } from '../../../../entity/contact/services/contact.service';
+import { ContactResponse } from '../../../../entity/contact/interfaces/contact.interface';
+import { AuthService } from '../../../auth/services/auth.service';
+import { ToastMessageService } from '../../../../shared/services/toast-message.service';
+import { RoomService } from '../../../../entity/room/services/room.service';
+import { ChatService } from '../../../../entity/chat/services/chat.service';
+import { Subscription } from 'rxjs';
+import { ChatResponse } from '../../../../entity/chat/interfaces/chat.interface';
 
 @Component({
   selector: 'main-chat-layout',
-  imports: [
-    IconMenuComponent,
-    ChatRecentlyComponent,
-    RouterOutlet
-],
+  imports: [IconMenuComponent, ChatRecentlyComponent, RouterOutlet],
   templateUrl: './main-chat-layout.component.html',
 })
 export class MainChatLayoutComponent {
+  // Servicios necesarios
+  private contactService = inject(ContactService);
+  private roomService = inject(RoomService);
+  private authService = inject(AuthService);
+  private chatService = inject(ChatService);
+  private toastService = inject(ToastMessageService);
+  private router = inject(Router);
 
-  dataMemory: Contact = {
-    id: 1,
-    avatar: "intrachat.png",
-    name: "Juan Perez",
-    content: "prueba mensaje",
-    time: new Date(),
-    unread: 2,
-    type: TypeRoom.PRIVADO
+  // Variables de interfaz
+  showMessagesRecently = signal<boolean>(true);
+  titleChatMenu = computed(() => {
+    return this.showMessagesRecently()
+      ? 'Mensajes recientes'
+      : 'Contactos de campaña';
+  });
+  // Contactos : Parte izquierda
+  public dataContacts = signal<ContactResponse[]>([]);
+  // Suscripciones : Grupos y Privado
+  private subscriptions = signal<Subscription[]>([]);
+
+  ngOnInit() {
+    this.connectInit();
   }
 
-  dataMemory2: Contact = {
-    id: 2,
-    avatar: "intrachat.png",
-    name: "Jhon Doe",
-    content: "prueba mensaje 2",
-    time: new Date(),
-    unread: 0,
-    type: TypeRoom.PRIVADO
+  // Desconexion y limpieza de suscripciones
+  ngOnDestroy() {
+    this.subscriptions().forEach((s) => s.unsubscribe());
+    this.chatService.disconnect();
   }
 
+  // Inicio de data para la interfaz
+  connectInit() {
+    // Carga chats recientes
+    this.loadRecently();
+    // Conexion inicial
+    this.chatService.connect();
+    // Suscripcion a eventos de chat privado
+    const chatPrivate = this.chatService.subscribeToPrivate(
+      (msg: ChatResponse) => {
+        console.log('📩 Mensaje privado recibido', msg);
+      }
+    );
+
+    // Suscripcion a eventos de chats grupales
+    this.roomService.getRoomsUserAuthenticated().subscribe((data) => {
+      for (let index = 0; index < data!.length; index++) {
+        const idRoom = data![index].id;
+
+        const chatGroup = this.chatService.subscribeToGroup(
+          idRoom,
+          (msg: ChatResponse) => {
+            console.log(`Mensaje grupal recibido en la sala: ${idRoom}`, msg);
+          }
+        );
+        // Almacenamiento de suscripciones grupales
+        this.subscriptions.update((old) => [...old, chatGroup]);
+      }
+    });
+    // Almacenamiento de suscripcion privada
+    this.subscriptions.update((old) => [...old, chatPrivate]);
+  }
+
+  // Cambiar entre chats recientes y contactos
+  alterView() {
+    this.showMessagesRecently.update((v) => !v);
+
+    if (this.showMessagesRecently()) this.loadRecently();
+    else this.loadAllContacts();
+  }
+
+  // Cargar chats recientes
+  loadRecently() {
+    this.contactService.getContactsRecently().subscribe((resp) => {
+      this.dataContacts.set(resp!);
+    });
+  }
+
+  // Cargar contactos recientes
+  loadAllContacts(filter?: string) {
+    this.contactService.getContactsCampania(filter).subscribe((resp) => {
+      this.dataContacts.set(resp!);
+    });
+  }
+
+  // Cierre de sesión
+  finishSession() {
+    this.authService.logout();
+    this.router.navigateByUrl('/login');
+    this.toastService.show('Sesión finalizada.', 'text-bg-secondary');
+  }
 }
+
+/*
+  messages = signal<ChatResponse[]>([]);
+  this.messages.update((prev) => [...prev, msg]);
+*/

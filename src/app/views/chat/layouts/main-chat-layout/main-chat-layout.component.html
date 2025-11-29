@@ -2,20 +2,16 @@
   <article class="col-auto panel-left py-3 px-2" style="width: 64px">
     <icon-menu
       [iconName]="'fa-message'"
-      [description]="'Todos los mensajes'"
-      [isActive]="true"
+      [description]="'Mensajes recientes'"
+      [isActive]="showMessagesRecently()"
+      (clickIcon)="alterView()"
     />
     <icon-menu
       class="mt-2"
       [iconName]="'fa-people-group'"
-      [description]="'Mensajes de grupos'"
-      [isActive]="false"
-    />
-    <icon-menu
-      class="mt-2"
-      [iconName]="'fa-people-arrows'"
-      [description]="'Mensajes privados'"
-      [isActive]="false"
+      [description]="'Contactos de campaña'"
+      [isActive]="!showMessagesRecently()"
+      (clickIcon)="alterView()"
     />
 
     <div class="mt-auto footer-icons">
@@ -29,6 +25,7 @@
         [iconName]="'fa-arrow-right-from-bracket'"
         [description]="'Cerrar sesión'"
         [isActive]="false"
+        (clickIcon)="finishSession()"
       />
     </div>
   </article>
@@ -39,25 +36,27 @@
     [class.col-auto]="true"
     [class.col]="false"
   >
-    <h4 class="header">Mensajes</h4>
-    <div class="search">
-      <input
-        #txtFilter
-        class="form-control input-personalized"
-        type="text"
-        name="filtro"
-        placeholder="Buscar chat o contacto"
-      />
-    </div>
+    <h4 class="header">{{ titleChatMenu() }}</h4>
+    @if (!showMessagesRecently()) {
+      <div class="search">
+        <input
+          #txtFilter
+          class="form-control input-personalized"
+          type="text"
+          name="filtro"
+          placeholder="Buscar contacto"
+          (input)="loadAllContacts(txtFilter.value)"
+        />
+      </div>
+    }
 
     <div class="contacts-recently">
-      <chat-recently
-        [dataMessageRecently]="dataMemory"
-        />
-      <chat-recently
-        [dataMessageRecently]="dataMemory2"
-        [isLast]="true"
-        />
+      @for (contact of dataContacts(); track $index) {
+        <chat-recently
+          [dataContact]="contact"
+          [isLast]="$last"
+          />
+      }
     </div>
   </article>
 
@@ -109,8 +108,6 @@
   }
 
   .header {
-    text-align: center;
-
     padding: 18px;
     margin-top: 10px;
 

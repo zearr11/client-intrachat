@@ -1,14 +1,18 @@
 <div
-  [routerLink]="['/chats', dataMessageRecently().type.toLowerCase(), dataMessageRecently().id]"
+  [routerLink]="[
+    '/chats',
+    dataMessageRecently().type.toLowerCase(),
+    dataMessageRecently().id
+  ]"
   routerLinkActive="active"
   class="contact-element"
   [class.separate]="!isLast()"
 >
-  @if (dataMessageRecently().unread > 0) {
+  <!-- @if (dataMessageRecently().unread > 0) {
   <div class="notification-badge">
     {{ dataMessageRecently().unread }}
   </div>
-  }
+  } -->
 
   <div class="row">
     <div class="col-2">

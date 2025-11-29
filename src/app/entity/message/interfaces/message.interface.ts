@@ -1,12 +1,12 @@
 import { TypeMessage } from "../enums/type-message.enum";
-import { RoomResponse } from "../../room/interfaces/room.interface";
-import { UserResponse } from "../../user/interfaces/user.interface";
+import { DataUserResponse } from "../../contact/interfaces/contact.interface";
+import { FileResponse } from "./file.interface";
 
 export interface MessageResponse {
-  id: number,
-  fechaCreacion: Date,
-  tipo: TypeMessage,
-  ultimaModificacion: Date,
-  sala: RoomResponse,
-  usuario: UserResponse
+  idMensaje: number,
+  remitente: DataUserResponse,
+  tipoMensaje: TypeMessage,
+  fechaEnvio: Date,
+  archivoResponse?: FileResponse,
+  contenido?: string
 }

@@ -1,14 +1,20 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ChatInputMessageComponent } from '../../components/chat-input-message/chat-input-message.component';
 import { ChatMessageComponent } from '../../components/chat-message/chat-message.component';
-import { MessageResponse } from '../../../../entity/message/interfaces/message.interface';
-import { TypeMessage } from '../../../../entity/message/enums/type-message.enum';
+import { ActivatedRoute } from '@angular/router';
 import { TypeRoom } from '../../../../entity/room/enums/type-room.enum';
-import { TipoDoc } from '../../../../entity/user/enums/tipo-doc-user.enum';
-import { Gender } from '../../../../entity/user/enums/gender-user.enum';
-import { Role } from '../../../../entity/user/enums/role-user.enum';
-import { FileResponse } from '../../../../entity/message/interfaces/file.interface';
-import { TextResponse } from '../../../../entity/message/interfaces/text.interface';
+import { RoomService } from '../../../../entity/room/services/room.service';
+import { effect } from '@angular/core';
+import { RoomResponse } from '../../../../entity/room/interfaces/room.interface';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { MessageResponse } from '../../../../entity/message/interfaces/message.interface';
+import { MessageService } from '../../../../entity/message/services/message.service';
+import { OptionsPaginatedMessage } from '../../../../shared/interfaces/options-paginated.interface';
+import { of, tap } from 'rxjs';
+import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
+import { UserService } from '../../../../entity/user/services/user.service';
+import { GroupResponse } from '../../../../entity/group/interfaces/group.interface';
+import { GroupService } from '../../../../entity/group/services/group.service';
 
 @Component({
   selector: 'chat-current-page',
@@ -16,9 +22,157 @@ import { TextResponse } from '../../../../entity/message/interfaces/text.interfa
   templateUrl: './chat-current-page.component.html',
 })
 export class ChatCurrentPageComponent {
+  private route = inject(ActivatedRoute);
+  private groupService = inject(GroupService);
+  private roomService = inject(RoomService);
+  private userService = inject(UserService);
+  private messageService = inject(MessageService);
 
-  scrollContainer = viewChild<ElementRef>('scrollContainer');
+  // Params de url
+  typeChat = signal<TypeRoom | null>(null);
+  id = signal<number | null>(null);
 
+  // Datos de sala
+  roomEntity = signal<RoomResponse | null>(null);
+  // Datos de grupo (Opcional)
+  groupEntity = signal<GroupResponse | null>(null);
+  // Datos de usuario de destino (Opcional)
+  userReceiver = signal<UserResponse | null>(null);
+
+  // Encabezado de chat
+  headerChat = computed(() => {
+    if (this.userReceiver()) {
+      return {
+        img: this.userReceiver()!.urlFoto,
+        name:
+          this.userReceiver()!.nombres + ' ' + this.userReceiver()!.apellidos,
+      };
+    }
+
+    if (this.groupEntity()) {
+      return {
+        img: this.groupEntity()!.urlFoto,
+        name: this.groupEntity()!.nombre,
+      };
+    }
+
+    return null;
+  });
+
+  // Mensajes de sala
+  dataMessages = signal<MessageResponse[] | null>(null);
+
+  // Opciones para la paginacion de mensajes
+  optionsMessages = signal<OptionsPaginatedMessage>({});
+
+  // Busqueda de sala dinamicamente
+  roomEntityResource = rxResource({
+    request: () => ({
+      type: this.typeChat(),
+      id: this.id(),
+    }),
+    loader: ({ request }) => {
+      if (!request.id) return of(null);
+
+      if (request.type === TypeRoom.PRIVADO) {
+        return this.roomService.getRoomByMembers(request.id);
+      }
+
+      if (request.type === TypeRoom.GRUPO) {
+        return this.roomService.getRoomById(request.id);
+      }
+
+      return of(null);
+    },
+  });
+
+  // Asignacion de Sala a signal
+  syncRoomEntity = effect(() => {
+    const room = this.roomEntityResource.value();
+    this.roomEntity.set(room!);
+  });
+
+  // Busqueda de grupo dinamicamente
+  groupEntityResource = rxResource({
+    request: () => ({
+      idRoom: this.roomEntity()?.id,
+    }),
+    loader: ({ request }) => {
+      if (!request.idRoom) return of(null);
+      return this.groupService.getGroupByRoom(request.idRoom);
+    },
+  });
+
+  // Asignacion de Grupo a signal
+  syncGroupEntity = effect(() => {
+    const group = this.groupEntityResource.value();
+    this.groupEntity.set(group!);
+  });
+
+  // Busqueda de usuario de destino dinamicamente
+  userReceiverEntityResource = rxResource({
+    request: () => ({
+      idUser: this.id(),
+      typeRoom: this.typeChat(),
+    }),
+    loader: ({ request }) => {
+      if (!request.idUser && !request.typeRoom) return of(null);
+
+      if (request.typeRoom == TypeRoom.PRIVADO)
+        return this.userService.getUserById(request.idUser!);
+
+      return of(null);
+    },
+  });
+
+  // Asignacion de Usuario de destino a signal
+  syncUserReceiverEntity = effect(() => {
+    const userReceiver = this.userReceiverEntityResource.value();
+    this.userReceiver.set(userReceiver!);
+  });
+
+  // Busqueda de mensajes de la sala
+  httpMessagesPaginated = rxResource({
+    request: () => ({
+      idRoom: this.roomEntity()?.id,
+      options: this.optionsMessages(),
+    }),
+    loader: ({ request }) => {
+      if (!request.idRoom) {
+        const resultDefault = {
+          page: request.options?.page ?? 1,
+          size: request.options?.size ?? 10,
+          itemsOnPage: 0,
+          count: 0,
+          totalPages: 0,
+          result: [],
+        };
+        this.dataMessages.set(resultDefault.result);
+        return of(resultDefault);
+      }
+
+      return this.messageService
+        .getMessagesRoom(request.idRoom, request.options)
+        .pipe(
+          tap((resp) => {
+            // console.log(resp.result);
+            this.dataMessages.set(resp.result);
+          })
+        );
+    },
+  });
+
+  ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      this.typeChat.set(params.get('type-chat')!.toUpperCase() as TypeRoom);
+      this.id.set(Number(params.get('id')));
+      console.log(this.typeChat(), this.id());
+    });
+  }
+}
+
+/*
+  public scrollContainer? = viewChild<ElementRef | null>('scrollContainer');
   ngAfterViewInit() {
     this.scrollToBottom();
   }
@@ -33,74 +187,4 @@ export class ChatCurrentPageComponent {
     const el = this.scrollContainer()?.nativeElement;
     el.scrollTop = el.scrollHeight;
   }
-
-  data: MessageResponse = {
-    id: 1,
-    fechaCreacion: new Date(),
-    tipo: TypeMessage.MSG_TEXTO,
-    ultimaModificacion: new Date(),
-    sala: {
-      id: 10,
-      fechaCreacion: new Date(),
-      tipoSala: TypeRoom.GRUPO,
-    },
-    usuario: {
-      id: 101,
-      urlFoto: 'https://cdn-icons-png.flaticon.com/512/204/204191.png',
-      nombres: 'Cesar Junior',
-      apellidos: 'Gamarra Rivera',
-      tipoDoc: TipoDoc.DNI,
-      numeroDoc: '12345678',
-      genero: Gender.MASCULINO,
-      celular: '987654321',
-      email: 'cesar@example.com',
-      rol: Role.USUARIO, // O ADMIN, etc.
-      fechaCreacion: new Date('2024-01-01'),
-      ultimaModificacion: new Date(),
-      estado: true,
-    },
-  };
-
-  data2: MessageResponse = {
-    id: 2,
-    fechaCreacion: new Date(),
-    tipo: TypeMessage.MSG_IMAGEN,
-    ultimaModificacion: new Date(),
-
-    sala: {
-      id: 11,
-      fechaCreacion: new Date(),
-      tipoSala: TypeRoom.GRUPO,
-    },
-
-    usuario: {
-      id: 205,
-      urlFoto:
-        'https://img.freepik.com/vector-premium/imagen-perfil-avatar-hombre-ilustracion-vectorial_268834-538.jpg?w=740',
-      nombres: 'Luis Fernando',
-      apellidos: 'Salazar Paredes',
-      tipoDoc: TipoDoc.CE,
-      numeroDoc: 'X9876543',
-      genero: Gender.MASCULINO,
-      celular: '912345678',
-      email: 'luis.salazar@example.com',
-      rol: Role.ADMIN,
-      fechaCreacion: new Date('2024-03-10'),
-      ultimaModificacion: new Date(),
-      estado: true,
-    },
-  };
-
-  fileData: FileResponse = {
-    id: 1,
-    nombre: 'documento.pdf',
-    tamanio: 204800,
-    tipo: 'application/pdf',
-    url: 'https://images.unsplash.com/photo-1512850183-6d7990f42385?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dmVydGljYWwlMjB3YWxscGFwZXJ8ZW58MHx8MHx8fDA%3D',
-  };
-
-  textData: TextResponse = {
-    id: 1,
-    contenido: 'Este es un mensaje de ejemplo para el chat.',
-  };
-}
+*/

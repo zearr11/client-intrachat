@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import * as bootstrap from 'bootstrap';
 
 @Component({
@@ -11,7 +11,12 @@ export class IconMenuComponent {
 
   iconName = input.required<string>();
   description = input.required<string>();
-  isActive = input.required<boolean>();
+  isActive = input<boolean>(false);
+  clickIcon = output();
+
+  onClick() {
+    this.clickIcon.emit();
+  }
 
   ngAfterViewInit() {
     const tooltipTriggerList = Array.from(

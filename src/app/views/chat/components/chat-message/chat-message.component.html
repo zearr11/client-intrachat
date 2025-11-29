@@ -1,31 +1,31 @@
 <div class="message-wrapper" [class.me]="isMe()" [class.other]="!isMe()">
   <!-- Mostrar avatar solo si NO soy yo y es chat grupal -->
   @if (!isMe() && !isChatPrivate()) {
-  <img class="avatar" [src]="dataMessage().usuario.urlFoto" alt="avatar" />
+  <img class="avatar" [src]="dataMessage().remitente.urlFoto" alt="avatar" />
   }
 
   <div class="message-content">
     <!-- Mostrar nombre solo si NO soy yo y es chat grupal -->
     @if (!isMe() && !isChatPrivate()) {
-    <span class="username">{{ dataMessage().usuario.nombres }}</span>
+    <span class="username">{{ dataMessage().remitente.nombreYApellido }}</span>
     }
 
     <!-- BURBUJA -->
     <div class="bubble">
       <!-- Switch por tipo de mensaje -->
-      @switch (dataMessage().tipo) {
+      @switch (dataMessage().tipoMensaje) {
 
       <!-- TEXTO -->
       @case ('MSG_TEXTO') {
       <div class="text-message">
-        {{ dataText()?.contenido || 'no llega el mensaje' }}
+        {{ dataMessage().contenido }}
       </div>
       }
 
       <!-- IMAGEN -->
       @case ('MSG_IMAGEN') {
       <div class="image-message">
-        <img [src]="dataFile()?.url" alt="image" />
+        <img [src]="dataMessage().archivoResponse?.url" alt="image" />
       </div>
       }
 
@@ -36,15 +36,17 @@
 
         <div class="file-info">
           <div class="file-name">
-            {{ dataFile()?.nombre }}
+            {{ dataMessage().archivoResponse?.nombre }}
           </div>
-          <div class="file-size">{{ dataFile()?.tamanio }} KB</div>
+          <div class="file-size">
+            {{ dataMessage().archivoResponse?.tamanio }}
+          </div>
         </div>
 
         <a
           class="download-btn"
-          [href]="dataFile()?.url"
-          [download]="dataFile()?.nombre"
+          [href]="dataMessage().archivoResponse?.url"
+          [download]="dataMessage().archivoResponse?.nombre"
         >
           <i class="fa-solid fa-download"></i>
         </a>
@@ -54,7 +56,7 @@
 
     <!-- FECHA / HORA -->
     <div class="timestamp">
-      {{ dataMessage().fechaCreacion | date : "shortTime" }}
+      {{ dataMessage().fechaEnvio | date : "shortTime" }}
     </div>
   </div>
 </div>
