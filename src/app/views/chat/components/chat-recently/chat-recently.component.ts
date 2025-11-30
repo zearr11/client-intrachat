@@ -50,6 +50,8 @@ export class ChatRecentlyComponent {
       type: typeRoom,
     };
 
+    // console.log(contactMapped);
+
     return contactMapped;
   }
 }

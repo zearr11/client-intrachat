@@ -41,4 +41,5 @@ export interface UserResponse {
   fechaCreacion:      Date;
   ultimaModificacion: Date;
   estado:             boolean;
+  informacion:        string;
 }

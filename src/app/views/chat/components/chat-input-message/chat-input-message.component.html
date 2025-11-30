@@ -1,8 +1,14 @@
 <div class="d-flex align-items-center bg-dark px-3 py-2 input-body">
-  <i class="fa-solid fa-file-circle-plus text-white fs-5 me-3 ms-1 chat-icon"></i>
+  <i
+    class="fa-solid fa-file-circle-plus text-white fs-5 me-3 ms-1 chat-icon"
+  ></i>
   <input
+    #txtMessage
     type="text"
     class="form-control text-white border-0 px-3 py-2 px-3 py-2 shadow-sm flex-grow-1 search-input"
     placeholder="Mensaje"
-    >
+    [value]="value()"
+    (input)="value.set(txtMessage.value)"
+    (keyup.enter)="sendText(value())"
+  />
 </div>

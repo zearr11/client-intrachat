@@ -1,9 +1,9 @@
 <section class="contenedor">
-  <div class="bg-dark cabecera">
+  <div class="bg-dark cabecera" #header>
     <div class="d-flex align-items-center gap-3">
-      <img [src]="headerChat()!.img" class="icono-grupo" />
+      <img [src]="headerChat().img" class="icono-grupo" />
       <h5 class="mb-0 nombre-grupo user-select-none">
-        {{ headerChat()?.name }}
+        {{ headerChat().name }}
       </h5>
     </div>
 
@@ -13,23 +13,28 @@
     </div>
   </div>
 
-  @if (dataMessages()?.length == 0) {
+  @if (dataMessages().length == 0) {
   <div class="no-messages user-select-none">
-    <h4>Aqui todavía no hay actividad. ¿Qué te gustaría decir?</h4>
+    <h4>Aquí todavía no hay actividad. ¿Qué te gustaría decir?</h4>
   </div>
   } @else {
-  <div class="content-messages" #scrollContainer>
-    @for (message of dataMessages(); track message.idMensaje) {
-    <chat-message
-      [isChatPrivate]="roomEntity()?.tipoSala == 'PRIVADO'"
-      [dataMessage]="message"
-    />
-    }
+  <div #scrollContainer class="content-messages" (scroll)="onScroll()">
+    <div class="message-content">
+      @for (message of dataMessages(); track message.idMensaje) {
+      <chat-message
+        [isChatPrivate]="roomEntity()?.tipoSala == 'PRIVADO'"
+        [dataMessage]="message"
+      />
+      }
+    </div>
   </div>
   }
 
   <div class="footer-messages">
-    <chat-input-message />
+    <chat-input-message
+      [resetTxt]="resetTxt()"
+      (textMessage)="sendNewMessage($event)"
+    />
   </div>
 </section>
 
@@ -78,11 +83,43 @@
     display: flex;
     text-align: center;
     justify-content: center;
-    flex-direction: column-reverse;
+    flex-direction: column;
     color: #d3d3d3;
     height: 100%;
   }
 
+  .content-messages {
+    flex: 1 1 auto;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    padding: 0 50px;
+    flex-direction: column;
+  }
+
+  .message-content {
+    /* display: flex;
+    flex-direction: column; */
+    margin-top: auto;
+  }
+
+  /* .inverted {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .inverted-content {
+    display: flex;
+    flex-direction: column;
+  } */
+
+  .footer-messages {
+    margin-top: auto;
+    padding-bottom: 10px;
+  }
+</style>
+
+<!--
   .content-messages {
     flex: 1 1 auto;
     overflow-y: auto;
@@ -91,7 +128,6 @@
     padding: 0 50px;
   }
 
-  /*
   .content-messages {
     flex: 1 1 auto;
     justify-content: center;
@@ -100,10 +136,4 @@
 
     padding: 0px 50px;
   }
-  */
-
-  .footer-messages {
-    margin-top: auto;
-    padding-bottom: 10px;
-  }
-</style>
+-->

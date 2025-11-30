@@ -1,190 +1,238 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ChatInputMessageComponent } from '../../components/chat-input-message/chat-input-message.component';
 import { ChatMessageComponent } from '../../components/chat-message/chat-message.component';
 import { ActivatedRoute } from '@angular/router';
-import { TypeRoom } from '../../../../entity/room/enums/type-room.enum';
-import { RoomService } from '../../../../entity/room/services/room.service';
-import { effect } from '@angular/core';
-import { RoomResponse } from '../../../../entity/room/interfaces/room.interface';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { MessageResponse } from '../../../../entity/message/interfaces/message.interface';
-import { MessageService } from '../../../../entity/message/services/message.service';
-import { OptionsPaginatedMessage } from '../../../../shared/interfaces/options-paginated.interface';
-import { of, tap } from 'rxjs';
-import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
-import { UserService } from '../../../../entity/user/services/user.service';
-import { GroupResponse } from '../../../../entity/group/interfaces/group.interface';
 import { GroupService } from '../../../../entity/group/services/group.service';
+import { RoomService } from '../../../../entity/room/services/room.service';
+import { UserService } from '../../../../entity/user/services/user.service';
+import { MessageService } from '../../../../entity/message/services/message.service';
+import { ChatService } from '../../../../entity/chat/services/chat.service';
+import { MessageResponse } from '../../../../entity/message/interfaces/message.interface';
+import { RoomResponse } from '../../../../entity/room/interfaces/room.interface';
+import { TypeRoom } from '../../../../entity/room/enums/type-room.enum';
+import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
+import {
+  ChatRequest,
+  ChatResponse,
+} from '../../../../entity/chat/interfaces/chat.interface';
+import { TypeMessage } from '../../../../entity/message/enums/type-message.enum';
+import { OptionsPaginatedMessage } from '../../../../shared/interfaces/options-paginated.interface';
+import { GroupResponse } from '../../../../entity/group/interfaces/group.interface';
+import { MessageMapper } from '../../utils/message.mapper';
+
+interface HeaderBase {
+  img: string;
+  name: string;
+}
 
 @Component({
   selector: 'chat-current-page',
   imports: [ChatInputMessageComponent, ChatMessageComponent],
   templateUrl: './chat-current-page.component.html',
 })
-export class ChatCurrentPageComponent {
+export class ChatCurrentPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private groupService = inject(GroupService);
   private roomService = inject(RoomService);
+  private groupService = inject(GroupService);
   private userService = inject(UserService);
   private messageService = inject(MessageService);
+  private chatService = inject(ChatService);
 
-  // Params de url
-  typeChat = signal<TypeRoom | null>(null);
-  id = signal<number | null>(null);
+  // Propiedades clave del componente
+  headerChat = signal<HeaderBase>({ img: '', name: '' }); // Cabecera
+  roomEntity = signal<RoomResponse | null>(null); // Datos de sala : Opcional
+  groupEntity = signal<GroupResponse | null>(null); // Datos de grupo : Opcional
+  userReceiver = signal<UserResponse | null>(null); // Datos de usuario de destino : Opcional
+  resetTxt = signal<boolean>(false); // Cambiar valor para restablecer input message
+  dataMessages = signal<MessageResponse[]>([]); // Arreglo de mensajes
+  optionsMessages = signal<OptionsPaginatedMessage | null>(null); // Opciones de paginado de mensajes
+  pageMessageMax = signal<number>(0);
 
-  // Datos de sala
-  roomEntity = signal<RoomResponse | null>(null);
-  // Datos de grupo (Opcional)
-  groupEntity = signal<GroupResponse | null>(null);
-  // Datos de usuario de destino (Opcional)
-  userReceiver = signal<UserResponse | null>(null);
+  // Validacion de carga, true = Cargando nuevos mensajes, false = Sin carga pendiente
+  loadingPage = signal<boolean>(false);
 
-  // Encabezado de chat
-  headerChat = computed(() => {
-    if (this.userReceiver()) {
-      return {
-        img: this.userReceiver()!.urlFoto,
-        name:
-          this.userReceiver()!.nombres + ' ' + this.userReceiver()!.apellidos,
-      };
-    }
+  // Referencias del template
+  scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
 
-    if (this.groupEntity()) {
-      return {
-        img: this.groupEntity()!.urlFoto,
-        name: this.groupEntity()!.nombre,
-      };
-    }
-
-    return null;
-  });
-
-  // Mensajes de sala
-  dataMessages = signal<MessageResponse[] | null>(null);
-
-  // Opciones para la paginacion de mensajes
-  optionsMessages = signal<OptionsPaginatedMessage>({});
-
-  // Busqueda de sala dinamicamente
-  roomEntityResource = rxResource({
-    request: () => ({
-      type: this.typeChat(),
-      id: this.id(),
-    }),
-    loader: ({ request }) => {
-      if (!request.id) return of(null);
-
-      if (request.type === TypeRoom.PRIVADO) {
-        return this.roomService.getRoomByMembers(request.id);
-      }
-
-      if (request.type === TypeRoom.GRUPO) {
-        return this.roomService.getRoomById(request.id);
-      }
-
-      return of(null);
-    },
-  });
-
-  // Asignacion de Sala a signal
-  syncRoomEntity = effect(() => {
-    const room = this.roomEntityResource.value();
-    this.roomEntity.set(room!);
-  });
-
-  // Busqueda de grupo dinamicamente
-  groupEntityResource = rxResource({
-    request: () => ({
-      idRoom: this.roomEntity()?.id,
-    }),
-    loader: ({ request }) => {
-      if (!request.idRoom) return of(null);
-      return this.groupService.getGroupByRoom(request.idRoom);
-    },
-  });
-
-  // Asignacion de Grupo a signal
-  syncGroupEntity = effect(() => {
-    const group = this.groupEntityResource.value();
-    this.groupEntity.set(group!);
-  });
-
-  // Busqueda de usuario de destino dinamicamente
-  userReceiverEntityResource = rxResource({
-    request: () => ({
-      idUser: this.id(),
-      typeRoom: this.typeChat(),
-    }),
-    loader: ({ request }) => {
-      if (!request.idUser && !request.typeRoom) return of(null);
-
-      if (request.typeRoom == TypeRoom.PRIVADO)
-        return this.userService.getUserById(request.idUser!);
-
-      return of(null);
-    },
-  });
-
-  // Asignacion de Usuario de destino a signal
-  syncUserReceiverEntity = effect(() => {
-    const userReceiver = this.userReceiverEntityResource.value();
-    this.userReceiver.set(userReceiver!);
-  });
-
-  // Busqueda de mensajes de la sala
-  httpMessagesPaginated = rxResource({
-    request: () => ({
-      idRoom: this.roomEntity()?.id,
-      options: this.optionsMessages(),
-    }),
-    loader: ({ request }) => {
-      if (!request.idRoom) {
-        const resultDefault = {
-          page: request.options?.page ?? 1,
-          size: request.options?.size ?? 10,
-          itemsOnPage: 0,
-          count: 0,
-          totalPages: 0,
-          result: [],
-        };
-        this.dataMessages.set(resultDefault.result);
-        return of(resultDefault);
-      }
-
-      return this.messageService
-        .getMessagesRoom(request.idRoom, request.options)
-        .pipe(
-          tap((resp) => {
-            // console.log(resp.result);
-            this.dataMessages.set(resp.result);
-          })
-        );
-    },
-  });
-
+  // Inicializacion de propiedades
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
-      this.typeChat.set(params.get('type-chat')!.toUpperCase() as TypeRoom);
-      this.id.set(Number(params.get('id')));
-      console.log(this.typeChat(), this.id());
+      this.clearEntitiesOpcionals();
+      const typeChat = params.get('type-chat')!.toUpperCase() as TypeRoom;
+      const idGeneric = Number(params.get('id'));
+      this.setRoomEntity(typeChat, idGeneric);
     });
   }
+
+  // Obtener nuevos mensajes al hacer scroll hacia arriba
+  onScroll() {
+    const divScroll = this.scrollContainer()?.nativeElement;
+    if (!divScroll) return;
+    const scrollCurrent = divScroll.scrollTop;
+
+    if (scrollCurrent < 200) {
+      const currentPage = this.optionsMessages()?.page;
+
+      if (currentPage! < this.pageMessageMax()) {
+        if (this.loadingPage()) return;
+
+        this.optionsMessages.update((prev) => ({
+          ...prev,
+          page: prev!.page! + 1,
+        }));
+
+        this.setMessagesPaginated();
+      }
+    }
+  }
+
+  // Asignar al scroll current el valor mas bajo
+  afterFirstLoadMessages = effect(() => {
+    const messages = this.dataMessages();
+
+    if (messages.length > 0 && this.optionsMessages()!.page === 1) {
+      queueMicrotask(() => {
+        const el = this.scrollContainer()?.nativeElement;
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    }
+  });
+
+  // Establecer datos de entidad sala
+  setRoomEntity(typeChat: TypeRoom, idGeneric: number) {
+    if (!idGeneric || !typeChat) return;
+
+    if (typeChat === TypeRoom.PRIVADO) {
+      this.setUserReceiver(idGeneric);
+      this.roomService.getRoomByMembers(idGeneric).subscribe((room) => {
+        this.roomEntity.set(room);
+        this.setMessagesPaginated();
+      });
+    } else if (typeChat === TypeRoom.GRUPO) {
+      this.setGroupEntity(idGeneric);
+      this.roomService.getRoomById(idGeneric).subscribe((room) => {
+        this.roomEntity.set(room);
+        this.setMessagesPaginated();
+      });
+    }
+  }
+
+  // Establecer datos de entidad usuario de destino (SOLO EN CHATS PRIVADOS)
+  setUserReceiver(idGeneric: number) {
+    this.userService.getUserById(idGeneric).subscribe((data) => {
+      this.userReceiver.set(data);
+    });
+  }
+
+  // Establecer datos de entidad grupo (SOLO EN CHATS GRUPALES)
+  setGroupEntity(idGeneric: number) {
+    this.groupService.getGroupByRoom(idGeneric).subscribe((data) => {
+      this.groupEntity.set(data);
+    });
+  }
+
+  // LIMPIEZA DE PROPIEDADES AL INICIAR COMPONENTE
+  clearEntitiesOpcionals() {
+    if (this.userReceiver()) {
+      this.userReceiver.set(null);
+    }
+    if (this.groupEntity()) {
+      this.groupEntity.set(null);
+    }
+
+    this.optionsMessages.set({ page: 1, size: 15 });
+    this.resetTxt.update((v) => !v);
+    this.dataMessages.set([]);
+  }
+
+  // Carga de encabezado del chat
+  headerEffect = effect(() => {
+    const user = this.userReceiver();
+    const group = this.groupEntity();
+
+    if (user) {
+      this.headerChat.set({
+        img: user.urlFoto,
+        name: user.nombres + ' ' + user.apellidos,
+      });
+    } else if (group) {
+      this.headerChat.set({
+        img: group.urlFoto,
+        name: group.nombre,
+      });
+    }
+  });
+
+  // Establecer primeros 15 mensajes de chat
+  setMessagesPaginated() {
+    if (this.loadingPage()) return;
+    this.loadingPage.set(true);
+
+    const room = this.roomEntity();
+    if (!room) return;
+    this.messageService
+      .getMessagesRoom(room.id, this.optionsMessages()!)
+      .subscribe((data) => {
+        this.dataMessages.update((prev) => {
+          const merged = [...data.result.reverse(), ...prev];
+
+          const unique = merged.filter(
+            (msg, index, arr) =>
+              arr.findIndex((m) => m.idMensaje === msg.idMensaje) === index
+          );
+
+          return unique;
+        });
+        this.pageMessageMax.set(data.totalPages);
+        console.log(data);
+        this.loadingPage.set(false);
+      });
+  }
+
+  // Agregar mensajes nuevos enviados o recibidos al estar dentro del chat
+  effectNewMessages = effect(() => {
+    const newMessages = this.chatService.newMessages();
+
+    if (newMessages.length > 0) {
+      // Obtener ultimo mensaje
+      const messageEntity: ChatResponse = newMessages[newMessages.length - 1];
+      // Parsear de ChatResponse a MessageResponse
+      const newMessage: MessageResponse =
+        MessageMapper.messageResponse(messageEntity);
+
+      // Si el mensaje corresponde a la sala actual entonces se carga
+      if (messageEntity.idSala == this.roomEntity()?.id) {
+        this.dataMessages.update((prev) => [...prev, newMessage]);
+      }
+    }
+  });
+
+  // Enviar mensaje de texto
+  sendNewMessage(txtValue: string) {
+    let typeRoom = this.roomEntity()?.tipoSala;
+
+    if (this.userReceiver()?.id) typeRoom = TypeRoom.PRIVADO;
+
+    const request: ChatRequest = {
+      idSala: this.roomEntity()?.id,
+      idUsuarioDestino: this.userReceiver()?.id,
+      tipoSala: typeRoom!,
+      tipoMensaje: TypeMessage.MSG_TEXTO,
+      texto: txtValue,
+    };
+
+    if (!request.idSala) {
+      this.setRoomEntity(request.tipoSala, request.idUsuarioDestino!);
+    }
+
+    this.chatService.sendMessage(request);
+  }
 }
-
-/*
-  public scrollContainer? = viewChild<ElementRef | null>('scrollContainer');
-  ngAfterViewInit() {
-    this.scrollToBottom();
-  }
-
-  ngOnChanges() {
-    this.scrollToBottom();
-  }
-
-  private scrollToBottom() {
-    if (!this.scrollContainer) return;
-
-    const el = this.scrollContainer()?.nativeElement;
-    el.scrollTop = el.scrollHeight;
-  }
-*/

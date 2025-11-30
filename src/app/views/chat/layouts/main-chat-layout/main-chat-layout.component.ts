@@ -1,4 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  HostListener,
+  inject,
+  signal,
+} from '@angular/core';
 import { IconMenuComponent } from '../../common/icon-menu/icon-menu.component';
 import { ChatRecentlyComponent } from '../../components/chat-recently/chat-recently.component';
 import { Router, RouterOutlet } from '@angular/router';
@@ -10,6 +17,7 @@ import { RoomService } from '../../../../entity/room/services/room.service';
 import { ChatService } from '../../../../entity/chat/services/chat.service';
 import { Subscription } from 'rxjs';
 import { ChatResponse } from '../../../../entity/chat/interfaces/chat.interface';
+import { UserService } from '../../../../entity/user/services/user.service';
 
 @Component({
   selector: 'main-chat-layout',
@@ -21,9 +29,15 @@ export class MainChatLayoutComponent {
   private contactService = inject(ContactService);
   private roomService = inject(RoomService);
   private authService = inject(AuthService);
+  private userService = inject(UserService);
   private chatService = inject(ChatService);
   private toastService = inject(ToastMessageService);
   private router = inject(Router);
+
+  constructor() {
+    if (!this.userService.dataUser())
+      this.userService.loadDataCurrentUser().subscribe();
+  }
 
   // Variables de interfaz
   showMessagesRecently = signal<boolean>(true);
@@ -56,7 +70,7 @@ export class MainChatLayoutComponent {
     // Suscripcion a eventos de chat privado
     const chatPrivate = this.chatService.subscribeToPrivate(
       (msg: ChatResponse) => {
-        console.log('📩 Mensaje privado recibido', msg);
+        // console.log('📩 Mensaje privado recibido', msg);
       }
     );
 
@@ -68,7 +82,7 @@ export class MainChatLayoutComponent {
         const chatGroup = this.chatService.subscribeToGroup(
           idRoom,
           (msg: ChatResponse) => {
-            console.log(`Mensaje grupal recibido en la sala: ${idRoom}`, msg);
+            // console.log(`Mensaje grupal recibido en la sala: ${idRoom}`, msg);
           }
         );
         // Almacenamiento de suscripciones grupales
@@ -94,6 +108,13 @@ export class MainChatLayoutComponent {
     });
   }
 
+  // Se recarga la vista de contactos si hay un nuevo mensaje
+  effectNewMessage = effect(() => {
+    if (this.chatService.newMessages().length > 0) {
+      this.loadRecently();
+    }
+  });
+
   // Cargar contactos recientes
   loadAllContacts(filter?: string) {
     this.contactService.getContactsCampania(filter).subscribe((resp) => {
@@ -107,9 +128,11 @@ export class MainChatLayoutComponent {
     this.router.navigateByUrl('/login');
     this.toastService.show('Sesión finalizada.', 'text-bg-secondary');
   }
-}
 
-/*
-  messages = signal<ChatResponse[]>([]);
-  this.messages.update((prev) => [...prev, msg]);
-*/
+  @HostListener('window:keydown.escape', ['$event'!])
+  onEsc(event: KeyboardEvent) {
+    event.preventDefault();
+    (document.activeElement as HTMLElement)?.blur();
+    this.router.navigate(['/chats']);
+  }
+}

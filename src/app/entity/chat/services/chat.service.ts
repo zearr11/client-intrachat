@@ -1,12 +1,13 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { RxStomp, RxStompState } from '@stomp/rx-stomp';
-import { BehaviorSubject, map } from 'rxjs';
+import { IMessage, RxStomp, RxStompState } from '@stomp/rx-stomp';
+import { BehaviorSubject, map, tap } from 'rxjs';
 import { AuthService } from '../../../views/auth/services/auth.service';
 import { ChatRequest, ChatResponse } from '../interfaces/chat.interface';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   private authService = inject(AuthService);
+  newMessages = signal<ChatResponse[]>([]);
 
   private rxStomp = new RxStomp();
   public estadoConexion$ = new BehaviorSubject<RxStompState | null>(null);
@@ -35,17 +36,31 @@ export class ChatService {
     this.rxStomp.deactivate();
   }
 
-  subscribeToGroup(roomId: number, cb: (dataMessage: ChatResponse) => void) {
+  private processIncomingMessage(raw: IMessage): ChatResponse {
+    return JSON.parse(raw.body) as ChatResponse;
+  }
+
+  private pushMessage(msg: ChatResponse) {
+    this.newMessages.update((prev) => [...prev, msg]);
+  }
+
+  subscribeToGroup(roomId: number, cb: (m: ChatResponse) => void) {
     return this.rxStomp
       .watch(`/topic/group.${roomId}`)
-      .pipe(map((msg) => JSON.parse(msg.body) as ChatResponse))
+      .pipe(
+        map((msg) => this.processIncomingMessage(msg)),
+        tap((parsed) => this.pushMessage(parsed))
+      )
       .subscribe(cb);
   }
 
-  subscribeToPrivate(cb: (dataMessage: ChatResponse) => void) {
+  subscribeToPrivate(cb: (m: ChatResponse) => void) {
     return this.rxStomp
       .watch(`/user/queue/messages`)
-      .pipe(map((msg) => JSON.parse(msg.body) as ChatResponse))
+      .pipe(
+        map((msg) => this.processIncomingMessage(msg)),
+        tap((parsed) => this.pushMessage(parsed))
+      )
       .subscribe(cb);
   }
 
