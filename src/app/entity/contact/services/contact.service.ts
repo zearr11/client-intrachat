@@ -11,24 +11,33 @@ const baseUrl = `${environment.baseUrl}/contactos`;
 export class ContactService {
   private http = inject(HttpClient);
 
+  getContactsRecently(filtroBusqueda?: string) {
+    const params = new HttpParams().set('filtroBusqueda', filtroBusqueda ?? '');
+
+    return this.http
+      .get<ResponseGeneric<ContactResponse[]>>(`${baseUrl}/recientes`, {
+        params,
+      })
+      .pipe(map((resp) => resp.data));
+  }
+
+  getContactsGroups(filtroBusqueda?: string) {
+    const params = new HttpParams().set('filtroBusqueda', filtroBusqueda ?? '');
+
+    return this.http
+      .get<ResponseGeneric<ContactResponse[]>>(`${baseUrl}/grupos`, {
+        params,
+      })
+      .pipe(map((resp) => resp.data));
+  }
+
   getContactsCampania(filtroBusqueda?: string) {
     const params = new HttpParams().set('filtroBusqueda', filtroBusqueda ?? '');
 
-    return this.http.get<ResponseGeneric<ContactResponse[]>>(
-      `${baseUrl}/todos`,
-      {
+    return this.http
+      .get<ResponseGeneric<ContactResponse[]>>(`${baseUrl}/campania`, {
         params,
-      }
-    ).pipe(
-      map(resp => resp.data)
-    );
-  }
-
-  getContactsRecently() {
-    return this.http.get<ResponseGeneric<ContactResponse[]>>(
-      `${baseUrl}/recientes`
-    ).pipe(
-      map(resp => resp.data)
-    );
+      })
+      .pipe(map((resp) => resp.data));
   }
 }

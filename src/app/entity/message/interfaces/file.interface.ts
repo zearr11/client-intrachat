@@ -1,5 +1,5 @@
 export interface FileResponse {
-  id: number,
+  id?: number,
   nombre: string,
   tamanio: number,
   tipo: string,

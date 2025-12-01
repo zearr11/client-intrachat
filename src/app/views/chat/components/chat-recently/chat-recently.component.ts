@@ -3,16 +3,19 @@ import { Contact } from '../../interfaces/contact.interface';
 import { DatePipe } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ContactResponse } from '../../../../entity/contact/interfaces/contact.interface';
+import { TruncateTextPipe } from '../../pipes/truncate-text.pipe';
+import { typesIconMenu } from '../../layouts/main-chat-layout/main-chat-layout.component';
 
 @Component({
   selector: 'chat-recently',
-  imports: [DatePipe, RouterLink, RouterLinkActive],
+  imports: [DatePipe, RouterLink, RouterLinkActive, TruncateTextPipe],
   templateUrl: './chat-recently.component.html',
 })
 export class ChatRecentlyComponent {
   dataContact = input.required<ContactResponse>();
   isLast = input<boolean>(false);
   dataMessageRecently = computed(() => this.convertDataContactToContact());
+  viewCurrent = input.required<typesIconMenu>();
 
   convertDataContactToContact() {
     const contact = this.dataContact();
@@ -31,15 +34,33 @@ export class ChatRecentlyComponent {
         ? contact.datosUsuario!.nombreYApellido
         : contact.datosGrupo!.nombreGrupo;
 
-    const time = contact.existeContactoPrevio
-      ? contact.datosMensaje!.horaEnvio
-      : '';
+    let time: string = '';
+    let content: string = '';
 
-    const content = contact.existeContactoPrevio
-      ? contact.datosMensaje!.texto
-      : typeRoom == 'PRIVADO'
-      ? contact.datosUsuario!.descripcion
-      : contact.datosGrupo!.descripcion;
+    if (this.viewCurrent() === 'recently') {
+      // ------------------------------------
+      // SOLO mostrar datos del mensaje
+      // ------------------------------------
+      time = contact.existeContactoPrevio
+        ? contact.datosMensaje?.horaEnvio.toString() ?? ''
+        : '';
+
+      content = contact.existeContactoPrevio
+        ? contact.datosMensaje?.texto ?? ''
+        : '';
+    } else {
+      // ------------------------------------
+      // Mostrar lo “otro”
+      // (descripcion usuario / descripcion grupo)
+      // ------------------------------------
+      time = '';
+
+      if (typeRoom === 'PRIVADO') {
+        content = contact.datosUsuario?.descripcion ?? '';
+      } else {
+        content = contact.datosGrupo?.descripcion ?? '';
+      }
+    }
 
     const contactMapped: Contact = {
       id: id as number,
@@ -55,3 +76,15 @@ export class ChatRecentlyComponent {
     return contactMapped;
   }
 }
+
+/*
+const time = contact.existeContactoPrevio
+      ? contact.datosMensaje!.horaEnvio
+      : '';
+
+    const content = contact.existeContactoPrevio
+      ? contact.datosMensaje!.texto
+      : typeRoom == 'PRIVADO'
+      ? contact.datosUsuario!.descripcion
+      : contact.datosGrupo!.descripcion;
+*/

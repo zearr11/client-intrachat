@@ -3,15 +3,22 @@
     <icon-menu
       [iconName]="'fa-message'"
       [description]="'Mensajes recientes'"
-      [isActive]="showMessagesRecently()"
-      (clickIcon)="alterView()"
+      [isActive]="iconMenuCurrent() == 'recently'"
+      (clickIcon)="alterView('recently')"
     />
     <icon-menu
       class="mt-2"
       [iconName]="'fa-people-group'"
+      [description]="'Grupos de trabajo'"
+      [isActive]="iconMenuCurrent() == 'groups'"
+      (clickIcon)="alterView('groups')"
+    />
+    <icon-menu
+      class="mt-2"
+      [iconName]="'fa-address-book'"
       [description]="'Contactos de campaña'"
-      [isActive]="!showMessagesRecently()"
-      (clickIcon)="alterView()"
+      [isActive]="iconMenuCurrent() == 'contacts'"
+      (clickIcon)="alterView('contacts')"
     />
 
     <div class="mt-auto footer-icons">
@@ -37,25 +44,24 @@
     [class.col]="false"
   >
     <h4 class="header">{{ titleChatMenu() }}</h4>
-    @if (!showMessagesRecently()) {
-      <div class="search">
-        <input
-          #txtFilter
-          class="form-control input-personalized"
-          type="text"
-          name="filtro"
-          placeholder="Buscar contacto"
-          (input)="loadAllContacts(txtFilter.value)"
-        />
-      </div>
-    }
+    <div class="search">
+      <input
+        #txtFilter
+        class="form-control input-personalized"
+        type="text"
+        name="filtro"
+        placeholder="Buscar contacto"
+        (input)="httpLoadWithFilter(txtFilter.value)"
+      />
+    </div>
 
     <div class="contacts-recently">
       @for (contact of dataContacts(); track $index) {
-        <chat-recently
-          [dataContact]="contact"
-          [isLast]="$last"
-          />
+      <chat-recently
+        [viewCurrent]="iconMenuCurrent()"
+        [dataContact]="contact"
+        [isLast]="$last"
+      />
       }
     </div>
   </article>

@@ -27,6 +27,7 @@ import { TypeMessage } from '../../../../entity/message/enums/type-message.enum'
 import { OptionsPaginatedMessage } from '../../../../shared/interfaces/options-paginated.interface';
 import { GroupResponse } from '../../../../entity/group/interfaces/group.interface';
 import { MessageMapper } from '../../utils/message.mapper';
+import { ToastMessageService } from '../../../../shared/services/toast-message.service';
 
 interface HeaderBase {
   img: string;
@@ -45,6 +46,7 @@ export class ChatCurrentPageComponent implements OnInit {
   private userService = inject(UserService);
   private messageService = inject(MessageService);
   private chatService = inject(ChatService);
+  private toastService = inject(ToastMessageService);
 
   // Propiedades clave del componente
   headerChat = signal<HeaderBase>({ img: '', name: '' }); // Cabecera
@@ -93,6 +95,19 @@ export class ChatCurrentPageComponent implements OnInit {
       }
     }
   }
+
+  effectDebug = effect(() => {
+    const room = this.roomEntity();
+    const userSender = this.userReceiver();
+    const group = this.groupEntity();
+    const messages = this.dataMessages();
+    console.log('---------------------------------------------------------');
+    console.log('Sala: ', room);
+    console.log('User: ', userSender);
+    console.log('Grupo: ', group);
+    console.log('Mensajes: ', messages);
+    console.log('---------------------------------------------------------');
+  });
 
   // Asignar al scroll current el valor mas bajo
   afterFirstLoadMessages = effect(() => {
@@ -147,6 +162,12 @@ export class ChatCurrentPageComponent implements OnInit {
     if (this.groupEntity()) {
       this.groupEntity.set(null);
     }
+    if (this.roomEntity()) {
+      this.roomEntity.set(null);
+    }
+    if (this.loadingPage()) {
+      this.loadingPage.set(false);
+    }
 
     this.optionsMessages.set({ page: 1, size: 15 });
     this.resetTxt.update((v) => !v);
@@ -192,7 +213,7 @@ export class ChatCurrentPageComponent implements OnInit {
           return unique;
         });
         this.pageMessageMax.set(data.totalPages);
-        console.log(data);
+        // console.log(data);
         this.loadingPage.set(false);
       });
   }
@@ -209,14 +230,26 @@ export class ChatCurrentPageComponent implements OnInit {
         MessageMapper.messageResponse(messageEntity);
 
       // Si el mensaje corresponde a la sala actual entonces se carga
-      if (messageEntity.idSala == this.roomEntity()?.id) {
-        this.dataMessages.update((prev) => [...prev, newMessage]);
+      if (
+        messageEntity.idSala == this.roomEntity()?.id ||
+        messageEntity.usuarioDestino?.id == this.userReceiver()?.id
+      ) {
+        this.dataMessages.update((prev) => {
+          const merged = [...prev, newMessage];
+
+          const unique = merged.filter(
+            (msg, index, arr) =>
+              arr.findIndex((m) => m.idMensaje === msg.idMensaje) === index
+          );
+
+          return unique;
+        });
       }
     }
   });
 
   // Enviar mensaje de texto
-  sendNewMessage(txtValue: string) {
+  sendNewTextMessage(txtValue: string) {
     let typeRoom = this.roomEntity()?.tipoSala;
 
     if (this.userReceiver()?.id) typeRoom = TypeRoom.PRIVADO;
@@ -234,5 +267,43 @@ export class ChatCurrentPageComponent implements OnInit {
     }
 
     this.chatService.sendMessage(request);
+  }
+
+  sendNewFileMessage(file: File) {
+    let typeRoom = this.roomEntity()?.tipoSala;
+    let typeMessage;
+
+    if (this.userReceiver()?.id) typeRoom = TypeRoom.PRIVADO;
+
+    if (file.type.startsWith('image/')) {
+      typeMessage = TypeMessage.MSG_IMAGEN;
+    } else {
+      typeMessage = TypeMessage.MSG_ARCHIVO;
+    }
+
+    const request: ChatRequest = {
+      idSala: this.roomEntity()?.id,
+      idUsuarioDestino: this.userReceiver()?.id,
+      tipoSala: typeRoom!,
+      tipoMensaje: typeMessage,
+    };
+
+    if (!request.idSala) {
+      this.setRoomEntity(request.tipoSala, request.idUsuarioDestino!);
+    }
+
+    this.messageService.sendMessageFile(file, request).subscribe({
+      next: (resp) => {
+        const initialMsg =
+          typeMessage != TypeMessage.MSG_IMAGEN ? 'El archivo' : 'La imagen';
+        this.toastService.show(
+          `${initialMsg} fue enviado correctamente.`,
+          'text-bg-success'
+        );
+      },
+      error: (err) => {
+        this.toastService.show(err.message, 'text-bg-danger');
+      },
+    });
   }
 }

@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  @if (dataMessages().length == 0) {
+  @if (dataMessages().length === 0) {
   <div class="no-messages user-select-none">
     <h4>Aquí todavía no hay actividad. ¿Qué te gustaría decir?</h4>
   </div>
@@ -33,7 +33,8 @@
   <div class="footer-messages">
     <chat-input-message
       [resetTxt]="resetTxt()"
-      (textMessage)="sendNewMessage($event)"
+      (fileOutput)="sendNewFileMessage($event)"
+      (textMessage)="sendNewTextMessage($event)"
     />
   </div>
 </section>

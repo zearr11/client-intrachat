@@ -45,8 +45,7 @@
 
         <a
           class="download-btn"
-          [href]="dataMessage().archivoResponse?.url"
-          [download]="dataMessage().archivoResponse?.nombre"
+          (click)="downloadFile(dataMessage().archivoResponse!)"
         >
           <i class="fa-solid fa-download"></i>
         </a>

@@ -2,9 +2,11 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   HostListener,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { IconMenuComponent } from '../../common/icon-menu/icon-menu.component';
 import { ChatRecentlyComponent } from '../../components/chat-recently/chat-recently.component';
@@ -18,10 +20,18 @@ import { ChatService } from '../../../../entity/chat/services/chat.service';
 import { Subscription } from 'rxjs';
 import { ChatResponse } from '../../../../entity/chat/interfaces/chat.interface';
 import { UserService } from '../../../../entity/user/services/user.service';
+import { FormsModule } from '@angular/forms';
+
+export type typesIconMenu = 'recently' | 'groups' | 'contacts';
 
 @Component({
   selector: 'main-chat-layout',
-  imports: [IconMenuComponent, ChatRecentlyComponent, RouterOutlet],
+  imports: [
+    IconMenuComponent,
+    ChatRecentlyComponent,
+    RouterOutlet,
+    FormsModule,
+  ],
   templateUrl: './main-chat-layout.component.html',
 })
 export class MainChatLayoutComponent {
@@ -40,11 +50,18 @@ export class MainChatLayoutComponent {
   }
 
   // Variables de interfaz
-  showMessagesRecently = signal<boolean>(true);
+  iconMenuCurrent = signal<typesIconMenu>('recently');
+  txtFilter = viewChild<ElementRef<HTMLInputElement>>('txtFilter');
+
   titleChatMenu = computed(() => {
-    return this.showMessagesRecently()
-      ? 'Mensajes recientes'
-      : 'Contactos de campaña';
+    switch (this.iconMenuCurrent()) {
+      case 'recently':
+        return 'Mensajes recientes';
+      case 'groups':
+        return 'Grupos de trabajo';
+      case 'contacts':
+        return 'Contactos de campaña';
+    }
   });
   // Contactos : Parte izquierda
   public dataContacts = signal<ContactResponse[]>([]);
@@ -64,7 +81,7 @@ export class MainChatLayoutComponent {
   // Inicio de data para la interfaz
   connectInit() {
     // Carga chats recientes
-    this.loadRecently();
+    this.httpLoadRecently();
     // Conexion inicial
     this.chatService.connect();
     // Suscripcion a eventos de chat privado
@@ -94,29 +111,68 @@ export class MainChatLayoutComponent {
   }
 
   // Cambiar entre chats recientes y contactos
-  alterView() {
-    this.showMessagesRecently.update((v) => !v);
-
-    if (this.showMessagesRecently()) this.loadRecently();
-    else this.loadAllContacts();
+  alterView(view: typesIconMenu) {
+    if (this.iconMenuCurrent() == view) return;
+    this.iconMenuCurrent.set(view);
+    this.txtFilter()!.nativeElement.value = '';
+    this.reloadContacts();
   }
 
-  // Cargar chats recientes
-  loadRecently() {
-    this.contactService.getContactsRecently().subscribe((resp) => {
+  // Carga de chats de acuerdo a la vista
+  reloadContacts(filter?: string) {
+    switch (this.iconMenuCurrent()) {
+      case 'recently': {
+        this.httpLoadRecently(filter);
+        break;
+      }
+      case 'groups': {
+        this.httpLoadGroups(filter);
+        break;
+      }
+      case 'contacts': {
+        this.httpLoadContacts(filter);
+        break;
+      }
+    }
+  }
+
+  // Recargar la vista de chats si hay un nuevo mensaje
+  effectNewMessage = effect(() => {
+    if (this.chatService.newMessages().length > 0) {
+      this.reloadContacts();
+    }
+  });
+
+  // Cargar con filtro
+  httpLoadWithFilter(filter: string) {
+    this.reloadContacts(filter);
+  }
+
+  // Cargar chats recientes (recently)
+  httpLoadRecently(filter?: string) {
+    this.contactService.getContactsRecently(filter).subscribe((resp) => {
+      const data = resp!
+        .map((entity) => ({
+          ...entity,
+          fechaOrden: entity.datosMensaje?.horaEnvio
+            ? new Date(entity.datosMensaje.horaEnvio)
+            : new Date(0),
+        }))
+        .sort((a, b) => b.fechaOrden.getTime() - a.fechaOrden.getTime());
+
+      this.dataContacts.set(data);
+    });
+  }
+
+  // Cargar grupos de trabajo (groups)
+  httpLoadGroups(filter?: string) {
+    this.contactService.getContactsGroups(filter).subscribe((resp) => {
       this.dataContacts.set(resp!);
     });
   }
 
-  // Se recarga la vista de contactos si hay un nuevo mensaje
-  effectNewMessage = effect(() => {
-    if (this.chatService.newMessages().length > 0) {
-      this.loadRecently();
-    }
-  });
-
-  // Cargar contactos recientes
-  loadAllContacts(filter?: string) {
+  // Cargar contactos de campaña (contacts)
+  httpLoadContacts(filter?: string) {
     this.contactService.getContactsCampania(filter).subscribe((resp) => {
       this.dataContacts.set(resp!);
     });

@@ -9,6 +9,7 @@ export interface ChatRequest {
   idUsuarioDestino?: number;
   tipoSala: TypeRoom;
   tipoMensaje: TypeMessage;
+  archivo?: File
   texto?: string;
 }
 

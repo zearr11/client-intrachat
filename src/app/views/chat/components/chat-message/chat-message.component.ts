@@ -2,6 +2,8 @@ import { Component, computed, inject, input } from '@angular/core';
 import { MessageResponse } from '../../../../entity/message/interfaces/message.interface';
 import { DatePipe } from '@angular/common';
 import { UserService } from '../../../../entity/user/services/user.service';
+import { FileResponse } from '../../../../entity/message/interfaces/file.interface';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'chat-message',
@@ -10,6 +12,7 @@ import { UserService } from '../../../../entity/user/services/user.service';
 })
 export class ChatMessageComponent {
   private userService = inject(UserService);
+  private http = inject(HttpClient);
 
   // Entidad mensaje con mucha data
   dataMessage = input.required<MessageResponse>();
@@ -24,13 +27,35 @@ export class ChatMessageComponent {
   // true = Es chat entre 2, false = es chat grupal
   isChatPrivate = input.required<boolean>();
 
-  // Entidad archivo
-  // dataFile = input<FileResponse>();
-  // Entidad texto
-  // dataText = input<TextResponse>();
+  downloadFile(file: FileResponse) {
+    const url = file.url;
+    const nombre = file.nombre;
 
-  // Enum con tipo de mensaje
-  /*
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = nombre; // nombre real
+        link.click();
+
+        window.URL.revokeObjectURL(blobUrl);
+      },
+      error: () => {
+        console.error('Error al descargar archivo');
+      },
+    });
+  }
+}
+
+// Entidad archivo
+// dataFile = input<FileResponse>();
+// Entidad texto
+// dataText = input<TextResponse>();
+
+// Enum con tipo de mensaje
+/*
     VALORES PARA TIPO DE SALA:
     this.dataMessage().sala.tipoSala == TypeRoom.GRUPO
     this.dataMessage().sala.tipoSala == TypeRoom.PRIVADO
@@ -52,7 +77,7 @@ export class ChatMessageComponent {
     this.dataMessage().texto = Si es MSG_TEXTO tiene el texto del mensaje.
   */
 
-  /*
+/*
   - Si soy yo = derecha
   - Si no soy yo = izquierda
 
@@ -66,4 +91,3 @@ export class ChatMessageComponent {
   - Si es archivo, implementar diseño para mostrar el archivo, con un icono de descarga
     y al hacer click en ese icono se descargue el archivo: usar la propiedad this.dataMessage().archivo y su contenido
   */
-}

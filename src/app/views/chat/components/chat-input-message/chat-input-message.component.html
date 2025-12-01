@@ -1,7 +1,14 @@
 <div class="d-flex align-items-center bg-dark px-3 py-2 input-body">
   <i
     class="fa-solid fa-file-circle-plus text-white fs-5 me-3 ms-1 chat-icon"
+    (click)="openFileDialog()"
   ></i>
+  <input
+    type="file"
+    #fileInput
+    class="d-none"
+    (change)="onFileSelected($event)"
+  />
   <input
     #txtMessage
     type="text"
