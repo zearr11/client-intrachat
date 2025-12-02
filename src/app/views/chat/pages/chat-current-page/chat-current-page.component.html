@@ -8,16 +8,25 @@
     </div>
 
     <div class="acciones d-flex align-items-center gap-4">
-      <i class="fa-solid fa-magnifying-glass accion-icon"></i>
-      <i class="fa-solid fa-circle-info accion-icon"></i>
+      <!---->
+      @if (idUserReceiver()) {
+        <i (click)="openModalUserInfo(userReceiver()!)" class="fa-solid fa-circle-info accion-icon"></i>
+      }
+      @else {
+        <i class="fa-solid fa-circle-info accion-icon"></i>
+      }
     </div>
   </div>
 
+  @if (loadingComponent()) {
+  <!---->
   @if (dataMessages().length === 0) {
   <div class="no-messages user-select-none">
     <h4>Aquí todavía no hay actividad. ¿Qué te gustaría decir?</h4>
   </div>
-  } @else {
+  }
+  <!---->
+  @else {
   <div #scrollContainer class="content-messages" (scroll)="onScroll()">
     <div class="message-content">
       @for (message of dataMessages(); track message.idMensaje) {
@@ -28,7 +37,8 @@
       }
     </div>
   </div>
-  }
+  } }
+
   <!-- resetTxt() -->
   <div class="footer-messages">
     <chat-input-message
@@ -38,6 +48,9 @@
     />
   </div>
 </section>
+
+<user-info #userModalInfo [userData]="dataUserInfo()" />
+<!-- <group-info #groupModalInfo [groupData]="groupData()!"/> -->
 
 <style>
   .contenedor {

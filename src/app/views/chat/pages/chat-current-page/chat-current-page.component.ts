@@ -22,6 +22,9 @@ import { ChatService } from '../../../../entity/chat/services/chat.service';
 import { MessageService } from '../../../../entity/message/services/message.service';
 import { MessageMapper } from '../../utils/message.mapper';
 import { UserService } from '../../../../entity/user/services/user.service';
+import { UserInfoComponent } from "../../modals/user-info/user-info.component";
+import { GroupInfoComponent } from "../../modals/group-info.component/group-info.component";
+import { FormsModule } from "@angular/forms";
 
 interface HeaderBase {
   img: string;
@@ -30,7 +33,7 @@ interface HeaderBase {
 
 @Component({
   selector: 'chat-current-page',
-  imports: [ChatInputMessageComponent, ChatMessageComponent],
+  imports: [ChatInputMessageComponent, ChatMessageComponent, UserInfoComponent, GroupInfoComponent, FormsModule],
   templateUrl: './chat-current-page.component.html',
 })
 export class ChatCurrentPageComponent {
@@ -61,8 +64,10 @@ export class ChatCurrentPageComponent {
 
   // Validacion de carga, true = Cargando nuevos mensajes, false = Sin carga pendiente
   loadingPage = signal<boolean>(false);
+  loadingComponent = signal<boolean>(false);
 
   async ngOnChanges() {
+    this.loadingComponent.set(false)
     this.resetTxt.update((v) => !v);
     await this.initComponent();
   }
@@ -85,6 +90,7 @@ export class ChatCurrentPageComponent {
     if (this.dataMessages().length > 0) this.dataMessages.set([]);
 
     await this.getMessagesPaginated();
+    this.loadingComponent.set(true);
 
     // console.log('----------------------');
     // console.log(this.roomEntity());
@@ -277,6 +283,23 @@ export class ChatCurrentPageComponent {
           }
         });
     }
+  }
+
+  // ----------------------------------------------------------------
+  /* MANAGEMENT MODALS */
+
+  userModalInfo = viewChild<UserInfoComponent>('userModalInfo');
+  groupModalInfo = viewChild('groupModalInfo');
+
+  dataUserInfo = signal<UserResponse|null>(null);
+
+  openModalUserInfo(userInfo: UserResponse) {
+    this.dataUserInfo.set(userInfo)
+    this.userModalInfo()!.show();
+  }
+
+  openModalGroupInfo() {
+    // this.groupModalInfo.show();
   }
 }
 
