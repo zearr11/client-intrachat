@@ -61,4 +61,36 @@ export class MessageService {
       })
     );
   }
+
+  messageIsFromChatPrivate(
+    idMessage: number,
+    idUserReceiver: number
+  ): Observable<boolean> {
+    const params = new HttpParams()
+      .set('idMensaje', idMessage)
+      .set('idUsuarioDestino', idUserReceiver);
+
+    return this.http.get<ResponseGeneric<boolean>>(
+      `${baseUrl}/validaciones/chat-privado`,
+      { params }
+    ).pipe(
+      map(resp => resp.data!)
+    );
+  }
+
+  messageIsFromChatGroup(
+    idMessage: number,
+    idRoom: number
+  ): Observable<boolean> {
+    const params = new HttpParams()
+      .set('idMensaje', idMessage)
+      .set('idSala', idRoom);
+
+    return this.http.get<ResponseGeneric<boolean>>(
+      `${baseUrl}/validaciones/chat-grupal`,
+      { params }
+    ).pipe(
+      map(resp => resp.data!)
+    );
+  }
 }

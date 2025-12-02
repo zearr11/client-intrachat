@@ -1,71 +1,275 @@
-import { inject, Injectable } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { of } from 'rxjs';
+import { inject, Injectable, signal } from '@angular/core';
+import { MessageResponse } from '../../../entity/message/interfaces/message.interface';
+import { RoomResponse } from '../../../entity/room/interfaces/room.interface';
+import { GroupResponse } from '../../../entity/group/interfaces/group.interface';
+import { UserResponse } from '../../../entity/user/interfaces/user.interface';
+import { TypeRoom } from '../../../entity/room/enums/type-room.enum';
+import { RoomService } from '../../../entity/room/services/room.service';
 import { GroupService } from '../../../entity/group/services/group.service';
 import { UserService } from '../../../entity/user/services/user.service';
-import { TypeRoom } from '../../../entity/room/enums/type-room.enum';
+import { MessageService } from '../../../entity/message/services/message.service';
+import { ChatService } from '../../../entity/chat/services/chat.service';
+import { ToastMessageService } from '../../../shared/services/toast-message.service';
+import { OptionsPaginatedMessage } from '../../../shared/interfaces/options-paginated.interface';
+import { ChatRequest } from '../../../entity/chat/interfaces/chat.interface';
+import { TypeMessage } from '../../../entity/message/enums/type-message.enum';
+import { firstValueFrom } from 'rxjs';
+import { PaginatedResponse } from '../../../shared/interfaces/paginated-response.interface';
 
 @Injectable({ providedIn: 'root' })
 export class ChatCurrentService {
-  // private groupService = inject(GroupService);
-  // private userService = inject(UserService);
+  private roomService = inject(RoomService);
+  private groupService = inject(GroupService);
+  private userService = inject(UserService);
+  private messageService = inject(MessageService);
+  private chatService = inject(ChatService);
+  private toastService = inject(ToastMessageService);
 
-  // groupEntityResource = (idRoom?: number) =>
-  //   rxResource({
-  //     request: () => ({
-  //       idRoom,
-  //     }),
-  //     loader: ({ request }) => {
-  //       if (!request.idRoom) return of(null);
-  //       return this.groupService.getGroupByRoom(request.idRoom);
-  //     },
-  //   });
+  // Retornar datos de entidad sala
+  async getRoomEntity(
+    typeChat: TypeRoom,
+    idGeneric: number
+  ): Promise<RoomResponse | null> {
+    if (!idGeneric || !typeChat) return null;
 
-  // userReceiverEntityResource = (idUser?: number, typeRoom?: TypeRoom) =>
-  //   rxResource({
-  //     request: () => ({
-  //       idUser,
-  //       typeRoom,
-  //     }),
-  //     loader: ({ request }) => {
-  //       if (!request.idUser && !request.typeRoom) return of(null);
+    if (typeChat === TypeRoom.PRIVADO)
+      return await firstValueFrom(this.roomService.getRoomByMembers(idGeneric));
+    else if (typeChat === TypeRoom.GRUPO)
+      return await firstValueFrom(this.roomService.getRoomById(idGeneric));
 
-  //       if (request.typeRoom == TypeRoom.PRIVADO)
-  //         return this.userService.getUserById(request.idUser!);
+    return null;
+  }
 
-  //       return of(null);
-  //     },
-  //   });
+  // Retornar datos de entidad usuario de destino (SOLO EN CHATS PRIVADOS)
+  async getUserReceiver(
+    typeChat: TypeRoom,
+    idGeneric: number
+  ): Promise<UserResponse | null> {
+    if (!idGeneric || !typeChat) return null;
 
-  // roomEntityResource = rxResource({
-  //   request: () => ({
-  //     type: this.typeChat(),
-  //     id: this.id(),
-  //   }),
-  //   loader: ({ request }) => {
-  //     if (!request.id) return of(null);
+    if (typeChat === TypeRoom.PRIVADO)
+      return await firstValueFrom(this.userService.getUserById(idGeneric));
 
-  //     if (request.type === TypeRoom.PRIVADO) {
-  //       return this.roomService.getRoomByMembers(request.id);
-  //     }
+    return null;
+  }
 
-  //     if (request.type === TypeRoom.GRUPO) {
-  //       return this.roomService.getRoomById(request.id);
-  //     }
+  // Retornar datos de entidad grupo (SOLO EN CHATS GRUPALES)
+  async setGroupEntity(
+    typeChat: TypeRoom,
+    idGeneric: number
+  ): Promise<GroupResponse | null> {
+    if (!idGeneric || !typeChat) return null;
 
-  //     return of(null);
-  //   },
-  // });
+    if (typeChat === TypeRoom.GRUPO)
+      return await firstValueFrom(this.groupService.getGroupByRoom(idGeneric));
 
-  // Params del URL
-  // typeChat = signal<TypeRoom | null>(null);
-  // id = signal<number | null>(null);
-  // this.typeChat.set(params.get('type-chat')!.toUpperCase() as TypeRoom);
-  // this.id.set(Number(params.get('id')));
-  // this.chatService.newMessages.set([]);
+    return null;
+  }
 
+  // Retornar mensajes paginado
+  async setMessagesPaginated(
+    idRoom: number,
+    optionsMessages: OptionsPaginatedMessage
+  ): Promise<PaginatedResponse<MessageResponse>> {
+    return await firstValueFrom(
+      this.messageService.getMessagesRoom(idRoom, optionsMessages)
+    );
+  }
 
-  /*
+  sendMessage(options: {
+    idRoom?: number;
+    idUserReceiver?: number;
+    typeRoom: TypeRoom;
+    txtText?: string;
+    file?: File;
+  }) {
+    const request: ChatRequest = {
+      idSala: options.idRoom,
+      idUsuarioDestino: options.idUserReceiver,
+      tipoSala: options.typeRoom,
+    };
+
+    if (options.txtText) this.sendNewTextMessage(request, options.txtText);
+    if (options.file) this.sendNewFileMessage(request, options.file);
+  }
+
+  // Enviar texto
+  private sendNewTextMessage(request: ChatRequest, txtText: string) {
+    request.tipoMensaje = TypeMessage.MSG_TEXTO;
+    request.texto = txtText;
+
+    this.chatService.sendMessage(request);
+  }
+
+  // Enviar archivo
+  private sendNewFileMessage(request: ChatRequest, file: File) {
+    let typeMessage;
+
+    if (file.type.startsWith('image/')) {
+      typeMessage = TypeMessage.MSG_IMAGEN;
+    } else {
+      typeMessage = TypeMessage.MSG_ARCHIVO;
+    }
+
+    request.tipoMensaje = typeMessage;
+
+    this.messageService.sendMessageFile(file, request).subscribe({
+      next: (resp) => {
+        const initialMsg =
+          typeMessage != TypeMessage.MSG_IMAGEN ? 'El archivo' : 'La imagen';
+        this.toastService.show(
+          `${initialMsg} fue enviado correctamente.`,
+          'text-bg-success'
+        );
+      },
+      error: (err) => {
+        this.toastService.show(err.message, 'text-bg-danger');
+      },
+    });
+  }
+}
+
+// Agregar mensajes nuevos enviados o recibidos al estar dentro del chat
+// effectNewMessages = effect(() => {
+//   const newMessages = this.chatService.newMessages();
+
+//   if (newMessages.length > 0) {
+//     // Obtener ultimo mensaje
+//     const messageEntity: ChatResponse = newMessages[newMessages.length - 1];
+//     // Parsear de ChatResponse a MessageResponse
+//     const newMessage: MessageResponse =
+//       MessageMapper.messageResponse(messageEntity);
+
+//     // Si el mensaje corresponde a la sala actual entonces se carga
+//     const typeRoom = messageEntity.tipoSala;
+//     const idMessage = messageEntity.idMensaje;
+//     const idRoom = messageEntity.idSala;
+//     const idUserDinamic = messageEntity.usuarioDestino?.id;
+
+//     if (!this.userReceiver() && !this.groupEntity()) return;
+//     if (this.userService.dataUser()?.id == messageEntity.usuarioDestino?.id)
+//       return;
+//     if (this.roomEntity() && typeRoom != this.roomEntity()?.tipoSala) return;
+
+//     // if (messageEntity.tipoSala == TypeRoom.PRIVADO) {
+//     //   // El chat esta abierto para mi
+//     //   if (this.userReceiver()) {
+//     //     idUserDinamic = this.userReceiver()?.id;
+//     //   } else { // El chat no esta abierto para mi
+//     //     idUserDinamic = messageEntity.usuarioRemitente.id;
+//     //   }
+//     // }
+
+//     console.log('----------------------');
+//     console.log(idMessage);
+//     console.log('USUARIO: ' + idUserDinamic);
+//     console.log('SALA: ' + idRoom);
+//     console.log(typeRoom);
+
+//     console.log('----------------------');
+
+//     if (idUserDinamic && typeRoom == TypeRoom.PRIVADO) {
+//       console.log('SE EJECUTA PRIVADO');
+
+//       this.messageService
+//         .messageIsFromChatPrivate(idMessage, idUserDinamic)
+//         .subscribe((isFromThisChat) => {
+//           if (isFromThisChat) {
+//             this.dataMessages.update((prev) => {
+//               const merged = [...prev, newMessage];
+
+//               const unique = merged.filter(
+//                 (msg, index, arr) =>
+//                   arr.findIndex((m) => m.idMensaje === msg.idMensaje) ===
+//                   index
+//               );
+
+//               return unique;
+//             });
+//           }
+//         });
+//     } else if (idRoom && typeRoom == TypeRoom.GRUPO && !this.userReceiver()) {
+//       console.log('SE EJECUTA GRUPO');
+//       this.messageService
+//         .messageIsFromChatGroup(idMessage, idRoom)
+//         .subscribe((isFromThisChat) => {
+//           if (isFromThisChat) {
+//             this.dataMessages.update((prev) => {
+//               const merged = [...prev, newMessage];
+
+//               const unique = merged.filter(
+//                 (msg, index, arr) =>
+//                   arr.findIndex((m) => m.idMensaje === msg.idMensaje) ===
+//                   index
+//               );
+
+//               return unique;
+//             });
+//           }
+//         });
+//     }
+//     this.chatService.newMessages.set([]);
+//   }
+// });
+
+// private groupService = inject(GroupService);
+// private userService = inject(UserService);
+
+// groupEntityResource = (idRoom?: number) =>
+//   rxResource({
+//     request: () => ({
+//       idRoom,
+//     }),
+//     loader: ({ request }) => {
+//       if (!request.idRoom) return of(null);
+//       return this.groupService.getGroupByRoom(request.idRoom);
+//     },
+//   });
+
+// userReceiverEntityResource = (idUser?: number, typeRoom?: TypeRoom) =>
+//   rxResource({
+//     request: () => ({
+//       idUser,
+//       typeRoom,
+//     }),
+//     loader: ({ request }) => {
+//       if (!request.idUser && !request.typeRoom) return of(null);
+
+//       if (request.typeRoom == TypeRoom.PRIVADO)
+//         return this.userService.getUserById(request.idUser!);
+
+//       return of(null);
+//     },
+//   });
+
+// roomEntityResource = rxResource({
+//   request: () => ({
+//     type: this.typeChat(),
+//     id: this.id(),
+//   }),
+//   loader: ({ request }) => {
+//     if (!request.id) return of(null);
+
+//     if (request.type === TypeRoom.PRIVADO) {
+//       return this.roomService.getRoomByMembers(request.id);
+//     }
+
+//     if (request.type === TypeRoom.GRUPO) {
+//       return this.roomService.getRoomById(request.id);
+//     }
+
+//     return of(null);
+//   },
+// });
+
+// Params del URL
+// typeChat = signal<TypeRoom | null>(null);
+// id = signal<number | null>(null);
+// this.typeChat.set(params.get('type-chat')!.toUpperCase() as TypeRoom);
+// this.id.set(Number(params.get('id')));
+// this.chatService.newMessages.set([]);
+
+/*
   onScroll() {
     // const scrollDiv = this.scrollContainer()?.nativeElement;
     // if (!scrollDiv) return;
@@ -134,7 +338,6 @@ export class ChatCurrentService {
 
 */
 
-
 /*
 
 setMessagesPaginated() {
@@ -154,10 +357,6 @@ setMessagesPaginated() {
   }
 
 */
-
-
-
-
 
 /*
   // Busqueda de sala dinamicamente
@@ -216,22 +415,6 @@ setMessagesPaginated() {
   });
 */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
   public
   ngAfterViewInit() {
@@ -257,5 +440,3 @@ setMessagesPaginated() {
     // Valor maximo que puede tener el scrollCurrent (APROXIMADO)
     const scrollMax = scrollHeight - clientHeight;
     */
-
-}

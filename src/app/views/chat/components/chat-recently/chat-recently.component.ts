@@ -1,17 +1,36 @@
-import { Component, computed, input } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { Contact } from '../../interfaces/contact.interface';
 import { DatePipe } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ContactResponse } from '../../../../entity/contact/interfaces/contact.interface';
 import { TruncateTextPipe } from '../../pipes/truncate-text.pipe';
 import { typesIconMenu } from '../../layouts/main-chat-layout/main-chat-layout.component';
+import { NotificationService } from '../../../../entity/chat/services/notification.service';
+import { TypeRoom } from '../../../../entity/room/enums/type-room.enum';
+import { ChatResponse } from '../../../../entity/chat/interfaces/chat.interface';
+import { UserService } from '../../../../entity/user/services/user.service';
+import { ChatCurrentService } from '../../services/chat-current.service';
+
+export interface minDataContact {
+  typeChat?: TypeRoom;
+  idUserReceiver?: number;
+  idRoom?: number;
+}
 
 @Component({
   selector: 'chat-recently',
-  imports: [DatePipe, RouterLink, RouterLinkActive, TruncateTextPipe],
+  imports: [DatePipe, TruncateTextPipe],
   templateUrl: './chat-recently.component.html',
 })
 export class ChatRecentlyComponent {
+  private notificationService = inject(NotificationService);
+
   dataContact = input.required<ContactResponse>();
   isLast = input<boolean>(false);
   dataMessageRecently = computed(() => this.convertDataContactToContact());
@@ -34,13 +53,11 @@ export class ChatRecentlyComponent {
         ? contact.datosUsuario!.nombreYApellido
         : contact.datosGrupo!.nombreGrupo;
 
+    let isToday = false;
     let time: string = '';
     let content: string = '';
 
     if (this.viewCurrent() === 'recently') {
-      // ------------------------------------
-      // SOLO mostrar datos del mensaje
-      // ------------------------------------
       time = contact.existeContactoPrevio
         ? contact.datosMensaje?.horaEnvio.toString() ?? ''
         : '';
@@ -48,11 +65,17 @@ export class ChatRecentlyComponent {
       content = contact.existeContactoPrevio
         ? contact.datosMensaje?.texto ?? ''
         : '';
+
+      if (time != '' && time) {
+        const d = new Date(time);
+        const today = new Date();
+
+        isToday =
+          d.getFullYear() === today.getFullYear() &&
+          d.getMonth() === today.getMonth() &&
+          d.getDate() === today.getDate();
+      }
     } else {
-      // ------------------------------------
-      // Mostrar lo “otro”
-      // (descripcion usuario / descripcion grupo)
-      // ------------------------------------
       time = '';
 
       if (typeRoom === 'PRIVADO') {
@@ -69,12 +92,56 @@ export class ChatRecentlyComponent {
       time,
       content,
       type: typeRoom,
+      isToday,
     };
-
-    // console.log(contactMapped);
 
     return contactMapped;
   }
+
+  newMessage = input.required<ChatResponse>();
+  inAnimation = signal<boolean>(false);
+  finishAnimation = output<boolean>();
+
+  ngOnChanges() {
+    if (!this.newMessage()) return;
+
+    if (
+      this.newMessage().idMensaje == this.dataContact().datosMensaje?.idMensaje
+    ) {
+      this.reproduceAnimation();
+      this.notificationService.emitSound();
+    }
+  }
+
+  reproduceAnimation() {
+    this.inAnimation.set(false);
+
+    setTimeout(() => {
+      this.inAnimation.set(true);
+
+      setTimeout(() => {
+        this.inAnimation.set(false);
+        this.finishAnimation.emit(true);
+      }, 600);
+    });
+  }
+
+  valuesContact = output<minDataContact>();
+
+  openChatsFromContact() {
+    const values: minDataContact = {
+      typeChat: this.dataMessageRecently().type,
+    };
+
+    if (values.typeChat == 'PRIVADO')
+      values.idUserReceiver = this.dataMessageRecently().id;
+    else values.idRoom = this.dataMessageRecently().id;
+
+    this.valuesContact.emit(values);
+  }
+
+  valueSelected = input.required<number | null>();
+  valueElement = input.required<number>();
 }
 
 /*

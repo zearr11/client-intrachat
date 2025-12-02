@@ -7,10 +7,10 @@ import { ChatRequest, ChatResponse } from '../interfaces/chat.interface';
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   private authService = inject(AuthService);
-  newMessages = signal<ChatResponse[]>([]);
 
   private rxStomp = new RxStomp();
   public estadoConexion$ = new BehaviorSubject<RxStompState | null>(null);
+  messageReceived = signal<ChatResponse | null>(null);
 
   accessToken = computed(() => this.authService.accessToken());
 
@@ -41,7 +41,7 @@ export class ChatService {
   }
 
   private pushMessage(msg: ChatResponse) {
-    this.newMessages.update((prev) => [...prev, msg]);
+    this.messageReceived.set(msg);
   }
 
   subscribeToGroup(roomId: number, cb: (m: ChatResponse) => void) {

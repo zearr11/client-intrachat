@@ -3,31 +3,25 @@ import {
   effect,
   ElementRef,
   inject,
-  OnInit,
+  input,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
 import { ChatInputMessageComponent } from '../../components/chat-input-message/chat-input-message.component';
 import { ChatMessageComponent } from '../../components/chat-message/chat-message.component';
-import { ActivatedRoute } from '@angular/router';
-import { GroupService } from '../../../../entity/group/services/group.service';
-import { RoomService } from '../../../../entity/room/services/room.service';
-import { UserService } from '../../../../entity/user/services/user.service';
-import { MessageService } from '../../../../entity/message/services/message.service';
-import { ChatService } from '../../../../entity/chat/services/chat.service';
+import { TypeRoom } from '../../../../entity/room/enums/type-room.enum';
+import { ChatCurrentService } from '../../services/chat-current.service';
+import { OptionsPaginatedMessage } from '../../../../shared/interfaces/options-paginated.interface';
 import { MessageResponse } from '../../../../entity/message/interfaces/message.interface';
 import { RoomResponse } from '../../../../entity/room/interfaces/room.interface';
-import { TypeRoom } from '../../../../entity/room/enums/type-room.enum';
-import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
-import {
-  ChatRequest,
-  ChatResponse,
-} from '../../../../entity/chat/interfaces/chat.interface';
-import { TypeMessage } from '../../../../entity/message/enums/type-message.enum';
-import { OptionsPaginatedMessage } from '../../../../shared/interfaces/options-paginated.interface';
 import { GroupResponse } from '../../../../entity/group/interfaces/group.interface';
+import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
+import { ChatResponse } from '../../../../entity/chat/interfaces/chat.interface';
+import { ChatService } from '../../../../entity/chat/services/chat.service';
+import { MessageService } from '../../../../entity/message/services/message.service';
 import { MessageMapper } from '../../utils/message.mapper';
-import { ToastMessageService } from '../../../../shared/services/toast-message.service';
+import { UserService } from '../../../../entity/user/services/user.service';
 
 interface HeaderBase {
   img: string;
@@ -39,142 +33,67 @@ interface HeaderBase {
   imports: [ChatInputMessageComponent, ChatMessageComponent],
   templateUrl: './chat-current-page.component.html',
 })
-export class ChatCurrentPageComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private roomService = inject(RoomService);
-  private groupService = inject(GroupService);
-  private userService = inject(UserService);
-  private messageService = inject(MessageService);
-  private chatService = inject(ChatService);
-  private toastService = inject(ToastMessageService);
+export class ChatCurrentPageComponent {
+  chatCurrentService = inject(ChatCurrentService);
+  chatService = inject(ChatService);
+  messageService = inject(MessageService);
+  userService = inject(UserService);
 
-  // Propiedades clave del componente
-  headerChat = signal<HeaderBase>({ img: '', name: '' }); // Cabecera
+  // Valores recibidos del padre (NO USAR DIRECTAMENTE | USAR CON PRECAUCION)
+  typeChat = input.required<TypeRoom>(); // SIEMPRE SE RECIBE
+  idUserReceiver = input<number>(); // SE RECIBE OPCIONALMENTE
+  idRoom = input<number>(); // SE RECIBE OPCIONALMENTE
+
+  // Entidades del chat
   roomEntity = signal<RoomResponse | null>(null); // Datos de sala : Opcional
   groupEntity = signal<GroupResponse | null>(null); // Datos de grupo : Opcional
   userReceiver = signal<UserResponse | null>(null); // Datos de usuario de destino : Opcional
-  resetTxt = signal<boolean>(false); // Cambiar valor para restablecer input message
+
+  // Propiedades clave del componente
+  headerChat = signal<HeaderBase>({ img: '', name: '' }); // Cabecera
   dataMessages = signal<MessageResponse[]>([]); // Arreglo de mensajes
   optionsMessages = signal<OptionsPaginatedMessage | null>(null); // Opciones de paginado de mensajes
   pageMessageMax = signal<number>(0);
-
-  // Validacion de carga, true = Cargando nuevos mensajes, false = Sin carga pendiente
-  loadingPage = signal<boolean>(false);
+  resetTxt = signal<boolean>(false); // Cambiar valor para restablecer input message
 
   // Referencias del template
   scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
 
-  // Inicializacion de propiedades
-  ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
-      this.clearEntitiesOpcionals();
-      const typeChat = params.get('type-chat')!.toUpperCase() as TypeRoom;
-      const idGeneric = Number(params.get('id'));
-      this.setRoomEntity(typeChat, idGeneric);
-    });
+  // Validacion de carga, true = Cargando nuevos mensajes, false = Sin carga pendiente
+  loadingPage = signal<boolean>(false);
+
+  async ngOnChanges() {
+    this.resetTxt.update((v) => !v);
+    await this.initComponent();
   }
 
-  // Obtener nuevos mensajes al hacer scroll hacia arriba
-  onScroll() {
-    const divScroll = this.scrollContainer()?.nativeElement;
-    if (!divScroll) return;
-    const scrollCurrent = divScroll.scrollTop;
+  async initComponent() {
+    const idGeneric = this.idUserReceiver() || this.idRoom();
 
-    if (scrollCurrent < 200) {
-      const currentPage = this.optionsMessages()?.page;
-
-      if (currentPage! < this.pageMessageMax()) {
-        if (this.loadingPage()) return;
-
-        this.optionsMessages.update((prev) => ({
-          ...prev,
-          page: prev!.page! + 1,
-        }));
-
-        this.setMessagesPaginated();
-      }
-    }
-  }
-
-  effectDebug = effect(() => {
-    const room = this.roomEntity();
-    const userSender = this.userReceiver();
-    const group = this.groupEntity();
-    const messages = this.dataMessages();
-    console.log('---------------------------------------------------------');
-    console.log('Sala: ', room);
-    console.log('User: ', userSender);
-    console.log('Grupo: ', group);
-    console.log('Mensajes: ', messages);
-    console.log('---------------------------------------------------------');
-  });
-
-  // Asignar al scroll current el valor mas bajo
-  afterFirstLoadMessages = effect(() => {
-    const messages = this.dataMessages();
-
-    if (messages.length > 0 && this.optionsMessages()!.page === 1) {
-      queueMicrotask(() => {
-        const el = this.scrollContainer()?.nativeElement;
-        if (el) el.scrollTop = el.scrollHeight;
-      });
-    }
-  });
-
-  // Establecer datos de entidad sala
-  setRoomEntity(typeChat: TypeRoom, idGeneric: number) {
-    if (!idGeneric || !typeChat) return;
-
-    if (typeChat === TypeRoom.PRIVADO) {
-      this.setUserReceiver(idGeneric);
-      this.roomService.getRoomByMembers(idGeneric).subscribe((room) => {
-        this.roomEntity.set(room);
-        this.setMessagesPaginated();
-      });
-    } else if (typeChat === TypeRoom.GRUPO) {
-      this.setGroupEntity(idGeneric);
-      this.roomService.getRoomById(idGeneric).subscribe((room) => {
-        this.roomEntity.set(room);
-        this.setMessagesPaginated();
-      });
-    }
-  }
-
-  // Establecer datos de entidad usuario de destino (SOLO EN CHATS PRIVADOS)
-  setUserReceiver(idGeneric: number) {
-    this.userService.getUserById(idGeneric).subscribe((data) => {
-      this.userReceiver.set(data);
-    });
-  }
-
-  // Establecer datos de entidad grupo (SOLO EN CHATS GRUPALES)
-  setGroupEntity(idGeneric: number) {
-    this.groupService.getGroupByRoom(idGeneric).subscribe((data) => {
-      this.groupEntity.set(data);
-    });
-  }
-
-  // LIMPIEZA DE PROPIEDADES AL INICIAR COMPONENTE
-  clearEntitiesOpcionals() {
-    if (this.userReceiver()) {
-      this.userReceiver.set(null);
-    }
-    if (this.groupEntity()) {
-      this.groupEntity.set(null);
-    }
-    if (this.roomEntity()) {
-      this.roomEntity.set(null);
-    }
-    if (this.loadingPage()) {
-      this.loadingPage.set(false);
-    }
+    this.roomEntity.set(
+      await this.chatCurrentService.getRoomEntity(this.typeChat(), idGeneric!)
+    );
+    this.groupEntity.set(
+      await this.chatCurrentService.setGroupEntity(this.typeChat(), idGeneric!)
+    );
+    this.userReceiver.set(
+      await this.chatCurrentService.getUserReceiver(this.typeChat(), idGeneric!)
+    );
 
     this.optionsMessages.set({ page: 1, size: 15 });
-    this.resetTxt.update((v) => !v);
-    this.dataMessages.set([]);
+
+    if (this.dataMessages().length > 0) this.dataMessages.set([]);
+
+    await this.getMessagesPaginated();
+
+    // console.log('----------------------');
+    // console.log(this.roomEntity());
+    // console.log(this.groupEntity());
+    // console.log(this.userReceiver());
+    // console.log(this.dataMessages());
+    // console.log('----------------------');
   }
 
-  // Carga de encabezado del chat
   headerEffect = effect(() => {
     const user = this.userReceiver();
     const group = this.groupEntity();
@@ -192,24 +111,189 @@ export class ChatCurrentPageComponent implements OnInit {
     }
   });
 
-  // Establecer primeros 15 mensajes de chat
-  setMessagesPaginated() {
-    if (this.loadingPage()) return;
-    this.loadingPage.set(true);
+  // Obtener nuevos mensajes al hacer scroll hacia arriba
+  onScroll() {
+    const divScroll = this.scrollContainer()?.nativeElement;
+    if (!divScroll) return;
 
-    const room = this.roomEntity();
-    if (!room) return;
+    const scrollCurrent = divScroll.scrollTop;
+
+    if (scrollCurrent < 220) {
+      const currentPage = this.optionsMessages()?.page;
+
+      if (currentPage! < this.pageMessageMax()) {
+        if (this.loadingPage()) return;
+
+        this.optionsMessages.update((prev) => ({
+          ...prev,
+          page: prev!.page! + 1,
+        }));
+
+        this.getMessagesPaginated();
+      }
+    }
+  }
+
+  // Establecer primeros 15 mensajes de chat
+  async getMessagesPaginated() {
+    if (this.loadingPage() || !this.roomEntity()) return;
+    this.loadingPage.set(true);
+    const data = await this.chatCurrentService.setMessagesPaginated(
+      this.roomEntity()!.id,
+      this.optionsMessages()!
+    );
+    this.dataMessages.update((prev) => {
+      const merged = [...data.result.reverse(), ...prev];
+      const unique = merged.filter(
+        (msg, index, arr) =>
+          arr.findIndex((m) => m.idMensaje === msg.idMensaje) === index
+      );
+      return unique;
+    });
+    this.pageMessageMax.set(data.totalPages);
+    this.loadingPage.set(false);
+  }
+
+  // Asignar al scroll current el valor mas bajo
+  afterFirstLoadMessages = effect(() => {
+    const messages = this.dataMessages();
+    if (messages.length > 0 && this.optionsMessages()!.page === 1) {
+      queueMicrotask(() => {
+        const el = this.scrollContainer()?.nativeElement;
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    }
+  });
+
+  sendText(txtText: string) {
+    this.chatCurrentService.sendMessage({
+      idRoom: this.roomEntity()?.id,
+      idUserReceiver: this.userReceiver()?.id,
+      typeRoom: this.typeChat(),
+      txtText,
+    });
+  }
+
+  sendFile(file: File) {
+    this.chatCurrentService.sendMessage({
+      idRoom: this.roomEntity()?.id,
+      idUserReceiver: this.userReceiver()?.id,
+      typeRoom: this.typeChat(),
+      file,
+    });
+  }
+
+  inProcessToLoadNewMessage = signal<boolean>(false);
+
+  addMessageReceived = effect(() => {
+    const messageReceived = this.chatService.messageReceived();
+    if (!messageReceived) return;
+    if (this.inProcessToLoadNewMessage()) return;
+    this.inProcessToLoadNewMessage.set(true);
+
+    this.valiteNewMessage(messageReceived);
+
+    this.chatService.messageReceived.set(null);
+    this.inProcessToLoadNewMessage.set(false);
+  });
+
+  valiteNewMessage(messageReceived: ChatResponse) {
+    const isChatPrivate = this.typeChat() == 'PRIVADO' && this.userReceiver();
+    const isChatGroup = this.typeChat() == 'GRUPO' && this.idRoom();
+    const withChatsPrevious = this.dataMessages().length > 0;
+
+    if (isChatPrivate && withChatsPrevious) {
+      console.log('Es chat privado con chats previos');
+      if (messageReceived.idSala != this.roomEntity()?.id) return;
+    }
+    if (isChatPrivate && !withChatsPrevious)
+      console.log('Es chat privado sin chats previos');
+    if (isChatGroup && withChatsPrevious) {
+      if (messageReceived.idSala != this.roomEntity()?.id) return;
+      console.log('Es chat grupal con chats previos');
+    }
+    if (isChatGroup && !withChatsPrevious)
+      console.log('Es chat grupal sin chats previos');
+
+    const newMessage: MessageResponse =
+      MessageMapper.messageResponse(messageReceived);
+
+    console.warn('SALA MENSAJE: ' + (messageReceived.idSala ?? 'No hay'));
+    console.warn(
+      'USUARIO DESTINO: ' + (messageReceived.usuarioDestino?.id ?? 'No hay')
+    );
+    console.warn('GROUP: ' + (this.groupEntity()?.nombre ?? 'No hay'));
+    console.warn('SALA CHAT: ' + (this.roomEntity()?.id ?? 'No hay'));
+
+    if (isChatPrivate) {
+      console.log('pasa privado');
+
+      const idUser =
+        messageReceived.usuarioDestino!.id == this.userService.dataUser()?.id
+          ? messageReceived.usuarioRemitente.id
+          : messageReceived.usuarioDestino!.id;
+      console.warn('USUARIO FINAL: ' + idUser);
+
+      this.messageService
+        .messageIsFromChatPrivate(
+          messageReceived.idMensaje,
+          idUser
+        )
+        .subscribe((isFromThisChat) => {
+          console.log(isFromThisChat);
+
+          if (isFromThisChat) {
+            this.dataMessages.update((prev) => {
+              const merged = [...prev, newMessage];
+
+              const unique = merged.filter(
+                (msg, index, arr) =>
+                  arr.findIndex((m) => m.idMensaje === msg.idMensaje) === index
+              );
+
+              return unique;
+            });
+          }
+        });
+    } else if (isChatGroup) {
+      console.log('pasa grupal');
+      this.messageService
+        .messageIsFromChatGroup(
+          messageReceived.idMensaje,
+          messageReceived.idSala
+        )
+        .subscribe((isFromThisChat) => {
+          if (isFromThisChat) {
+            this.dataMessages.update((prev) => {
+              const merged = [...prev, newMessage];
+
+              const unique = merged.filter(
+                (msg, index, arr) =>
+                  arr.findIndex((m) => m.idMensaje === msg.idMensaje) === index
+              );
+
+              return unique;
+            });
+          }
+        });
+    }
+  }
+}
+
+/*
+
+  setMessagesPaginated() {
+    if (this.loadingPage() || !this.idRoom()) return;
+    this.loadingPage.set(true);
     this.messageService
-      .getMessagesRoom(room.id, this.optionsMessages()!)
+      .getMessagesRoom(this.idRoom()!, this.optionsMessages()!)
       .subscribe((data) => {
         this.dataMessages.update((prev) => {
           const merged = [...data.result.reverse(), ...prev];
-
           const unique = merged.filter(
             (msg, index, arr) =>
               arr.findIndex((m) => m.idMensaje === msg.idMensaje) === index
           );
-
           return unique;
         });
         this.pageMessageMax.set(data.totalPages);
@@ -218,92 +302,41 @@ export class ChatCurrentPageComponent implements OnInit {
       });
   }
 
-  // Agregar mensajes nuevos enviados o recibidos al estar dentro del chat
-  effectNewMessages = effect(() => {
-    const newMessages = this.chatService.newMessages();
+private route = inject(ActivatedRoute);
+  chatCurrentService = inject(ChatCurrentService);
 
-    if (newMessages.length > 0) {
-      // Obtener ultimo mensaje
-      const messageEntity: ChatResponse = newMessages[newMessages.length - 1];
-      // Parsear de ChatResponse a MessageResponse
-      const newMessage: MessageResponse =
-        MessageMapper.messageResponse(messageEntity);
 
-      // Si el mensaje corresponde a la sala actual entonces se carga
-      if (
-        messageEntity.idSala == this.roomEntity()?.id ||
-        messageEntity.usuarioDestino?.id == this.userReceiver()?.id
-      ) {
-        this.dataMessages.update((prev) => {
-          const merged = [...prev, newMessage];
+  resetTxt = signal<boolean>(false); // Cambiar valor para restablecer input message
 
-          const unique = merged.filter(
-            (msg, index, arr) =>
-              arr.findIndex((m) => m.idMensaje === msg.idMensaje) === index
-          );
 
-          return unique;
-        });
-      }
-    }
-  });
 
-  // Enviar mensaje de texto
-  sendNewTextMessage(txtValue: string) {
-    let typeRoom = this.roomEntity()?.tipoSala;
-
-    if (this.userReceiver()?.id) typeRoom = TypeRoom.PRIVADO;
-
-    const request: ChatRequest = {
-      idSala: this.roomEntity()?.id,
-      idUsuarioDestino: this.userReceiver()?.id,
-      tipoSala: typeRoom!,
-      tipoMensaje: TypeMessage.MSG_TEXTO,
-      texto: txtValue,
-    };
-
-    if (!request.idSala) {
-      this.setRoomEntity(request.tipoSala, request.idUsuarioDestino!);
-    }
-
-    this.chatService.sendMessage(request);
-  }
-
-  sendNewFileMessage(file: File) {
-    let typeRoom = this.roomEntity()?.tipoSala;
-    let typeMessage;
-
-    if (this.userReceiver()?.id) typeRoom = TypeRoom.PRIVADO;
-
-    if (file.type.startsWith('image/')) {
-      typeMessage = TypeMessage.MSG_IMAGEN;
-    } else {
-      typeMessage = TypeMessage.MSG_ARCHIVO;
-    }
-
-    const request: ChatRequest = {
-      idSala: this.roomEntity()?.id,
-      idUsuarioDestino: this.userReceiver()?.id,
-      tipoSala: typeRoom!,
-      tipoMensaje: typeMessage,
-    };
-
-    if (!request.idSala) {
-      this.setRoomEntity(request.tipoSala, request.idUsuarioDestino!);
-    }
-
-    this.messageService.sendMessageFile(file, request).subscribe({
-      next: (resp) => {
-        const initialMsg =
-          typeMessage != TypeMessage.MSG_IMAGEN ? 'El archivo' : 'La imagen';
-        this.toastService.show(
-          `${initialMsg} fue enviado correctamente.`,
-          'text-bg-success'
-        );
-      },
-      error: (err) => {
-        this.toastService.show(err.message, 'text-bg-danger');
-      },
+  // Inicializacion de propiedades
+  ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      this.resetTxt.update((v) => !v);
+      this.chatCurrentService.clearEntitiesOpcionals();
+      this.optionsMessages.set({ page: 1, size: 15 });
+      const typeChat = params.get('type-chat')!.toUpperCase() as TypeRoom;
+      const idGeneric = Number(params.get('id'));
+      this.chatCurrentService.setRoomEntity(typeChat, idGeneric);
     });
   }
-}
+
+  // Carga de encabezado del chat
+
+*/
+
+/*
+effectDebug = effect(() => {
+    // const room = this.roomEntity();
+    // const userSender = this.userReceiver();
+    // const group = this.groupEntity();
+    // const messages = this.dataMessages();
+    // console.log('---------------------------------------------------------');
+    // console.log('Sala: ', room);
+    // console.log('User: ', userSender);
+    // console.log('Grupo: ', group);
+    // console.log('Mensajes: ', messages);
+    // console.log('---------------------------------------------------------');
+  });
+*/

@@ -58,16 +58,27 @@
     <div class="contacts-recently">
       @for (contact of dataContacts(); track $index) {
       <chat-recently
-        [viewCurrent]="iconMenuCurrent()"
-        [dataContact]="contact"
-        [isLast]="$last"
-      />
+          [valueSelected]="valueSelected()"
+          [valueElement]="contact.idSala! || contact.datosUsuario?.idUsuario!"
+          [newMessage]="newMessage()!"
+          (finishAnimation)="newMessage.set(null)"
+          (valuesContact)="openChat($event, (contact.idSala! || contact.datosUsuario?.idUsuario!))"
+          [viewCurrent]="iconMenuCurrent()"
+          [dataContact]="contact"
+          [isLast]="$last"
+        />
       }
     </div>
   </article>
 
   <article class="d-none d-lg-block col panel-right p-0">
-    <router-outlet />
+    @if (contactToShowInChat()) {
+    <chat-current-page
+      [typeChat]="contactToShowInChat()!.typeChat!"
+      [idUserReceiver]="contactToShowInChat()?.idUserReceiver"
+      [idRoom]="contactToShowInChat()?.idRoom"
+    />
+    }
   </article>
 </main>
 

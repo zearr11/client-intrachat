@@ -1,12 +1,9 @@
 <div
-  [routerLink]="[
-    '/chats',
-    dataMessageRecently().type.toLowerCase(),
-    dataMessageRecently().id
-  ]"
-  routerLinkActive="active"
   class="contact-element"
+  [class.new-message]="inAnimation()"
   [class.separate]="!isLast()"
+  [class.active-contact]="valueSelected() == valueElement()"
+  (click)="openChatsFromContact()"
 >
   <!-- @if (dataMessageRecently().unread > 0) {
   <div class="notification-badge">
@@ -27,9 +24,15 @@
     <div class="col" #contenido>
       <div class="row">
         <div class="col-8" #nombre>{{ dataMessageRecently().name }}</div>
+        @if (dataMessageRecently().isToday) {
         <div class="col txt-muted text-end" #hora>
           {{ dataMessageRecently().time | date : "shortTime" }}
         </div>
+        } @else {
+        <div class="col txt-muted text-end" #hora>
+          {{ dataMessageRecently().time | date : "dd/MM/yyyy" }}
+        </div>
+        }
       </div>
 
       <div class="row">
@@ -50,7 +53,7 @@
     border-radius: 8px;
   }
 
-  .active {
+  .active-contact {
     background-color: rgba(118, 115, 115, 0.369);
   }
 
@@ -86,5 +89,19 @@
 
     border-radius: 50%;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ANIMACION */
+  .new-message {
+    animation: highlight 0.6s ease-out;
+  }
+
+  @keyframes highlight {
+    0% {
+      background-color: #2ecc7188;
+    }
+    100% {
+      background-color: inherit;
+    }
   }
 </style>

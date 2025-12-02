@@ -1,4 +1,4 @@
-import { TypeRoom } from "../../room/enums/type-room.enum";
+import { TypeRoom } from '../../room/enums/type-room.enum';
 
 export interface ContactResponse {
   idSala?: number; // Opcional
@@ -10,6 +10,7 @@ export interface ContactResponse {
 }
 
 export interface DataMessageResponse {
+  idMensaje: number;
   ultimoMensajeEsMio: boolean;
   texto: string;
   horaEnvio: Date;

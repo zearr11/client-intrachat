@@ -9,7 +9,10 @@ import {
   viewChild,
 } from '@angular/core';
 import { IconMenuComponent } from '../../common/icon-menu/icon-menu.component';
-import { ChatRecentlyComponent } from '../../components/chat-recently/chat-recently.component';
+import {
+  ChatRecentlyComponent,
+  minDataContact,
+} from '../../components/chat-recently/chat-recently.component';
 import { Router, RouterOutlet } from '@angular/router';
 import { ContactService } from '../../../../entity/contact/services/contact.service';
 import { ContactResponse } from '../../../../entity/contact/interfaces/contact.interface';
@@ -21,6 +24,7 @@ import { Subscription } from 'rxjs';
 import { ChatResponse } from '../../../../entity/chat/interfaces/chat.interface';
 import { UserService } from '../../../../entity/user/services/user.service';
 import { FormsModule } from '@angular/forms';
+import { ChatCurrentPageComponent } from '../../pages/chat-current-page/chat-current-page.component';
 
 export type typesIconMenu = 'recently' | 'groups' | 'contacts';
 
@@ -29,8 +33,8 @@ export type typesIconMenu = 'recently' | 'groups' | 'contacts';
   imports: [
     IconMenuComponent,
     ChatRecentlyComponent,
-    RouterOutlet,
     FormsModule,
+    ChatCurrentPageComponent,
   ],
   templateUrl: './main-chat-layout.component.html',
 })
@@ -63,8 +67,11 @@ export class MainChatLayoutComponent {
         return 'Contactos de campaña';
     }
   });
+
   // Contactos : Parte izquierda
   public dataContacts = signal<ContactResponse[]>([]);
+  // Ultimo mensaje
+  public newMessage = signal<ChatResponse | null>(null);
   // Suscripciones : Grupos y Privado
   private subscriptions = signal<Subscription[]>([]);
 
@@ -87,7 +94,9 @@ export class MainChatLayoutComponent {
     // Suscripcion a eventos de chat privado
     const chatPrivate = this.chatService.subscribeToPrivate(
       (msg: ChatResponse) => {
-        // console.log('📩 Mensaje privado recibido', msg);
+        if (this.userService.dataUser()?.id != msg.usuarioRemitente.id) {
+          this.newMessage.set(msg);
+        }
       }
     );
 
@@ -99,7 +108,9 @@ export class MainChatLayoutComponent {
         const chatGroup = this.chatService.subscribeToGroup(
           idRoom,
           (msg: ChatResponse) => {
-            // console.log(`Mensaje grupal recibido en la sala: ${idRoom}`, msg);
+            if (this.userService.dataUser()?.id != msg.usuarioRemitente.id) {
+              this.newMessage.set(msg);
+            }
           }
         );
         // Almacenamiento de suscripciones grupales
@@ -138,9 +149,8 @@ export class MainChatLayoutComponent {
 
   // Recargar la vista de chats si hay un nuevo mensaje
   effectNewMessage = effect(() => {
-    if (this.chatService.newMessages().length > 0) {
-      this.reloadContacts();
-    }
+    const messages = this.chatService.messageReceived();
+    this.reloadContacts();
   });
 
   // Cargar con filtro
@@ -185,10 +195,22 @@ export class MainChatLayoutComponent {
     this.toastService.show('Sesión finalizada.', 'text-bg-secondary');
   }
 
+  // Al presionar Esc se cierra el chat
   @HostListener('window:keydown.escape', ['$event'!])
   onEsc(event: KeyboardEvent) {
     event.preventDefault();
     (document.activeElement as HTMLElement)?.blur();
-    this.router.navigate(['/chats']);
+    this.contactToShowInChat.set(null);
+    this.valueSelected.set(null);
   }
+
+  contactToShowInChat = signal<minDataContact | null>(null);
+
+  // Al dar click en un contacto se pasan los parametros al hijo
+  openChat(valuesContact: minDataContact, indexClick: number) {
+    this.contactToShowInChat.set(valuesContact);
+    this.valueSelected.set(indexClick);
+  }
+
+  valueSelected = signal<number | null>(null);
 }

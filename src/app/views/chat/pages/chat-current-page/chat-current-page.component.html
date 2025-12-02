@@ -22,19 +22,19 @@
     <div class="message-content">
       @for (message of dataMessages(); track message.idMensaje) {
       <chat-message
-        [isChatPrivate]="roomEntity()?.tipoSala == 'PRIVADO'"
+        [isChatPrivate]="!typeChat() || typeChat() == 'PRIVADO'"
         [dataMessage]="message"
       />
       }
     </div>
   </div>
   }
-
+  <!-- resetTxt() -->
   <div class="footer-messages">
     <chat-input-message
       [resetTxt]="resetTxt()"
-      (fileOutput)="sendNewFileMessage($event)"
-      (textMessage)="sendNewTextMessage($event)"
+      (fileOutput)="sendFile($event)"
+      (textMessage)="sendText($event)"
     />
   </div>
 </section>
