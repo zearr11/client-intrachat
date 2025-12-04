@@ -1,7 +1,6 @@
 <div #modalElement class="modal fade">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-
       <div class="modal-header">
         <h5 class="modal-title">{{ titleModal() }}</h5>
       </div>
@@ -24,11 +23,13 @@
           Cancelar
         </button>
 
-        <button type="button"
+        <button
+          type="button"
           class="btn"
           [class.btn-danger]="isDelete()"
           [class.btn-primary]="!isDelete()"
-          (click)="confirmAction()">
+          (click)="confirmAction()"
+        >
           {{ msgConfirmDelete() }}
         </button>
       </div>

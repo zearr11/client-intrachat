@@ -1,14 +1,26 @@
 export interface CompanyRequest {
-  nombres:            string;
+  razonSocial: string;
+  nombreComercial: string;
+  ruc: string;
+  correo: string;
+  telefono: string;
 }
 
 export interface CompanyRequest2 {
-  nombres:            string;
-  estado:             boolean;
+  razonSocial?: string;
+  nombreComercial?: string;
+  ruc?: string;
+  correo?: string;
+  telefono?: string;
+  estado?: boolean;
 }
 
 export interface CompanyResponse {
-  id:                 number;
-  empresa:            string;
-  estado:             boolean;
+  id: number;
+  razonSocial: string;
+  nombreComercial: string;
+  ruc: string;
+  correo: string;
+  telefono: string;
+  estado: boolean;
 }

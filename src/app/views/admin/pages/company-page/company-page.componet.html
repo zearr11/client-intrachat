@@ -56,8 +56,11 @@
               ( dataPaginated()?.size ?? 1 ) + $index + 1
             }}
           </th>
-          <td>{{ company.empresa | titlecase }}</td>
-          <td>{{ (company.estado) ? 'Activo' : 'Inactivo' }}</td>
+          <td>{{ company.razonSocial }}</td>
+          <td>{{ company.nombreComercial }}</td>
+          <td>{{ company.ruc }}</td>
+          <td>{{ company.correo  }}</td>
+          <td>{{ company.telefono }}</td>
           <td>
             <div class="d-flex justify-content-center gap-3 action-icons">
               <i
@@ -73,17 +76,17 @@
                 >
               </i>
               @if (company.estado) {
+                <!-- (click)="openModalChangeState(company.id, true)" -->
                 <i
                   class="bi bi-trash-fill text-danger"
                   title="Deshabilitar"
-                  (click)="openModalChangeState(company.id, true)"
                   >
                 </i>
               } @else {
+                <!-- (click)="openModalChangeState(company.id, false)" -->
                 <i
                   class="bi bi-arrow-up-circle-fill text-success"
                   title="Habilitar"
-                  (click)="openModalChangeState(company.id, false)"
                   >
                 </i>
               }
@@ -105,20 +108,20 @@
   </div>
 </article>
 
-<!-- <company-modal-info
-  #modalInfoUser
-  [user]="dataInfoUser()!"
-/>
-
 <company-modal-add
-  #modalNewUser
+  #modalNew
   (updateTable)="reloadTable($event)"
 />
 
 <company-modal-edit
-  #modalEditUser
+  #modalEdit
   (updateTable)="reloadTable($event)"
-  [dataUser]="dataUserEdit()!"
+  [dataCompany]="dataCompanyEdit()!"
+/>
+
+<!-- <company-modal-info
+  #modalInfoUser
+  [user]="dataInfoUser()!"
 />
 
 <company-modal-change-state

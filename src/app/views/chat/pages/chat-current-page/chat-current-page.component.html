@@ -10,10 +10,15 @@
     <div class="acciones d-flex align-items-center gap-4">
       <!---->
       @if (idUserReceiver()) {
-        <i (click)="openModalUserInfo(userReceiver()!)" class="fa-solid fa-circle-info accion-icon"></i>
-      }
-      @else {
-        <i class="fa-solid fa-circle-info accion-icon"></i>
+      <i
+        (click)="openModalUserInfo()"
+        class="fa-solid fa-circle-info accion-icon"
+      ></i>
+      } @else {
+      <i
+        (click)="openModalGroupInfo()"
+        class="fa-solid fa-circle-info accion-icon"
+      ></i>
       }
     </div>
   </div>
@@ -50,7 +55,7 @@
 </section>
 
 <user-info #userModalInfo [userData]="dataUserInfo()" />
-<!-- <group-info #groupModalInfo [groupData]="groupData()!"/> -->
+<group-info #groupModalInfo [groupData]="dataGroupInfo()" />
 
 <style>
   .contenedor {

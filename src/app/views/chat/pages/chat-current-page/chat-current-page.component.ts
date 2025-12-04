@@ -22,9 +22,10 @@ import { ChatService } from '../../../../entity/chat/services/chat.service';
 import { MessageService } from '../../../../entity/message/services/message.service';
 import { MessageMapper } from '../../utils/message.mapper';
 import { UserService } from '../../../../entity/user/services/user.service';
-import { UserInfoComponent } from "../../modals/user-info/user-info.component";
-import { GroupInfoComponent } from "../../modals/group-info.component/group-info.component";
-import { FormsModule } from "@angular/forms";
+import { UserInfoComponent } from '../../modals/user-info/user-info.component';
+import { GroupInfoComponent } from '../../modals/group-info/group-info.component';
+import { FormsModule } from '@angular/forms';
+import { ManagementAccountComponent } from '../../modals/management-account/management-account.component';
 
 interface HeaderBase {
   img: string;
@@ -33,7 +34,14 @@ interface HeaderBase {
 
 @Component({
   selector: 'chat-current-page',
-  imports: [ChatInputMessageComponent, ChatMessageComponent, UserInfoComponent, GroupInfoComponent, FormsModule],
+  imports: [
+    ChatInputMessageComponent,
+    ChatMessageComponent,
+    UserInfoComponent,
+    GroupInfoComponent,
+    FormsModule,
+    ManagementAccountComponent,
+  ],
   templateUrl: './chat-current-page.component.html',
 })
 export class ChatCurrentPageComponent {
@@ -67,7 +75,7 @@ export class ChatCurrentPageComponent {
   loadingComponent = signal<boolean>(false);
 
   async ngOnChanges() {
-    this.loadingComponent.set(false)
+    this.loadingComponent.set(false);
     this.resetTxt.update((v) => !v);
     await this.initComponent();
   }
@@ -241,10 +249,7 @@ export class ChatCurrentPageComponent {
       console.warn('USUARIO FINAL: ' + idUser);
 
       this.messageService
-        .messageIsFromChatPrivate(
-          messageReceived.idMensaje,
-          idUser
-        )
+        .messageIsFromChatPrivate(messageReceived.idMensaje, idUser)
         .subscribe((isFromThisChat) => {
           console.log(isFromThisChat);
 
@@ -289,17 +294,24 @@ export class ChatCurrentPageComponent {
   /* MANAGEMENT MODALS */
 
   userModalInfo = viewChild<UserInfoComponent>('userModalInfo');
-  groupModalInfo = viewChild('groupModalInfo');
+  groupModalInfo = viewChild<GroupInfoComponent>('groupModalInfo');
 
-  dataUserInfo = signal<UserResponse|null>(null);
+  dataUserInfo = signal<UserResponse | null>(null);
+  dataGroupInfo = signal<GroupResponse | null>(null);
 
-  openModalUserInfo(userInfo: UserResponse) {
-    this.dataUserInfo.set(userInfo)
+  openModalUserInfo() {
+    this.dataUserInfo.set(this.userReceiver());
     this.userModalInfo()!.show();
   }
 
   openModalGroupInfo() {
-    // this.groupModalInfo.show();
+    this.dataGroupInfo.set(this.groupEntity());
+    this.groupModalInfo()!.show();
+  }
+
+  ngOnDestroy() {
+    this.userModalInfo()!.close();
+    this.userModalInfo()!.close();
   }
 }
 

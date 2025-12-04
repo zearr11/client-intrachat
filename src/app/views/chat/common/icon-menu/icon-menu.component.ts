@@ -5,14 +5,15 @@ import * as bootstrap from 'bootstrap';
   selector: 'icon-menu',
   imports: [],
   templateUrl: './icon-menu.component.html',
-  styleUrl: './icon-menu.component.css'
+  styleUrl: './icon-menu.component.css',
 })
 export class IconMenuComponent {
-
   iconName = input.required<string>();
   description = input.required<string>();
   isActive = input<boolean>(false);
   clickIcon = output();
+
+  private tooltipInstances: any[] = [];
 
   onClick() {
     this.clickIcon.emit();
@@ -23,7 +24,13 @@ export class IconMenuComponent {
       document.querySelectorAll('[data-bs-toggle="tooltip"]')
     );
 
-    tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+    this.tooltipInstances = tooltipTriggerList.map((el) => {
+      return new bootstrap.Tooltip(el);
+    });
   }
 
+  ngOnDestroy() {
+    this.tooltipInstances.forEach((t) => t.dispose());
+    this.tooltipInstances = [];
+  }
 }

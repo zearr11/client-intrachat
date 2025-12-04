@@ -1,10 +1,13 @@
 import { Component, ElementRef, input, signal, viewChild } from '@angular/core';
 import { UserResponse } from '../../../../entity/user/interfaces/user.interface';
 import { Modal } from 'bootstrap';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'user-info',
-  imports: [],
+  imports: [
+    DatePipe
+  ],
   templateUrl: './user-info.component.html',
 })
 export class UserInfoComponent {

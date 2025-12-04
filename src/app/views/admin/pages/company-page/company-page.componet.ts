@@ -21,7 +21,6 @@ import { OptionsPaginated } from '../../../../shared/interfaces/options-paginate
     SearchInputDarkComponent,
     ActivesInactivesSelectDarkComponent,
     NavTableDarkComponent,
-    TitleCasePipe,
     CompanyModalInfoComponent,
     CompanyModalAddComponent,
     CompanyModalEditComponent,
@@ -36,7 +35,7 @@ export class CompanyPageComponet {
   private companyService = inject(CompanyService);
 
   elementsTable: string[] = [
-    'N°', 'Empresa', 'Estado', ''
+    'N°', 'Razón Social', 'Nombre Comercial', 'RUC', 'Correo', 'Teléfono', ''
   ];
 
   // ------------------- HTTP Listado --------------------------
@@ -106,10 +105,10 @@ export class CompanyPageComponet {
   // ------------------- Modales --------------------------------
 
   /* Declaracion de modales */
-  @ViewChild('modalInfo') modalInfo!: CompanyModalInfoComponent;
+  // @ViewChild('modalInfo') modalInfo!: CompanyModalInfoComponent;
   @ViewChild('modalNew') modalNew!: CompanyModalAddComponent;
   @ViewChild('modalEdit') modalEdit!: CompanyModalEditComponent;
-  @ViewChild('modalChangeState') modalChangeState!: CompanyModalChangeStateComponent;
+  // @ViewChild('modalChangeState') modalChangeState!: CompanyModalChangeStateComponent;
 
   /* Atributos de Info */
   dataInfoCompany = signal<CompanyResponse | null>(null);
@@ -121,29 +120,29 @@ export class CompanyPageComponet {
   /* Atributos de Edit */
   dataCompanyEdit = signal<CompanyResponse | null>(null);
 
-  /* Apertura de modal info usuario */
+  /* Apertura de modal info empresa */
   openModalInfo(data: CompanyResponse) {
     this.dataInfoCompany.set(data);
     // this.modalInfo.show();
   }
 
-  /* Apertura de modal nuevo usario */
+  /* Apertura de modal nueva empresa */
   openModalNew() {
-    // this.modalNew.show();
+    this.modalNew.show();
   }
 
-  /* Apertura de modal modificar usario */
+  /* Apertura de modal modificar empresa */
   openModalEdit(data: CompanyResponse) {
     this.dataCompanyEdit.set(data);
-    // this.modalEdit.show();
+    this.modalEdit.show();
   }
 
-  /* Apertura de modal cambiar estado de usario */
-  openModalChangeState(id: number, isDelete: boolean) {
-    this.idCompanyToChangeState.set(id);
-    this.isDelete.set(isDelete);
-    // this.modalChangeState.show();
-  }
+  /* Apertura de modal cambiar estado de empresa */
+  // openModalChangeState(id: number, isDelete: boolean) {
+  //   this.idCompanyToChangeState.set(id);
+  //   this.isDelete.set(isDelete);
+  //   // this.modalChangeState.show();
+  // }
 
   reloadTable(reload: boolean) {
     if (!reload) return;

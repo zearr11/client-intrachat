@@ -1,0 +1,204 @@
+<!-- Modal -->
+<div #modalElement class="modal fade">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Mi cuenta</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body p-0">
+        <div class="row g-0">
+          <!-- ====================== COLUMNA IZQUIERDA ====================== -->
+          <div
+            class="col-12 col-md-4 border-end p-4 text-center"
+            style="background: #fafafa"
+          >
+            <!-- Foto -->
+            <img
+              [src]="imgUser()"
+              class="rounded-circle mb-3"
+              style="
+                width: 120px;
+                height: 120px;
+                object-fit: cover;
+                border: 3px solid #e9e9e9;
+              "
+            />
+
+            <!-- Botón cambiar foto -->
+            <input
+              type="file"
+              #fileInput
+              accept="image/*"
+              hidden
+              (change)="onFileSelected($event)"
+            />
+
+            <button
+              class="btn btn-outline-primary btn-sm mb-3"
+              (click)="fileInput.click()"
+              [disabled]="!editEnabled()"
+            >
+              Cambiar foto
+            </button>
+
+            <!-- Nombre -->
+            <h5 class="fw-semibold m-0">
+              {{ userCurrent()?.nombres }} {{ userCurrent()?.apellidos }}
+            </h5>
+
+            <!-- Información -->
+            <p class="text-muted mt-2" style="font-size: 0.9rem">
+              {{ userCurrent()?.informacion || "Sin información" }}
+            </p>
+
+            <!-- DATOS PERSONALES -->
+            <div class="text-start mt-4">
+              <hr />
+
+              <div class="mb-2">
+                <small class="label-muted">Tipo de documento</small>
+                <div class="fw-semibold">{{ userCurrent()?.tipoDoc }}</div>
+              </div>
+
+              <div class="mb-2">
+                <small class="label-muted">Número de documento</small>
+                <div class="fw-semibold">{{ userCurrent()?.numeroDoc }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====================== COLUMNA DERECHA ====================== -->
+          <div class="col-12 col-md-8 p-3">
+            <!-- Switch de edición -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="section-title m-0">Datos de cuenta</h6>
+
+              <div class="form-check form-switch">
+                <input
+                  #editSwitch
+                  class="form-check-input"
+                  type="checkbox"
+                  (change)="toggleEdit($event)"
+                />
+                <label class="form-check-label">Editar</label>
+              </div>
+            </div>
+
+            <!-- FORMULARIO -->
+            <form [formGroup]="myForm" id="myForm" (ngSubmit)="onSaveChanges()">
+              <!-- Celular -->
+              <div class="mb-3">
+                <label class="form-label">Número de celular</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="celular"
+                  placeholder="Número de celular"
+                  required
+                  minlength="9"
+                  maxlength="9"
+                  pattern="[0-9]{1,9}"
+                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 9);"
+                />
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label class="form-label">Correo electrónico</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  required
+                  formControlName="email"
+                  placeholder="ejemplo@correo.com"
+                />
+              </div>
+
+              <!-- Información -->
+              <div class="mb-3">
+                <label class="form-label">Información / estado</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  required
+                  formControlName="informacion"
+                  placeholder="Escribe tu estado…"
+                />
+              </div>
+
+              <hr />
+
+              <!-- Cambio de contraseña -->
+              <h6 class="section-title mb-3">Cambiar contraseña</h6>
+
+              <div class="mb-3">
+                <label class="form-label">Nueva contraseña</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  formControlName="passNueva"
+                  placeholder="Nueva contraseña"
+                />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Repite la contraseña</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  formControlName="passNuevaConfirm"
+                  placeholder="Repite la contraseña"
+                />
+              </div>
+            </form>
+
+            <hr />
+
+            <!-- Disclaimer -->
+            <div class="alert alert-warning" style="font-size: 0.85rem">
+              <strong>Nota:</strong>
+              Si necesitas actualizar tu nombre, tipo de documento o número de
+              documento, o corregir datos erróneos, debes contactar a un
+              administrador del sistema.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          class="btn btn-primary"
+          type="submit"
+          form="myForm"
+          [disabled]="dissableBtnChange()"
+        >
+          Guardar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .section-title {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #6c757d;
+  }
+
+  .label-muted {
+    font-size: 0.8rem;
+    color: #777;
+  }
+</style>

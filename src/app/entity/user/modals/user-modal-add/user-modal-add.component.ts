@@ -9,7 +9,6 @@ import { Modal } from 'bootstrap';
 import { UserRequest } from '../../interfaces/user.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of, tap } from 'rxjs';
-import { Role } from '../../enums/role-user.enum';
 
 @Component({
   selector: 'user-modal-add',

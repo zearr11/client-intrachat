@@ -1,18 +1,78 @@
 <!-- Modal -->
-<div #modalElement
-  class="modal fade"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="staticBackdropLabel"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-xxl-down">
+<div #modalElement class="modal fade">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title">Información</h5>
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Información del contacto</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
       </div>
 
+      <div class="modal-body">
+        <!-- FOTO + NOMBRE + INFO -->
+        <div class="text-center mb-3">
+          <img
+            [src]="userData()?.urlFoto"
+            class="rounded-circle mb-2"
+            style="width: 120px; height: 120px; object-fit: cover"
+          />
+
+          <h4 class="fw-semibold m-0">
+            {{ userData()?.nombres }} {{ userData()?.apellidos }}
+          </h4>
+
+          <p class="text-muted mt-1 mb-0" style="font-size: 0.9rem">
+            {{ userData()?.informacion || "Disponible" }}
+          </p>
+        </div>
+
+        <hr />
+
+        <!-- DATOS DE CONTACTO -->
+        <div class="mb-3">
+          <h6
+            class="text-uppercase text-secondary fw-bold"
+            style="font-size: 0.75rem"
+          >
+            Datos de contacto
+          </h6>
+
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-telephone-fill me-2 text-primary"></i>
+            <span>{{ userData()?.celular }}</span>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <i class="bi bi-envelope-fill me-2 text-danger"></i>
+            <span>{{ userData()?.email }}</span>
+          </div>
+        </div>
+
+        <hr />
+
+        <!-- FECHA REGISTRO -->
+        <div class="mb-1">
+          <h6
+            class="text-uppercase text-secondary fw-bold"
+            style="font-size: 0.75rem"
+          >
+            Fecha de registro
+          </h6>
+
+          <p class="m-0">
+            {{ userData()?.fechaCreacion | date : "longDate" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
     </div>
   </div>
 </div>

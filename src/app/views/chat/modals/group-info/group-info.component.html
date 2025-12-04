@@ -1,0 +1,108 @@
+<!-- Modal -->
+<div #modalElement class="modal fade">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Detalles del grupo</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- FOTO + NOMBRE + DESCRIPCION -->
+        <div class="text-center mb-3">
+          <img
+            [src]="groupData()?.urlFoto"
+            class="rounded-circle mb-2"
+            style="width: 120px; height: 120px; object-fit: cover"
+          />
+
+          <h4 class="fw-semibold m-0">{{ groupData()?.nombre }}</h4>
+
+          <p class="text-muted mt-1" style="font-size: 0.9rem">
+            {{ groupData()?.descripcion || "Sin descripción" }}
+          </p>
+        </div>
+
+        <hr />
+
+        <!-- INFO DEL GRUPO -->
+        <div class="mb-3">
+          <h6
+            class="text-uppercase text-secondary fw-bold"
+            style="font-size: 0.75rem"
+          >
+            Información del grupo
+          </h6>
+
+          <div class="d-flex align-items-center mb-1">
+            <i class="bi bi-people-fill me-2 text-primary"></i>
+            <span>{{ groupData()?.sala?.integrantes?.length }} miembros</span>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <i class="bi bi-calendar-event-fill me-2 text-success"></i>
+            <span>
+              Creado el
+              {{ groupData()?.sala?.fechaCreacion | date : "longDate" }}
+            </span>
+          </div>
+        </div>
+
+        <hr />
+
+        <!-- INTEGRANTES -->
+        <h6
+          class="text-uppercase text-secondary fw-bold mb-2"
+          style="font-size: 0.75rem"
+        >
+          Integrantes
+        </h6>
+
+        <!-- ZONA SCROLLEABLE -->
+        <div style="max-height: 200px; overflow-y: auto; padding-right: 5px">
+          <div
+            *ngFor="let m of sortedMembers()"
+            class="d-flex align-items-center mb-3"
+          >
+            <!-- Foto -->
+            <img
+              [src]="m.usuarioResponse.urlFoto"
+              class="rounded-circle me-3"
+              style="width: 50px; height: 50px; object-fit: cover"
+            />
+
+            <div class="flex-grow-1">
+              <!-- Nombre -->
+              <div class="fw-semibold">
+                {{ m.usuarioResponse.nombres }}
+                {{ m.usuarioResponse.apellidos }}
+
+                <span
+                  *ngIf="m.permiso === 'ADMINISTRADOR'"
+                  class="badge bg-primary ms-2"
+                >
+                  Admin
+                </span>
+              </div>
+
+              <!-- Celular -->
+              <div class="text-muted" style="font-size: 0.85rem">
+                {{ m.usuarioResponse.celular }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

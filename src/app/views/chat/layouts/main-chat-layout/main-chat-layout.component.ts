@@ -25,6 +25,7 @@ import { ChatResponse } from '../../../../entity/chat/interfaces/chat.interface'
 import { UserService } from '../../../../entity/user/services/user.service';
 import { FormsModule } from '@angular/forms';
 import { ChatCurrentPageComponent } from '../../pages/chat-current-page/chat-current-page.component';
+import { ManagementAccountComponent } from '../../modals/management-account/management-account.component';
 
 export type typesIconMenu = 'recently' | 'groups' | 'contacts';
 
@@ -35,6 +36,7 @@ export type typesIconMenu = 'recently' | 'groups' | 'contacts';
     ChatRecentlyComponent,
     FormsModule,
     ChatCurrentPageComponent,
+    ManagementAccountComponent,
   ],
   templateUrl: './main-chat-layout.component.html',
 })
@@ -48,10 +50,11 @@ export class MainChatLayoutComponent {
   private toastService = inject(ToastMessageService);
   private router = inject(Router);
 
-  constructor() {
-    if (!this.userService.dataUser())
-      this.userService.loadDataCurrentUser().subscribe();
-  }
+  loadUserCurrent = effect(() => {
+    if (this.userService.dataUser()) return;
+
+    this.userService.loadDataCurrentUser().subscribe();
+  });
 
   // Variables de interfaz
   iconMenuCurrent = signal<typesIconMenu>('recently');
@@ -213,4 +216,11 @@ export class MainChatLayoutComponent {
   }
 
   valueSelected = signal<number | null>(null);
+
+  managementAccountModal =
+    viewChild<ManagementAccountComponent>('accountModal');
+
+  openModalManagementAccount() {
+    this.managementAccountModal()!.show();
+  }
 }

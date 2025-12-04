@@ -1,1 +1,119 @@
-<p>company-modal-edit.component works!</p>,
+<!-- Modal -->
+<div
+  #modalElement
+  class="modal fade"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-xxl-down"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modificar Empresa</h5>
+      </div>
+
+      <form autocomplete="off" [formGroup]="myForm" (ngSubmit)="submitForm()">
+        <div class="modal-body">
+          <!-- RAZÓN SOCIAL - NOMBRE COMERCIAL -->
+          <section class="row mb-3">
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="razonSocial"
+                  class="form-control"
+                  required
+                  maxlength="150"
+                  placeholder="razonSocial"
+                />
+                <label>Razón social</label>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="nombreComercial"
+                  class="form-control"
+                  required
+                  maxlength="150"
+                  placeholder="nombreComercial"
+                />
+                <label>Nombre comercial</label>
+              </div>
+            </div>
+          </section>
+
+          <!-- RUC - CORREO -->
+          <section class="row mb-3">
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="ruc"
+                  class="form-control"
+                  placeholder="ruc"
+                  required
+                  minlength="11"
+                  maxlength="11"
+                  pattern="[0-9]{11}"
+                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);"
+                />
+                <label>RUC</label>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="email"
+                  formControlName="correo"
+                  class="form-control"
+                  required
+                  maxlength="100"
+                  placeholder="correo"
+                />
+                <label>Correo electrónico</label>
+              </div>
+            </div>
+          </section>
+
+          <!-- TELÉFONO -->
+          <section class="row">
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="telefono"
+                  class="form-control"
+                  placeholder="telefono"
+                  required
+                  minlength="9"
+                  maxlength="9"
+                  pattern="[0-9]{9}"
+                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 9);"
+                />
+                <label>Teléfono</label>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" (click)="close()" class="btn btn-danger">
+            Cancelar
+          </button>
+
+          <button type="submit" class="btn btn-success">
+            Actualizar datos de la empresa
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
