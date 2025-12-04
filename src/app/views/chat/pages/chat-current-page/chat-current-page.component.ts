@@ -40,7 +40,6 @@ interface HeaderBase {
     UserInfoComponent,
     GroupInfoComponent,
     FormsModule,
-    ManagementAccountComponent,
   ],
   templateUrl: './chat-current-page.component.html',
 })
@@ -199,35 +198,71 @@ export class ChatCurrentPageComponent {
 
   inProcessToLoadNewMessage = signal<boolean>(false);
 
-  addMessageReceived = effect(() => {
+  addMessageReceived = effect(async () => {
     const messageReceived = this.chatService.messageReceived();
     if (!messageReceived) return;
     if (this.inProcessToLoadNewMessage()) return;
     this.inProcessToLoadNewMessage.set(true);
 
-    this.valiteNewMessage(messageReceived);
+    await this.validateNewMessage(messageReceived);
 
     this.chatService.messageReceived.set(null);
     this.inProcessToLoadNewMessage.set(false);
   });
 
-  valiteNewMessage(messageReceived: ChatResponse) {
+  async validateNewMessage(messageReceived: ChatResponse) {
     const isChatPrivate = this.typeChat() == 'PRIVADO' && this.userReceiver();
     const isChatGroup = this.typeChat() == 'GRUPO' && this.idRoom();
     const withChatsPrevious = this.dataMessages().length > 0;
 
-    if (isChatPrivate && withChatsPrevious) {
-      console.log('Es chat privado con chats previos');
-      if (messageReceived.idSala != this.roomEntity()?.id) return;
+    // if (isChatPrivate && withChatsPrevious) {
+    //   console.log('Es chat privado con chats previos');
+    //   if (messageReceived.idSala != this.roomEntity()?.id) return;
+    // }
+    // if (isChatPrivate && !withChatsPrevious)
+    //   console.log('Es chat privado sin chats previos');
+    // if (isChatGroup && withChatsPrevious) {
+    //   if (messageReceived.idSala != this.roomEntity()?.id) return;
+    //   console.log('Es chat grupal con chats previos');
+    // }
+    // if (isChatGroup && !withChatsPrevious)
+    //   console.log('Es chat grupal sin chats previos');
+
+    if (isChatPrivate) {
+      switch (withChatsPrevious) {
+        case true:
+          console.log('Es chat privado con chats previos');
+
+          if (messageReceived.idSala && !this.roomEntity()) {
+            this.roomEntity.set(
+              await this.chatCurrentService.getRoomEntity(
+                this.typeChat(),
+                this.userReceiver()!.id
+              )
+            );
+          }
+
+          if (messageReceived.idSala != this.roomEntity()?.id) return;
+          break;
+        case false:
+          console.log('Es chat privado sin chats previos');
+          if (this.groupEntity()) return;
+          break;
+      }
     }
-    if (isChatPrivate && !withChatsPrevious)
-      console.log('Es chat privado sin chats previos');
-    if (isChatGroup && withChatsPrevious) {
-      if (messageReceived.idSala != this.roomEntity()?.id) return;
-      console.log('Es chat grupal con chats previos');
+
+    if (isChatGroup) {
+      switch (withChatsPrevious) {
+        case true:
+          console.log('Es chat grupal con chats previos');
+          if (messageReceived.idSala != this.roomEntity()?.id) return;
+          break;
+        case false:
+          console.log('Es chat grupal sin chats previos');
+          if (this.userReceiver()) return;
+          break;
+      }
     }
-    if (isChatGroup && !withChatsPrevious)
-      console.log('Es chat grupal sin chats previos');
 
     const newMessage: MessageResponse =
       MessageMapper.messageResponse(messageReceived);
