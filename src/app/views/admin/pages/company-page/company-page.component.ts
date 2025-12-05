@@ -2,7 +2,6 @@ import { Component, computed, inject, signal, ViewChild } from '@angular/core';
 import { SearchInputDarkComponent } from "../../common/search-input-dark/search-input-dark.component";
 import { ActivesInactivesSelectDarkComponent } from "../../common/actives-inactives-select-dark/actives-inactives-select-dark.component";
 import { NavTableDarkComponent } from "../../common/nav-table-dark/nav-table-dark.component";
-import { CompanyModalInfoComponent } from "../../../../entity/company/modals/company-modal-info/company-modal-info.component";
 import { CompanyModalAddComponent } from "../../../../entity/company/modals/company-modal-add/company-modal-add.component";
 import { CompanyModalEditComponent } from "../../../../entity/company/modals/company-modal-edit/company-modal-edit.component";
 import { CompanyModalChangeStateComponent } from "../../../../entity/company/modals/company-modal-change-state/company-modal-change-state.component";
@@ -21,15 +20,14 @@ import { OptionsPaginated } from '../../../../shared/interfaces/options-paginate
     SearchInputDarkComponent,
     ActivesInactivesSelectDarkComponent,
     NavTableDarkComponent,
-    CompanyModalInfoComponent,
     CompanyModalAddComponent,
     CompanyModalEditComponent,
     CompanyModalChangeStateComponent
   ],
-  templateUrl: './company-page.componet.html',
+  templateUrl: './company-page.component.html',
   styleUrl: './company-page.component.css'
 })
-export class CompanyPageComponet {
+export class CompanyPageComponent {
 
   private toastService = inject(ToastMessageService);
   private companyService = inject(CompanyService);
@@ -110,21 +108,12 @@ export class CompanyPageComponet {
   @ViewChild('modalEdit') modalEdit!: CompanyModalEditComponent;
   // @ViewChild('modalChangeState') modalChangeState!: CompanyModalChangeStateComponent;
 
-  /* Atributos de Info */
-  dataInfoCompany = signal<CompanyResponse | null>(null);
-
   /* Atributos de Change State */
   idCompanyToChangeState = signal<number | null>(null);
   isDelete = signal<boolean>(false);
 
   /* Atributos de Edit */
   dataCompanyEdit = signal<CompanyResponse | null>(null);
-
-  /* Apertura de modal info empresa */
-  openModalInfo(data: CompanyResponse) {
-    this.dataInfoCompany.set(data);
-    // this.modalInfo.show();
-  }
 
   /* Apertura de modal nueva empresa */
   openModalNew() {

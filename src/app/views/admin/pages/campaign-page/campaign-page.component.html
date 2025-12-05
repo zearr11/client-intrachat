@@ -1,4 +1,3 @@
-<!--
 <article class="layout">
   <div class="encabezado">
     <hr>
@@ -57,18 +56,18 @@
               ( dataPaginated()?.size ?? 1 ) + $index + 1
             }}
           </th>
-          <td>{{ campaign.empresa.empresa }}</td>
+          <td>{{ campaign.nombreComercialEmpresa }}</td>
           <td>{{ campaign.areaAtencion | removeunderscore }}</td>
           <td>{{ campaign.medioComunicacion | removeunderscore }}</td>
+          <td>{{ campaign.totalOperacionesActivas }}</td>
+          <td>{{ campaign.totalOperacionesInactivas }}</td>
+          <td>{{ campaign.totalEquiposActivos }}</td>
+          <td>{{ campaign.totalEquiposInactivos }}</td>
+          <td>{{ campaign.totalUsuariosActivos }}</td>
+          <td>{{ campaign.totalUsuariosInactivos }}</td>
           <td>{{ campaign.fechaCreacion | date: 'dd/MM/yyyy' }}</td>
           <td>
             <div class="d-flex justify-content-center gap-3 action-icons">
-              <i
-                class="bi bi-eye-fill text-info"
-                title="Ver detalles"
-                (click)="openModalInfo(campaign)"
-                >
-              </i>
               <i
                 class="bi bi-pencil text-warning"
                 title="Modificar"
@@ -106,7 +105,7 @@
       (changePage)="changePage($event)"
       />
   </div>
-</article> -->
+</article>
 
 <!-- <company-modal-info
   #modalInfoUser

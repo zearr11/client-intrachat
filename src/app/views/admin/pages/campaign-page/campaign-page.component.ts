@@ -6,8 +6,6 @@ import { ToastMessageService } from '../../../../shared/services/toast-message.s
 import { CampaignService } from '../../../../entity/campaign/services/campaign.service';
 import { OptionsPaginated } from '../../../../shared/interfaces/options-paginated.interface';
 import { PaginatedResponse } from '../../../../shared/interfaces/paginated-response.interface';
-import { CampaignResponse } from '../../../../entity/campaign/interfaces/campaign.interface';
-import { CampaignModalInfoComponent } from '../../../../entity/campaign/modals/campaign-modal-info/campaign-modal-info.component';
 import { CampaignModalAddComponent } from '../../../../entity/campaign/modals/campaign-modal-add/campaign-modal-add.component';
 import { CampaignModalEditComponent } from '../../../../entity/campaign/modals/campaign-modal-edit/campaign-modal-edit.component';
 import { CampaignModalChangeStateComponent } from '../../../../entity/campaign/modals/campaign-modal-change-state/campaign-modal-change-state.component';
@@ -15,6 +13,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { RemoveUnderScorePipe } from '../../../../entity/campaign/pipes/remove-underscore.pipe';
+import { CampaignEspecialResponse } from '../../../../entity/campaign/interfaces/campaign.interface';
 
 @Component({
   selector: 'campaign-page',
@@ -22,7 +21,6 @@ import { RemoveUnderScorePipe } from '../../../../entity/campaign/pipes/remove-u
     SearchInputDarkComponent,
     ActivesInactivesSelectDarkComponent,
     NavTableDarkComponent,
-    TitleCasePipe,
     RemoveUnderScorePipe,
     DatePipe
   ],
@@ -36,7 +34,8 @@ export class CampaignPageComponent {
 
   elementsTable: string[] = [
     'N°', 'Empresa', 'Area de Atención', 'Medio Comunicación',
-    'Fecha de Inicio', ''
+    'Op. Activas', 'Op. Inactivas', 'Eq. Operativos', 'Eq. Inoperativos',
+    'U. Activos', 'U. Inactivos', 'Fecha de Creación', ''
   ];
 
   // ------------------- HTTP Listado --------------------------
@@ -44,7 +43,7 @@ export class CampaignPageComponent {
   optionsPaginated = signal<OptionsPaginated>({ estado: true });
 
   /* Data paginada */
-  dataPaginated = signal<PaginatedResponse<CampaignResponse> | null>(null);
+  dataPaginated = signal<PaginatedResponse<CampaignEspecialResponse> | null>(null);
 
   /* Buscar por filtro en la tabla */
   setFilterPaginated(txtFilter: string) {
@@ -106,39 +105,29 @@ export class CampaignPageComponent {
   // ------------------- Modales --------------------------------
 
   /* Declaracion de modales */
-  @ViewChild('modalInfo') modalInfo!: CampaignModalInfoComponent;
   @ViewChild('modalNew') modalNew!: CampaignModalAddComponent;
   @ViewChild('modalEdit') modalEdit!: CampaignModalEditComponent;
   @ViewChild('modalChangeState') modalChangeState!: CampaignModalChangeStateComponent;
-
-  /* Atributos de Info */
-  dataInfoCampaign = signal<CampaignResponse | null>(null);
 
   /* Atributos de Change State */
   idCampaignToChangeState = signal<number | null>(null);
   isDelete = signal<boolean>(false);
 
   /* Atributos de Edit */
-  dataCampaignEdit = signal<CampaignResponse | null>(null);
+  dataCampaignEdit = signal<any | null>(null);
 
-  /* Apertura de modal info usuario */
-  openModalInfo(data: CampaignResponse) {
-    this.dataInfoCampaign.set(data);
-    // this.modalInfo.show();
-  }
-
-  /* Apertura de modal nuevo usario */
+  /* Apertura de modal nueva campaña */
   openModalNew() {
     // this.modalNew.show();
   }
 
-  /* Apertura de modal modificar usario */
-  openModalEdit(data: CampaignResponse) {
+  /* Apertura de modal modificar campaña */
+  openModalEdit(data: any) {
     this.dataCampaignEdit.set(data);
     // this.modalEdit.show();
   }
 
-  /* Apertura de modal cambiar estado de usario */
+  /* Apertura de modal cambiar estado de campaña */
   openModalChangeState(id: number, isDelete: boolean) {
     this.idCampaignToChangeState.set(id);
     this.isDelete.set(isDelete);

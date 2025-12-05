@@ -4,6 +4,7 @@ import {
   effect,
   ElementRef,
   inject,
+  input,
   signal,
   viewChild,
 } from '@angular/core';

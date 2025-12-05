@@ -1,0 +1,68 @@
+/* Contenedor general */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Sección del encabezado */
+.encabezado {
+  padding: 15px;
+  text-align: center;
+  flex: 0 0 auto;
+  /* NO crece, NO se mueve */
+  background: rgba(141, 141, 141, 0.05);
+}
+
+/* Sección central (tabla) */
+.tabla {
+  flex: 1 1 auto;
+  /* ocupa todo el espacio disponible */
+  display: flex;
+  justify-content: center;
+  /* centra horizontal */
+  align-items: flex-start;
+  /* centra vertical */
+  padding: 20px 10px;
+  overflow: auto;
+  /* scroll solo para la tabla si hay muchos datos */
+  min-height: 250px;
+}
+
+.tabla>.table {
+  min-width: 30%;
+  /* la tabla no se reduce demasiado */
+  max-width: 95%;
+}
+
+/* Acciones tabla */
+.action-icons i {
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: transform 0.15s ease, opacity 0.15s ease, color 0.15s ease;
+}
+
+.action-icons i:hover {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+.action-icons .bi-eye-fill:hover {
+  color: #0dcaf0;
+  /* azul Bootstrap */
+}
+
+.action-icons .bi-pencil:hover {
+  color: #ffc107;
+  /* amarillo Bootstrap */
+}
+
+.action-icons .bi-trash-fill:hover {
+  color: #dc3545;
+  /* rojo Bootstrap */
+}
+
+.action-icons .bi-arrow-up-circle-fill:hover {
+  color: #198754
+}

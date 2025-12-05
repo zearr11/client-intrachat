@@ -1,1 +1,118 @@
-<p>operation-page works!</p>,
+<article class="layout">
+  <div class="encabezado">
+    <hr>
+    <h3 style="text-align: left;">Gestionar Operaciones</h3>
+    <hr>
+    <div class="row">
+      <section class="col-4">
+        <!-- [initialValue]="optionsPaginated().filtro" -->
+        <filter-select
+          [dataToShow]="genericCampaingTransform()"
+          (changeEmit)="applyCampaignFilter($event)"
+          [selectedValue]="optionsPaginated().idCampania!"
+        />
+      </section>
+
+      <section class="col-5 d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="clearFilters()"
+          >
+          Quitar filtros
+        </button>
+        <!-- (click)="openModalNew()" -->
+        <button
+          type="button"
+          class="btn btn-primary"
+          >
+          Nueva Operación
+        </button>
+      </section>
+
+      <section class="col-3">
+        <actives-inactives-select-dark
+          [showActives]="optionsPaginated().estado!"
+          (stateEmited)="changeState($event)"
+          />
+      </section>
+    </div>
+    <hr>
+  </div>
+
+  <div class="tabla">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          @for (header of elementsTable; track $index) {
+            @if (header == 'Finalización' && !optionsPaginated().estado) {
+              <th scope="col">{{ header }}</th>
+            }
+            @if (header != 'Finalización') {
+              <th scope="col">{{ header }}</th>
+            }
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (operation of dataPaginated()?.result; track operation.id) {
+        <tr>
+          <th scope="row">
+            {{
+              ( ( dataPaginated()?.page ?? 1 ) - 1 ) *
+              ( dataPaginated()?.size ?? 1 ) + $index + 1
+            }}
+          </th>
+          <td>{{ operation.jefeOperacion }}</td>
+          <td>{{ operation.sede }}</td>
+          <td>{{ operation.campania }}</td>
+          <td>{{ operation.totalEquiposOperativos }}</td>
+          <td>{{ operation.totalEquiposInoperativos }}</td>
+          <td>{{ operation.totalUsuariosOperativos }}</td>
+          <td>{{ operation.totalUsuariosInoperativos }}</td>
+          <td>{{ operation.fechaCreacion | date: 'dd/MM/yyyy' }}</td>
+          @if (!optionsPaginated().estado) {
+            <td>{{ operation.fechaFinalizacion | date: 'dd/MM/yyyy' }}</td>
+          }
+          <td>
+            <div class="d-flex justify-content-center gap-3 action-icons">
+              <!-- (click)="openModalEdit(campaign)" -->
+              <i
+                class="bi bi-pencil text-warning"
+                title="Modificar"
+                >
+              </i>
+              @if (optionsPaginated().estado) {
+                <!-- (click)="openModalChangeState(campaign.id, true)" -->
+                <i
+                  class="bi bi-trash-fill text-danger"
+                  title="Deshabilitar"
+
+                  >
+                </i>
+              } @else {
+                <!-- (click)="openModalChangeState(campaign.id, false)" -->
+                <i
+                  class="bi bi-arrow-up-circle-fill text-success"
+                  title="Habilitar"
+                  >
+                </i>
+              }
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-paginacion">
+    <nav-table-dark
+      [dataPaginated]="dataPaginated()"
+      [isTableWithoutData]="nothingShowInTable()"
+      (nextPage)="nextPage($event)"
+      (changePage)="changePage($event)"
+      />
+  </div>
+</article>
+

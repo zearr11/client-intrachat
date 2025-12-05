@@ -52,10 +52,12 @@
               {{ userCurrent()?.nombres }} {{ userCurrent()?.apellidos }}
             </h5>
 
+            @if (userCurrent()?.rol != 'ADMIN') {
             <!-- Información -->
             <p class="text-muted mt-2" style="font-size: 0.9rem">
               {{ userCurrent()?.informacion || "Sin información" }}
             </p>
+            }
 
             <!-- DATOS PERSONALES -->
             <div class="text-start mt-4">
@@ -121,7 +123,7 @@
               </div>
 
               <!-- Información -->
-              <div class="mb-3">
+              <div class="mb-3" [hidden]="userCurrent()?.rol == 'ADMIN'">
                 <label class="form-label">Información / estado</label>
                 <input
                   type="text"
@@ -163,9 +165,10 @@
             <!-- Disclaimer -->
             <div class="alert alert-warning" style="font-size: 0.85rem">
               <strong>Nota:</strong>
-              Si necesitas actualizar tu nombre, tipo de documento o número de
-              documento, o corregir datos erróneos, debes contactar a un
-              administrador del sistema.
+              Algunos datos sensibles de tu cuenta solo pueden ser modificados
+              por el área correspondiente. Si notas información incorrecta,
+              ponte en contacto con la administración para solicitar la
+              actualización.
             </div>
           </div>
         </div>

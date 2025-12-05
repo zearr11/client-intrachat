@@ -5,7 +5,8 @@ import { OperationPageComponent } from './pages/operation-page/operation-page.co
 import { TeamPageComponent } from './pages/team-page/team-page.component';
 import { UserPageComponent } from './pages/user-page/user-page.component';
 import { MainAdminLayoutComponent } from './layouts/main-admin-layout/main-admin-layout.component';
-import { CompanyPageComponet } from './pages/company-page/company-page.componet';
+import { CompanyPageComponent } from './pages/company-page/company-page.component';
+import { SedePageComponent } from './pages/sede-page/sede-page.component';
 
 export const adminRoutes: Routes = [
   {
@@ -18,7 +19,11 @@ export const adminRoutes: Routes = [
       },
       {
         path: 'empresas',
-        component: CompanyPageComponet
+        component: CompanyPageComponent
+      },
+      {
+        path: 'sedes',
+        component: SedePageComponent
       },
       {
         path: 'campanias',

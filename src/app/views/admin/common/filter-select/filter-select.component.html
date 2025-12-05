@@ -1,0 +1,25 @@
+<style>
+  /* Select style */
+  .select-personalized {
+    background-color: #1e1f22 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #343a40 !important;
+    cursor: pointer;
+  }
+
+  .select-personalized option {
+    background-color: #1e1f22;
+    color: #e0e0e0;
+  }
+</style>
+
+<select
+  #dpId
+  class="form-select select-personalized"
+  [value]="selectedValue() ?? dataToShow()[0]?.id"
+  (change)="changeEmit.emit(dpId.value)"
+>
+  @for (item of dataToShow(); track item.id) {
+    <option [value]="item.id">{{ item.element }}</option>
+  }
+</select>

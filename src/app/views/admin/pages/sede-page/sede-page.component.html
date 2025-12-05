@@ -1,7 +1,7 @@
 <article class="layout">
   <div class="encabezado">
     <hr />
-    <h3 style="text-align: left">Gestionar Equipos</h3>
+    <h3 style="text-align: left">Gestionar Sedes</h3>
     <hr />
     <div class="row">
       <section class="col-4">
@@ -20,7 +20,7 @@
           Quitar filtros
         </button>
         <!-- (click)="openModalNew()" -->
-        <button type="button" class="btn btn-primary">Nuevo Equipo</button>
+        <button type="button" class="btn btn-primary">Nueva Sede</button>
       </section>
 
       <section class="col-3">
@@ -43,7 +43,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (team of dataPaginated()?.result; track team.id) {
+        @for (headquarters of dataPaginated()?.result; track headquarters.id) {
         <tr>
           <th scope="row">
             {{
@@ -53,18 +53,14 @@
                 1
             }}
           </th>
-          <td>{{ team.campania }}</td>
-          <td>{{ team.jefeOperacion }}</td>
-          <td>{{ team.supervisor }}</td>
-          <td>{{ team.nombreEquipo }}</td>
-          <td>{{ team.integrantesOperativos }}</td>
-          <td>{{ team.integrantesInoperativos }}</td>
-          <td>{{ team.promedioMensajesDiarios }}</td>
+          <td>{{ headquarters.nombre }}</td>
+          <td>{{ headquarters.direccion }}</td>
+          <td>{{ headquarters.codigoPostal }}</td>
           <td>
             <div class="d-flex justify-content-center gap-3 action-icons">
               <!-- (click)="openModalEdit(campaign)" -->
               <i class="bi bi-pencil text-warning" title="Modificar"> </i>
-              @if (team.estado) {
+              @if (headquarters.estado) {
               <!-- (click)="openModalChangeState(campaign.id, true)" -->
               <i class="bi bi-trash-fill text-danger" title="Deshabilitar"> </i>
               } @else {

@@ -1,47 +1,33 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ToastMessageService } from '../../../../shared/services/toast-message.service';
-import { TeamService } from '../../../../entity/team/services/team.service';
+import { HeadquartersService } from '../../../../entity/headquarters/services/headquarters.service';
 import { OptionsPaginated } from '../../../../shared/interfaces/options-paginated.interface';
 import { PaginatedResponse } from '../../../../shared/interfaces/paginated-response.interface';
-import { TeamSpecialResponse } from '../../../../entity/team/interfaces/team.interface';
+import { HeadquartersResponse } from '../../../../entity/headquarters/interfaces/headquarters.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
-import { SearchInputDarkComponent } from '../../common/search-input-dark/search-input-dark.component';
-import { ActivesInactivesSelectDarkComponent } from '../../common/actives-inactives-select-dark/actives-inactives-select-dark.component';
-import { NavTableDarkComponent } from '../../common/nav-table-dark/nav-table-dark.component';
+import { SearchInputDarkComponent } from "../../common/search-input-dark/search-input-dark.component";
+import { ActivesInactivesSelectDarkComponent } from "../../common/actives-inactives-select-dark/actives-inactives-select-dark.component";
+import { NavTableDarkComponent } from "../../common/nav-table-dark/nav-table-dark.component";
 
 @Component({
-  selector: 'team-page',
-  imports: [
-    SearchInputDarkComponent,
-    ActivesInactivesSelectDarkComponent,
-    NavTableDarkComponent,
-  ],
-  templateUrl: './team-page.component.html',
-  styleUrl: './team-page.component.css',
+  selector: 'sede-page',
+  imports: [SearchInputDarkComponent, ActivesInactivesSelectDarkComponent, NavTableDarkComponent],
+  templateUrl: './sede-page.component.html',
+  styleUrl: './sede-page.component.css',
 })
-export class TeamPageComponent {
+export class SedePageComponent {
   private toastService = inject(ToastMessageService);
-  private teamService = inject(TeamService);
+  private headquartersService = inject(HeadquartersService);
 
-  elementsTable: string[] = [
-    'N°',
-    'Campaña',
-    'Jefe de Operación',
-    'Supervisor',
-    'Nombre Equipo',
-    'Int. Operativos',
-    'Int. Inoperativos',
-    'Prom. Mensajes Diarios',
-    '',
-  ];
+  elementsTable: string[] = ['N°', 'Nombre', 'Dirección', 'Código Postal', ''];
 
   // ------------------- HTTP Listado --------------------------
 
   optionsPaginated = signal<OptionsPaginated>({ estado: true });
 
   /* Data paginada */
-  dataPaginated = signal<PaginatedResponse<TeamSpecialResponse> | null>(null);
+  dataPaginated = signal<PaginatedResponse<HeadquartersResponse> | null>(null);
 
   /* Buscar por filtro en la tabla */
   setFilterPaginated(txtFilter: string) {
@@ -87,19 +73,21 @@ export class TeamPageComponent {
   httpCampaignsPaginated = rxResource({
     request: () => ({ options: this.optionsPaginated() }),
     loader: ({ request }) => {
-      return this.teamService.getTeamPaginated(request.options).pipe(
-        tap((resp) => {
-          if (resp.data) {
-            this.dataPaginated.set(resp.data);
+      return this.headquartersService
+        .getHeadquartersPaginated(request.options)
+        .pipe(
+          tap((resp) => {
+            if (resp.data) {
+              this.dataPaginated.set(resp.data);
 
-            if (resp.data.count == 0)
-              this.toastService.show(
-                'No se encontraron resultados.',
-                'text-bg-danger'
-              );
-          }
-        })
-      );
+              if (resp.data.count == 0)
+                this.toastService.show(
+                  'No se encontraron resultados.',
+                  'text-bg-danger'
+                );
+            }
+          })
+        );
     },
   });
 }
