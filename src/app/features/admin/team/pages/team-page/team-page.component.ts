@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { SearchInputDarkComponent } from '../../../../../shared/common/search-input-dark/search-input-dark.component';
 import { ActivesInactivesSelectDarkComponent } from '../../../../../shared/common/actives-inactives-select-dark/actives-inactives-select-dark.component';
 import { NavTableDarkComponent } from '../../../../../shared/common/nav-table-dark/nav-table-dark.component';
@@ -9,6 +9,11 @@ import { PaginatedResponse } from '../../../../../shared/interfaces/paginated-re
 import { TeamSpecialResponse } from '../../interfaces/team.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
+import { DatePipe } from '@angular/common';
+import { TeamInfoComponent } from '../../components/team-info/team-info.component';
+import { TeamAddComponent } from '../../components/team-add/team-add.component';
+import { TeamEditComponent } from '../../components/team-edit/team-edit.component';
+import { TeamDeleteComponent } from '../../components/team-delete/team-delete.component';
 
 @Component({
   selector: 'team-page',
@@ -16,6 +21,11 @@ import { tap } from 'rxjs';
     SearchInputDarkComponent,
     ActivesInactivesSelectDarkComponent,
     NavTableDarkComponent,
+    DatePipe,
+    TeamEditComponent,
+    TeamInfoComponent,
+    TeamAddComponent,
+    TeamDeleteComponent,
   ],
   templateUrl: './team-page.component.html',
   styleUrl: './team-page.component.css',
@@ -29,10 +39,11 @@ export class TeamPageComponent {
     'Campaña',
     'Jefe de Operación',
     'Supervisor',
-    'Nombre Equipo',
     'Int. Operativos',
     'Int. Inoperativos',
     'Prom. Mensajes Diarios',
+    'Creación',
+    'Cierre',
     '',
   ];
 
@@ -84,7 +95,7 @@ export class TeamPageComponent {
   }
 
   /* Peticion HTTP Paginada y asignacion a un signal */
-  httpCampaignsPaginated = rxResource({
+  httpTeamsPaginated = rxResource({
     request: () => ({ options: this.optionsPaginated() }),
     loader: ({ request }) => {
       return this.teamService.getTeamPaginated(request.options).pipe(
@@ -102,4 +113,43 @@ export class TeamPageComponent {
       );
     },
   });
+
+  // ------------------- Modales --------------------------------
+
+  /* Declaracion de modales */
+  modalInfo = viewChild<TeamInfoComponent>('modalInfo');
+  modalNew = viewChild<TeamAddComponent>('modalNew');
+  modalEdit = viewChild<TeamEditComponent>('modalEdit');
+  modalDelete = viewChild<TeamDeleteComponent>('modalDelete');
+
+  /* Id generico */
+  idTeamManagement = signal<number | null>(null);
+
+  /* Apertura de modal info */
+  openModalInfo(id: number) {
+    this.idTeamManagement.set(id);
+    // this.modalInfo.show();
+  }
+
+  /* Apertura de modal nuevo team */
+  openModalAdd() {
+    this.modalNew()!.show();
+  }
+
+  /* Apertura de modal edit team */
+  openModalEdit(id: number) {
+    this.idTeamManagement.set(id);
+    // this.modalEdit.show();
+  }
+
+  /* Apertura de modal delete team */
+  openModalDelete(id: number) {
+    this.idTeamManagement.set(id);
+    // this.modalDelete.show();
+  }
+
+  reloadTable(reload: boolean) {
+    if (!reload) return;
+    this.httpTeamsPaginated.reload();
+  }
 }

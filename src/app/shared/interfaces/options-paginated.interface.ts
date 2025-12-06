@@ -16,4 +16,5 @@ export interface OptionsPaginatedOperation {
   size?: number;
   estado?: boolean;
   idCampania?: number;
+  filtro?: string;
 }

@@ -19,8 +19,9 @@
         >
           Quitar filtros
         </button>
-        <!-- (click)="openModalNew()" -->
-        <button type="button" class="btn btn-primary">Nuevo Equipo</button>
+        <button type="button" class="btn btn-primary" (click)="openModalAdd()">
+          Nuevo Equipo
+        </button>
       </section>
 
       <section class="col-3">
@@ -37,9 +38,12 @@
     <table class="table table-dark table-striped">
       <thead>
         <tr>
-          @for (header of elementsTable; track $index) {
+          @for (header of elementsTable; track $index) { @if (header == 'Cierre'
+          && !optionsPaginated().estado) {
           <th scope="col">{{ header }}</th>
-          }
+          } @if (header != 'Cierre') {
+          <th scope="col">{{ header }}</th>
+          } }
         </tr>
       </thead>
       <tbody>
@@ -56,22 +60,33 @@
           <td>{{ team.campania }}</td>
           <td>{{ team.jefeOperacion }}</td>
           <td>{{ team.supervisor }}</td>
-          <td>{{ team.nombreEquipo }}</td>
           <td>{{ team.integrantesOperativos }}</td>
           <td>{{ team.integrantesInoperativos }}</td>
           <td>{{ team.promedioMensajesDiarios }}</td>
+          <td>{{ team.fechaCreacion | date : "dd/MM/yyyy" }}</td>
+          @if (team.fechaCierre) {
+          <td>{{ team.fechaCierre | date : "dd/MM/yyyy" }}</td>
+          }
           <td>
             <div class="d-flex justify-content-center gap-3 action-icons">
-              <!-- (click)="openModalEdit(campaign)" -->
-              <i class="bi bi-pencil text-warning" title="Modificar"> </i>
-              @if (team.estado) {
-              <!-- (click)="openModalChangeState(campaign.id, true)" -->
-              <i class="bi bi-trash-fill text-danger" title="Deshabilitar"> </i>
-              } @else {
-              <!-- (click)="openModalChangeState(campaign.id, false)" -->
               <i
-                class="bi bi-arrow-up-circle-fill text-success"
-                title="Habilitar"
+                class="bi bi-eye-fill text-info"
+                title="Ver detalles"
+                (click)="openModalInfo(team.id)"
+              >
+              </i>
+              <i
+                class="bi bi-pencil text-warning"
+                title="Modificar"
+                (click)="openModalEdit(team.id)"
+              >
+              </i>
+              @if (!team.fechaCierre) {
+
+              <i
+                class="bi bi-trash-fill text-danger"
+                title="Deshabilitar"
+                (click)="openModalDelete(team.id)"
               >
               </i>
               }
@@ -92,3 +107,8 @@
     />
   </div>
 </article>
+
+<!-- <team-info #modalInfo /> -->
+<team-add #modalNew (updateTable)="reloadTable($event)" />
+<!-- <team-edit #modalEdit />
+<team-delete #modalDelete /> -->

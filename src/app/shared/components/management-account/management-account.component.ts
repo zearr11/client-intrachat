@@ -106,8 +106,8 @@ export class ManagementAccountComponent {
         informacion: user.informacion ?? '',
       });
     },
-    { allowSignalWrites: true }
   );
+  //     { allowSignalWrites: true }
 
   dissableForm = effect(() => {
     const editable = this.editEnabled();

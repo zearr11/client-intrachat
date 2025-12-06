@@ -15,6 +15,7 @@ import { UserMapper } from '../mapping/user.mapper';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { ResponseGeneric } from '../../shared/interfaces/general-response.interface';
 import { PaginatedResponse } from '../../shared/interfaces/paginated-response.interface';
+import { Position } from '../enums/position-user.enum';
 
 const baseUrlUser = `${environment.baseUrl}/usuarios`;
 
@@ -77,6 +78,8 @@ export class UserService {
     size?: number;
     state?: boolean;
     filter?: string;
+    cargo?: Position;
+    enCampania?: boolean;
   }): Observable<PaginatedResponse<UserResponse>> {
     const url = `${baseUrlUser}/paginacion`;
     let params = new HttpParams();
@@ -86,8 +89,8 @@ export class UserService {
     if (options?.state != undefined)
       params = params.set('estado', options.state);
     if (options?.filter) params = params.set('filtro', options.filter);
-
-    // console.log(params);
+    if (options?.cargo) params = params.set('cargo', options.cargo);
+    if (options?.enCampania != null) params = params.set('enCampania', options.enCampania);
 
     return this.http
       .get<ResponseGeneric<PaginatedResponse<UserResponse>>>(url, { params })

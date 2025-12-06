@@ -1,10 +1,14 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { OptionsPaginated } from '../../../../shared/interfaces/options-paginated.interface';
-import { Observable } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { ResponseGeneric } from '../../../../shared/interfaces/general-response.interface';
 import { PaginatedResponse } from '../../../../shared/interfaces/paginated-response.interface';
-import { TeamSpecialResponse } from '../interfaces/team.interface';
+import { TeamRequest, TeamSpecialResponse } from '../interfaces/team.interface';
 import { environment } from '../../../../../environments/environment';
 
 const baseUrl = `${environment.baseUrl}/equipos`;
@@ -21,5 +25,16 @@ export class TeamService {
     return this.http.get<
       ResponseGeneric<PaginatedResponse<TeamSpecialResponse>>
     >(`${baseUrl}/paginacion`, { params });
+  };
+
+  registerNewTeam = (dataTeam: TeamRequest): Observable<string> => {
+    return this.http.post<ResponseGeneric<null>>(baseUrl, dataTeam).pipe(
+      map((resp) => resp.message!),
+      catchError((err: HttpErrorResponse) => {
+        const messageError =
+          err.error?.message ?? 'Error inesperado, inténtelo mas tarde.';
+        return throwError(() => new Error(messageError));
+      })
+    );
   };
 }

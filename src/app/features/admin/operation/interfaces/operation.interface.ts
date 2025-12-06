@@ -1,5 +1,6 @@
 export interface OperationSpecialResponse {
   id: number;
+  empresa: string;
   campania: string;
   sede: string;
   jefeOperacion: string;

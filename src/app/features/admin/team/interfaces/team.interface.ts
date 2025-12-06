@@ -1,3 +1,11 @@
+import { MemberRequest } from "../../../chat/interfaces/room.interface";
+
+export interface TeamRequest {
+  idOperacion?: number;
+  idSupervisor?: number;
+  integrantes?: MemberRequest[];
+}
+
 export interface TeamSpecialResponse {
   id: number;
   sede: string;
@@ -8,5 +16,6 @@ export interface TeamSpecialResponse {
   integrantesOperativos: number;
   integrantesInoperativos: number;
   promedioMensajesDiarios: number;
-  estado: boolean;
+  fechaCreacion: Date;
+  fechaCierre?: Date;
 }
