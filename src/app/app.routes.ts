@@ -3,19 +3,19 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./views/auth/auth.routes')
+    loadChildren: () => import('./features/auth/auth.routes'),
   },
   {
     path: 'chats',
-    loadChildren: () => import('./views/chat/chat.routes')
+    loadChildren: () => import('./features/chat/chat.routes'),
   },
   {
     path: '',
-    loadChildren: () => import('./views/admin/admin.routes')
+    loadChildren: () => import('./features/admin/admin.routes'),
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'login'
-  }
+    redirectTo: 'login',
+  },
 ];

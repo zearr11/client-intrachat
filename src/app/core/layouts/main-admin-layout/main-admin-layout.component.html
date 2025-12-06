@@ -1,0 +1,88 @@
+<main class="row m-0 text-white">
+  <section style="background-color: #16191b" class="col-2">
+    <div class="nav-route">
+      <!-- mt-5 mb-5 text-center -->
+      <div class="logo-title-app">
+        <img src="intrachat.png" alt="Logo" width="100" height="100" />
+        <h5 class="mt-3">Panel Administrativo</h5>
+      </div>
+
+      <hr />
+
+      <div class="menu-complete">
+        <div class="content-menu" style="width: 100%">
+          <item-menu
+            [iconNameClass]="'bi bi-speedometer2'"
+            [nameItem]="'Dashboard'"
+            [route]="'dashboard'"
+          />
+          <item-menu
+            [iconNameClass]="'bi bi-person-fill'"
+            [nameItem]="'Usuarios'"
+            [route]="'usuarios'"
+          />
+          <item-menu
+            [iconNameClass]="'bi bi-briefcase'"
+            [nameItem]="'Empresas'"
+            [route]="'empresas'"
+          />
+          <item-menu
+            [iconNameClass]="'bi bi-building-fill'"
+            [nameItem]="'Sedes'"
+            [route]="'sedes'"
+          />
+          <item-menu
+            [iconNameClass]="'bi bi-headset'"
+            [nameItem]="'Campañas'"
+            [route]="'campanias'"
+          />
+          <item-menu
+            [iconNameClass]="'bi bi-diagram-3-fill'"
+            [nameItem]="'Operaciones'"
+            [route]="'operaciones'"
+          />
+          <item-menu
+            [iconNameClass]="'bi bi-cup-hot-fill'"
+            [nameItem]="'Equipos'"
+            [route]="'equipos'"
+          />
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="footer-user">
+        <a
+          (click)="openModalManagementAccount()"
+          class="list-group-item btn-account"
+        >
+          <i class="icons-btn bi bi-person"> </i>
+          Mi cuenta
+        </a>
+
+        <a class="list-group-item btn-logout" (click)="finishSession()">
+          <i class="icons-btn bi bi-box-arrow-right"> </i>
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section style="background-color: #212429" class="col-10 p-0">
+    <router-outlet />
+  </section>
+</main>
+
+<management-account #accountModal />
+
+<!--
+
+  <nav class="navbar navbar-dark" style="background-color: #16191B;">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+
+-->

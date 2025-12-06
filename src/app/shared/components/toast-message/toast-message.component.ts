@@ -8,7 +8,6 @@ import { Toast } from 'bootstrap';
   templateUrl: './toast-message.component.html',
 })
 export class ToastMessageComponent {
-
   message = signal<string>('');
   color = signal<string>('');
 
@@ -30,6 +29,4 @@ export class ToastMessageComponent {
   hide() {
     this.toastInstance.hide();
   }
-
 }
-

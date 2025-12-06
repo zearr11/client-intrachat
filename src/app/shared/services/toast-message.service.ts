@@ -3,7 +3,6 @@ import { ToastMessageComponent } from '../components/toast-message/toast-message
 
 @Injectable({ providedIn: 'root' })
 export class ToastMessageService {
-
   private toastRef?: ToastMessageComponent;
 
   register(toast: ToastMessageComponent) {
@@ -17,5 +16,4 @@ export class ToastMessageService {
     this.toastRef.color.set(color);
     this.toastRef.show();
   }
-
 }

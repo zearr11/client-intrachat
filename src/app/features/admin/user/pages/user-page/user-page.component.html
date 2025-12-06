@@ -1,0 +1,135 @@
+<article class="layout">
+  <div class="encabezado">
+    <hr>
+    <h3 style="text-align: left;">Gestionar Usuarios</h3>
+    <hr>
+    <div class="row">
+      <section class="col-4">
+        <search-input
+          (emitValue)="setFilterPaginated($event)"
+          [initialValue]="filter()"
+          />
+      </section>
+
+      <section class="col-5 d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="clearFilters()">
+          Quitar filtros
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="openModalNewUser()"
+          >
+          Nuevo Usuario
+        </button>
+      </section>
+
+      <section class="col-3">
+        <actives-inactives-select-dark
+          [showActives]="showActives()"
+          (stateEmited)="changeState($event)"
+          />
+      </section>
+    </div>
+    <hr>
+  </div>
+
+  <div class="tabla">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          @for (header of usersElementsTable; track $index) {
+            <th scope="col">{{ header }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of dataPaginated()?.result; track user.id) {
+        <tr>
+          <th scope="row">
+            {{
+              ( ( dataPaginated()?.page ?? 1 ) - 1 ) *
+              ( dataPaginated()?.size ?? 1 ) + $index + 1
+            }}
+          </th>
+          <td>
+            {{ `${user.nombres} ${user.apellidos}` | titlecase }}
+          </td>
+          <td>{{ user.tipoDoc }}</td>
+          <td>{{ user.numeroDoc }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.celular }}</td>
+          <td>{{ user.fechaCreacion | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ user.ultimaModificacion | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <div class="d-flex justify-content-center gap-3 action-icons">
+              <i
+                class="bi bi-eye-fill text-info"
+                title="Ver detalles"
+                (click)="openModalInfoUser(user)"
+                >
+              </i>
+              <i
+                class="bi bi-pencil text-warning"
+                title="Modificar"
+                (click)="openModalEditUser(user)"
+                >
+              </i>
+              @if (user.estado) {
+                <i
+                  class="bi bi-trash-fill text-danger"
+                  title="Deshabilitar"
+                  (click)="openModalChangeState(user.id, true)"
+                  >
+                </i>
+              } @else {
+                <i
+                  class="bi bi-arrow-up-circle-fill text-success"
+                  title="Habilitar"
+                  (click)="openModalChangeState(user.id, false)"
+                  >
+                </i>
+              }
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-paginacion">
+    <nav-table-dark
+      [dataPaginated]="dataPaginated()"
+      [isTableWithoutData]="nothingShowInTable()"
+      (nextPage)="nextPage($event)"
+      (changePage)="changePage($event)"
+      />
+  </div>
+</article>
+
+<user-info
+  #modalInfoUser
+  [user]="dataInfoUser()!"
+/>
+
+<user-add
+  #modalNewUser
+  (updateTable)="reloadTable($event)"
+/>
+
+<user-edit
+  #modalEditUser
+  (updateTable)="reloadTable($event)"
+  [dataUser]="dataUserEdit()!"
+/>
+
+<user-change-state
+  #modalChangeStateUser
+  [idUser]="idUserToChangeState()!"
+  [isDelete]="isDelete()"
+  (updateTable)="reloadTable($event)"
+/>

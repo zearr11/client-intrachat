@@ -1,0 +1,5 @@
+export enum MediaOutlet {
+  LLAMADAS = 'LLAMADAS',
+  CANALES_ESCRITOS = 'CANALES_ESCRITOS',
+  CORREO = 'CORREO'
+}
