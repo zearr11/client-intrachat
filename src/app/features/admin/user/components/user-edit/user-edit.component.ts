@@ -26,10 +26,13 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of, tap } from 'rxjs';
 import { UserService } from '../../../../../core/services/user.service';
+import { Position } from '../../../../../core/enums/position-user.enum';
+import { Role } from '../../../../../core/enums/role-user.enum';
+import { RemoveUnderScorePipe } from '../../../../../shared/pipes/remove-underscore.pipe';
 
 @Component({
   selector: 'user-edit',
-  imports: [ReactiveFormsModule, TitleCasePipe],
+  imports: [ReactiveFormsModule, TitleCasePipe, RemoveUnderScorePipe],
   templateUrl: './user-edit.component.html',
 })
 export class UserEditComponent {
@@ -55,7 +58,7 @@ export class UserEditComponent {
       genero: this.dataUser().genero,
       celular: this.dataUser().celular,
       email: this.dataUser().email,
-      rol: this.dataUser().rol,
+      rol: this.dataUser().cargo,
     });
   });
 
@@ -80,7 +83,7 @@ export class UserEditComponent {
 
   typesDoc = EnumsList.tipoDocs;
   genders = EnumsList.genders;
-  roles = EnumsList.roles;
+  roles = EnumsList.positions;
 
   /* Formulario reactivo */
   myForm: FormGroup = this.formGroup.group({
@@ -124,7 +127,25 @@ export class UserEditComponent {
       return;
     }
 
-    this.updateUser.set(this.myForm.value);
+    const valuesForm = this.myForm.value;
+    const role =
+      valuesForm.rol == Position.ADMIN.toString() ? Role.ADMIN : Role.USUARIO;
+
+    const userUpdated: UserRequest2 = {
+      nombres: valuesForm.nombres,
+      apellidos: valuesForm.apellidos,
+      tipoDoc: valuesForm.tipoDoc,
+      numeroDoc: valuesForm.numeroDoc,
+      genero: valuesForm.genero,
+      celular: valuesForm.celular,
+      email: valuesForm.email,
+      rol: role,
+      cargo: valuesForm.rol,
+    };
+
+    console.log(userUpdated);
+
+    // this.updateUser.set(userUpdated);
   }
 
   httpUpdateUser = rxResource({

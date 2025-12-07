@@ -14,17 +14,20 @@ import {
 } from '@angular/forms';
 import { ToastMessageService } from '../../../../../shared/services/toast-message.service';
 import { EnumsList } from '../../../../../shared/utils/enums-list.class';
-import { TitleCasePipe } from '@angular/common';
+import { TitleCasePipe, UpperCasePipe } from '@angular/common';
 import { Patterns } from '../../../../../shared/utils/patterns.class';
 import { Modal } from 'bootstrap';
 import { UserRequest } from '../../../../../core/interfaces/user.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of, tap } from 'rxjs';
 import { UserService } from '../../../../../core/services/user.service';
+import { Position } from '../../../../../core/enums/position-user.enum';
+import { Role } from '../../../../../core/enums/role-user.enum';
+import { RemoveUnderScorePipe } from '../../../../../shared/pipes/remove-underscore.pipe';
 
 @Component({
   selector: 'user-add',
-  imports: [ReactiveFormsModule, TitleCasePipe],
+  imports: [ReactiveFormsModule, TitleCasePipe, RemoveUnderScorePipe],
   templateUrl: './user-add.component.html',
 })
 export class UserAddComponent {
@@ -59,7 +62,7 @@ export class UserAddComponent {
   /* Carga de selects */
   typesDoc = EnumsList.tipoDocs;
   genders = EnumsList.genders;
-  roles = EnumsList.roles;
+  roles = EnumsList.positions;
 
   /* Formulario reactivo */
   myForm: FormGroup = this.formGroup.group({
@@ -103,7 +106,23 @@ export class UserAddComponent {
       return;
     }
 
-    this.dataNewUser.set(this.myForm.value);
+    const valuesForm = this.myForm.value;
+    const role =
+      valuesForm.rol == Position.ADMIN.toString() ? Role.ADMIN : Role.USUARIO;
+
+    const newUser: UserRequest = {
+      nombres: valuesForm.nombres,
+      apellidos: valuesForm.apellidos,
+      tipoDoc: valuesForm.tipoDoc,
+      numeroDoc: valuesForm.numeroDoc,
+      genero: valuesForm.genero,
+      celular: valuesForm.celular,
+      email: valuesForm.email,
+      rol: role,
+      cargo: valuesForm.rol,
+    };
+
+    this.dataNewUser.set(newUser);
   }
 
   /* ---------------------------- HTTP ------------------------------- */

@@ -74,7 +74,7 @@
                   pattern="[0-9]{1,13}"
                   oninput="this.value = this.value.replace(/\D/g, '').slice(0, 13);"
                 />
-                <label> Numero de documento </label>
+                <label> Número de documento </label>
               </div>
             </div>
           </section>
@@ -137,7 +137,7 @@
                     [selected]="$first"
                     [value]="item == 'Seleccione' ? '' : item"
                   >
-                    {{ item | titlecase }}
+                    {{ item | removeunderscore }}
                   </option>
                   }
                 </select>

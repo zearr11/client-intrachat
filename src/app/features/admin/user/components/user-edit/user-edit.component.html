@@ -150,7 +150,7 @@
                     <option
                       [selected]="$first"
                       [value]="item == 'Seleccione' ? '' : item">
-                      {{ item | titlecase }}
+                      {{ item | removeunderscore }}
                     </option>
                   }
                 </select>
