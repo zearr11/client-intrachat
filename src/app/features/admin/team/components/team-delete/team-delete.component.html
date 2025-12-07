@@ -1,1 +1,129 @@
-<p>team-delete.component works!</p>,
+<div #modalElement class="modal fade">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <!-- HEADER (mantener color por defecto) -->
+      <div class="modal-header">
+        <h5 class="modal-title">Cierre de Equipo</h5>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body">
+        <!-- INFORMACIÓN GENERAL DEL EQUIPO -->
+        <div class="mb-3">
+          <h6 class="fw-bold mb-3">Información del equipo</h6>
+
+          <div class="row g-2">
+            <div class="col-md-6">
+              <p class="mb-1">
+                <strong>Nombre del equipo:</strong><br />
+                {{ team()?.datosGrupo?.nombre }}
+              </p>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1">
+                <strong>ID del equipo:</strong><br />
+                {{ team()?.idEquipo }}
+              </p>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1">
+                <strong>Jefe de Operación:</strong><br />
+                {{ team()?.datosOperacion?.datosJefeOperacion?.nombres }}
+                {{ team()?.datosOperacion?.datosJefeOperacion?.apellidos }}
+              </p>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1">
+                <strong>Supervisor:</strong><br />
+                {{ team()?.datosSupervisor?.nombres }}
+                {{ team()?.datosSupervisor?.apellidos }}
+              </p>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1">
+                <strong>Campaña:</strong><br />
+                {{ team()?.datosOperacion?.datosCampania?.nombre }}
+              </p>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1">
+                <strong>Sede:</strong><br />
+                {{ team()?.datosOperacion?.datosSede?.nombre }}
+              </p>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1">
+                <strong>Integrantes operativos:</strong><br />
+                {{ membersActives().length }}
+              </p>
+            </div>
+
+            <div class="col-md-6">
+              <p class="mb-1">
+                <strong>Fecha de creación del equipo:</strong><br />
+                {{ team()?.fechaCreacion | date : "dd/MM/yyyy" }}
+              </p>
+            </div>
+          </div>
+
+          <hr />
+        </div>
+
+        <!-- ADVERTENCIA (TONO SUAVE) -->
+        <div class="alert alert-warning">
+          <h6 class="fw-bold mb-2">Atención: esta acción es permanente.</h6>
+
+          <p class="mb-2">
+            Estás a punto de <strong>deshabilitar definitivamente</strong> el
+            equipo <strong>{{ team()?.datosGrupo?.nombre }}</strong
+            >.
+          </p>
+
+          <p class="mb-2">
+            Una vez deshabilitado, el equipo quedará cerrado de forma permanente
+            y
+            <strong>no podrá reactivarse</strong>.
+          </p>
+
+          <p class="mb-2">
+            Los integrantes perderán acceso a su
+            <strong>chat grupal</strong> y quedarán
+            <strong>sin equipo asociado</strong>. Podrán ser asignados
+            nuevamente a otros equipos si lo deseas.
+          </p>
+
+          <p class="mb-2">
+            Si deseas mantenerlos agrupados, deberás
+            <strong>crear un nuevo grupo</strong> y asignarlos manualmente.
+          </p>
+
+          <p class="fw-semibold mb-0">
+            Por favor, revisa toda la información antes de continuar.
+          </p>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmDisableTeam()"
+        >
+          Deshabilitar equipo definitivamente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

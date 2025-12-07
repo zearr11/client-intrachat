@@ -1,1 +1,329 @@
-<p>team-info.component works!</p>,
+<!-- Modal Equipo -->
+<div
+  #modalElement
+  class="modal fade"
+  tabindex="-1"
+  aria-labelledby="modalTeamLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5
+          class="modal-title d-flex align-items-center gap-2"
+          id="modalTeamLabel"
+        >
+          <i class="bi bi-people-fill"></i>
+          Información del Equipo
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <!-- Body -->
+      @if (team()) {
+      <div class="modal-body">
+        <!-- NAV TABS -->
+        <ul class="nav nav-tabs mb-4" role="tablist">
+          <li class="nav-item">
+            <button
+              class="nav-link active"
+              data-bs-toggle="tab"
+              data-bs-target="#tabGeneral"
+              type="button"
+              role="tab"
+            >
+              Información General
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              data-bs-toggle="tab"
+              data-bs-target="#tabIntegrantes"
+              type="button"
+              role="tab"
+            >
+              Integrantes
+            </button>
+          </li>
+        </ul>
+
+        <!-- TAB CONTENT -->
+        <div class="tab-content">
+          <!-- ⭐ TAB 1: INFORMACIÓN GENERAL -->
+          <div
+            class="tab-pane fade show active"
+            id="tabGeneral"
+            role="tabpanel"
+          >
+            <div class="container">
+              <div class="row g-4">
+                <!-- Grupo -->
+                <div class="col-12">
+                  <h5 class="section-title">
+                    <i class="bi bi-collection me-2"></i> Grupo
+                  </h5>
+
+                  <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                      <div class="mb-2">
+                        <span class="label">Nombre del equipo: </span>
+                        <span class="value">{{
+                          team()?.datosGrupo?.nombre
+                        }}</span>
+                      </div>
+
+                      <div class="mb-2">
+                        <span class="label">Descripción:</span>
+                      </div>
+                      <textarea class="form-control" rows="3" readonly>{{
+                        team()?.datosGrupo?.descripcion
+                      }}</textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Operación -->
+                <div class="col-md-6">
+                  <h5 class="section-title">
+                    <i class="bi bi-building me-2"></i> Operación
+                  </h5>
+
+                  <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                      <div class="mb-2">
+                        <span class="label">Sede: </span>
+                        <span class="value">{{
+                          team()?.datosOperacion?.datosSede?.nombre
+                        }}</span>
+                      </div>
+
+                      <div class="mb-2">
+                        <span class="label">Dirección: </span>
+                        <span class="value">{{
+                          team()?.datosOperacion?.datosSede?.direccion
+                        }}</span>
+                      </div>
+
+                      <div class="mb-2">
+                        <span class="label">Código postal: </span>
+                        <span class="value">{{
+                          team()?.datosOperacion?.datosSede?.codigoPostal
+                        }}</span>
+                      </div>
+
+                      <div class="mb-0">
+                        <span class="label">Jefe de Operación: </span>
+                        <span class="value">
+                          {{
+                            `${team()?.datosOperacion?.datosJefeOperacion?.nombres}
+                            ${team()?.datosOperacion?.datosJefeOperacion?.apellidos}`
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Campaña -->
+                <div class="col-md-6">
+                  <h5 class="section-title">
+                    <i class="bi bi-bullseye me-2"></i> Campaña
+                  </h5>
+
+                  <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                      <div class="mb-2">
+                        <span class="label">Nombre: </span>
+                        <span class="value">{{
+                          team()?.datosOperacion?.datosCampania?.nombre
+                        }}</span>
+                      </div>
+
+                      <div class="mb-2">
+                        <span class="label">Área: </span>
+                        <span class="value">{{
+                          team()?.datosOperacion?.datosCampania?.areaAtencion!
+                            | removeunderscore
+                        }}</span>
+                      </div>
+
+                      <div class="mb-2">
+                        <span class="label">Estado: </span>
+                        <span class="value">
+                          <span
+                            class="badge px-3 py-2"
+                            [ngClass]="
+                              team()?.datosOperacion?.datosCampania?.estado
+                                ? 'bg-success'
+                                : 'bg-danger'
+                            "
+                          >
+                            {{
+                              team()?.datosOperacion?.datosCampania?.estado
+                                ? "Activo"
+                                : "Inactivo"
+                            }}
+                          </span>
+                        </span>
+                      </div>
+
+                      <div class="mb-0">
+                        <span class="label">Empresa: </span>
+                        <span class="value">
+                          {{
+                            team()?.datosOperacion?.datosCampania?.datosEmpresa
+                              ?.nombreComercial
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="col-12">
+                  <h5 class="section-title">
+                    <i class="bi bi-calendar-event me-2"></i> Detalles Generales
+                  </h5>
+
+                  <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                      <div class="mb-2">
+                        <span class="label">Creación: </span>
+                        <span class="value">{{
+                          team()?.fechaCreacion | date : "dd/MM/yyyy"
+                        }}</span>
+                      </div>
+
+                      <div>
+                        <span class="label">Cierre: </span>
+                        <span class="value">
+                          {{
+                            team()?.fechaCierre
+                              ? (team()?.fechaCierre | date : "dd/MM/yyyy")
+                              : "Equipo operativo sin cierre registrado"
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: INTEGRANTES -->
+          <div class="tab-pane fade" id="tabIntegrantes" role="tabpanel">
+            <div class="integrantes-scroll mt-3">
+              <div class="row g-3">
+                @for (m of team()?.integrantes; track m.idEquipoUsuario) {
+                <div class="col-md-4">
+                  <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body text-center">
+                      <img
+                        [src]="m.datosIntegrante.urlFoto"
+                        class="rounded-circle mb-3 border shadow-sm"
+                        style="width: 90px; height: 90px; object-fit: cover"
+                      />
+
+                      <h6 class="fw-bold mb-1">
+                        {{ m.datosIntegrante.nombres }}
+                        {{ m.datosIntegrante.apellidos }}
+                      </h6>
+
+                      <p class="small mb-1">
+                        {{
+                          m.datosIntegrante.cargo | removeunderscore | uppercase
+                        }}
+                      </p>
+
+                      <span
+                        class="badge mb-2 px-3 py-1"
+                        [ngClass]="{
+                          'bg-primary': m.permiso === 'ADMINISTRADOR',
+                          'bg-secondary': m.permiso === 'USUARIO_REGULAR'
+                        }"
+                        >{{ m.permiso | removeunderscore | uppercase }}</span
+                      >
+
+                      <p class="small mb-0">{{ m.datosIntegrante.email }}</p>
+
+                      <p class="mt-2 mb-0">
+                        <span class="label">Inicio:</span>
+                        {{ m.fechaInicio | date : "dd/MM/yyyy" }}
+                      </p>
+
+                      <p class="mb-0">
+                        <span class="label">Fin:</span>
+                        <span
+                          [ngClass]="{
+                            'text-danger': m.fechaFin,
+                            'text-success': !m.fechaFin
+                          }"
+                        >
+                          {{
+                            m.fechaFin
+                              ? (m.fechaFin | date : "dd/MM/yyyy")
+                              : "Usuario operativo"
+                          }}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #555;
+    border-left: 4px solid gray;
+    padding-left: 10px;
+  }
+
+  .label {
+    font-weight: 600;
+    color: #444;
+  }
+
+  .value {
+    color: #333;
+  }
+
+  .integrantes-scroll {
+    max-height: 600px; /* Ajusta la altura que quieras */
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+  .integrantes-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .integrantes-scroll::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+  }
+</style>

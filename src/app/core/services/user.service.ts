@@ -16,6 +16,7 @@ import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { ResponseGeneric } from '../../shared/interfaces/general-response.interface';
 import { PaginatedResponse } from '../../shared/interfaces/paginated-response.interface';
 import { Position } from '../enums/position-user.enum';
+import { OptionsPaginatedUserTeam } from '../../features/admin/team/components/team-edit/team-edit.component';
 
 const baseUrlUser = `${environment.baseUrl}/usuarios`;
 
@@ -73,6 +74,26 @@ export class UserService {
   }
 
   // Paginacion
+  getUsersWithTeamAndWithoutCampaignPaginated(
+    options?: OptionsPaginatedUserTeam
+  ): Observable<PaginatedResponse<UserResponse>> {
+    const url = `${baseUrlUser}/paginacion/equipos`;
+    let params = new HttpParams();
+
+    if (options?.page) params = params.set('page', options.page);
+    if (options?.size) params = params.set('size', options.size);
+    if (options?.state != undefined)
+      params = params.set('estado', options.state);
+    if (options?.filter) params = params.set('filtro', options.filter);
+    if (options?.cargo) params = params.set('cargo', options.cargo);
+    if (options?.idTeam) params = params.set('idEquipo', options.idTeam);
+
+    return this.http
+      .get<ResponseGeneric<PaginatedResponse<UserResponse>>>(url, { params })
+      .pipe(map((resp) => resp.data!));
+  }
+
+  // Paginacion
   getUsersPaginated(options?: {
     page?: number;
     size?: number;
@@ -90,7 +111,8 @@ export class UserService {
       params = params.set('estado', options.state);
     if (options?.filter) params = params.set('filtro', options.filter);
     if (options?.cargo) params = params.set('cargo', options.cargo);
-    if (options?.enCampania != null) params = params.set('enCampania', options.enCampania);
+    if (options?.enCampania != null)
+      params = params.set('enCampania', options.enCampania);
 
     return this.http
       .get<ResponseGeneric<PaginatedResponse<UserResponse>>>(url, { params })

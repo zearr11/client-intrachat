@@ -1,3 +1,7 @@
+import { UserResponse } from '../../../../core/interfaces/user.interface';
+import { CampaniaResponse } from '../../campaign/interfaces/campaign.interface';
+import { HeadquartersResponse } from '../../headquarters/interfaces/headquarters.interface';
+
 export interface OperationSpecialResponse {
   id: number;
   empresa: string;
@@ -13,4 +17,13 @@ export interface OperationSpecialResponse {
 
   fechaCreacion: Date;
   fechaFinalizacion?: Date;
+}
+
+export interface OperationResponse {
+  idOperacion: number;
+  datosSede: HeadquartersResponse;
+  datosCampania: CampaniaResponse;
+  datosJefeOperacion: UserResponse;
+  fechaCreacion: Date;
+  fechaFinalizacion: Date;
 }

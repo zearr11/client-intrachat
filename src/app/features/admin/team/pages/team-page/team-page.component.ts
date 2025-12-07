@@ -128,7 +128,7 @@ export class TeamPageComponent {
   /* Apertura de modal info */
   openModalInfo(id: number) {
     this.idTeamManagement.set(id);
-    // this.modalInfo.show();
+    this.modalInfo()!.show();
   }
 
   /* Apertura de modal nuevo team */
@@ -139,13 +139,13 @@ export class TeamPageComponent {
   /* Apertura de modal edit team */
   openModalEdit(id: number) {
     this.idTeamManagement.set(id);
-    // this.modalEdit.show();
+    this.modalEdit()!.show();
   }
 
   /* Apertura de modal delete team */
   openModalDelete(id: number) {
     this.idTeamManagement.set(id);
-    // this.modalDelete.show();
+    this.modalDelete()!.show();
   }
 
   reloadTable(reload: boolean) {

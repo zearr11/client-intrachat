@@ -75,14 +75,14 @@
                 (click)="openModalInfo(team.id)"
               >
               </i>
+              @if (!team.fechaCierre) {
               <i
                 class="bi bi-pencil text-warning"
                 title="Modificar"
                 (click)="openModalEdit(team.id)"
               >
               </i>
-              @if (!team.fechaCierre) {
-
+              } @if (!team.fechaCierre) {
               <i
                 class="bi bi-trash-fill text-danger"
                 title="Deshabilitar"
@@ -108,7 +108,15 @@
   </div>
 </article>
 
-<!-- <team-info #modalInfo /> -->
+<team-info #modalInfo [idTeam]="idTeamManagement()" />
 <team-add #modalNew (updateTable)="reloadTable($event)" />
-<!-- <team-edit #modalEdit />
-<team-delete #modalDelete /> -->
+<team-edit
+  #modalEdit
+  [idTeam]="idTeamManagement()"
+  (updateTable)="reloadTable($event)"
+/>
+<team-delete
+  #modalDelete
+  [idTeam]="idTeamManagement()"
+  (updateTable)="reloadTable($event)"
+/>

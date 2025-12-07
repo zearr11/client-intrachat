@@ -4,7 +4,7 @@ import { UserResponse } from '../../../core/interfaces/user.interface';
 
 export interface RoomRequest {
   tipoSala: TypeRoom;
-  integrantes: MemberRequest[]
+  integrantes: MemberRequest[];
 }
 
 export interface MemberRequest {
@@ -23,6 +23,14 @@ export interface MemberResponse {
   estado: boolean;
   permiso: Permission;
   usuarioResponse: UserResponse;
+}
+
+export interface MemberCompleteResponse {
+  idEquipoUsuario: number;
+  fechaInicio: Date;
+  fechaFin?: Date;
+  permiso: Permission;
+  datosIntegrante: UserResponse;
 }
 
 /*

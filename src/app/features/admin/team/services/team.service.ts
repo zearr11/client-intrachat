@@ -8,7 +8,12 @@ import { OptionsPaginated } from '../../../../shared/interfaces/options-paginate
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { ResponseGeneric } from '../../../../shared/interfaces/general-response.interface';
 import { PaginatedResponse } from '../../../../shared/interfaces/paginated-response.interface';
-import { TeamRequest, TeamSpecialResponse } from '../interfaces/team.interface';
+import {
+  TeamRequest,
+  TeamRequest2,
+  TeamResponse,
+  TeamSpecialResponse,
+} from '../interfaces/team.interface';
 import { environment } from '../../../../../environments/environment';
 
 const baseUrl = `${environment.baseUrl}/equipos`;
@@ -16,6 +21,12 @@ const baseUrl = `${environment.baseUrl}/equipos`;
 @Injectable({ providedIn: 'root' })
 export class TeamService {
   private http = inject(HttpClient);
+
+  getTeamById = (idTeam: number) => {
+    return this.http
+      .get<ResponseGeneric<TeamResponse>>(`${baseUrl}/${idTeam}`)
+      .pipe(map((resp) => resp.data));
+  };
 
   getTeamPaginated = (
     options?: OptionsPaginated
@@ -36,5 +47,24 @@ export class TeamService {
         return throwError(() => new Error(messageError));
       })
     );
+  };
+
+  updateTeam = (idTeam: number, dataTeam: TeamRequest2): Observable<string> => {
+    return this.http
+      .put<ResponseGeneric<null>>(`${baseUrl}/${idTeam}`, dataTeam)
+      .pipe(
+        map((resp) => resp.message!),
+        catchError((err: HttpErrorResponse) => {
+          const messageError =
+            err.error?.message ?? 'Error inesperado, inténtelo mas tarde.';
+          return throwError(() => new Error(messageError));
+        })
+      );
+  };
+
+  dissableTeam = (idTeam: number): Observable<string> => {
+    return this.http
+      .delete<ResponseGeneric<null>>(`${baseUrl}/${idTeam}`)
+      .pipe(map((resp) => resp.message!));
   };
 }

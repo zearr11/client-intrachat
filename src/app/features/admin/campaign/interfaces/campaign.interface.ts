@@ -1,5 +1,6 @@
 import { AreaAttention } from '../../../../core/enums/area-attention.enum';
 import { MediaOutlet } from '../../../../core/enums/media-outlet.enum';
+import { CompanyResponse } from '../../company/interfaces/company.interface';
 
 export interface CampaignRequest {
   nombre: string;
@@ -52,4 +53,15 @@ export interface CampaignEspecialResponse {
   estado: boolean;
   fechaCreacion: Date;
   ultimaModificacion: Date;
+}
+
+export interface CampaniaResponse {
+  idCampania: number;
+  nombre: string;
+  areaAtencion: AreaAttention;
+  medioComunicacion: MediaOutlet;
+  estado: boolean;
+  fechaCreacion: Date;
+  ultimaModificacion: Date;
+  datosEmpresa: CompanyResponse;
 }
