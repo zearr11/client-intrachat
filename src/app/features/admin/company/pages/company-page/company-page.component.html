@@ -1,14 +1,14 @@
 <article class="layout">
   <div class="encabezado">
-    <hr>
-    <h3 style="text-align: left;">Gestionar Empresas</h3>
-    <hr>
+    <hr />
+    <h3 style="text-align: left">Gestionar Empresas</h3>
+    <hr />
     <div class="row">
       <section class="col-4">
         <search-input
           (emitValue)="setFilterPaginated($event)"
           [initialValue]="optionsPaginated().filtro"
-          />
+        />
       </section>
 
       <section class="col-5 d-flex justify-content-end gap-2">
@@ -16,14 +16,10 @@
           type="button"
           class="btn btn-secondary"
           (click)="clearFilters()"
-          >
+        >
           Quitar filtros
         </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="openModalNew()"
-          >
+        <button type="button" class="btn btn-primary" (click)="openModalNew()">
           Nueva Empresa
         </button>
       </section>
@@ -32,10 +28,10 @@
         <actives-inactives-select-dark
           [showActives]="optionsPaginated().estado"
           (stateEmited)="changeState($event)"
-          />
+        />
       </section>
     </div>
-    <hr>
+    <hr />
   </div>
 
   <div class="tabla">
@@ -43,7 +39,7 @@
       <thead>
         <tr>
           @for (header of elementsTable; track $index) {
-            <th scope="col">{{ header }}</th>
+          <th scope="col">{{ header }}</th>
           }
         </tr>
       </thead>
@@ -52,37 +48,39 @@
         <tr>
           <th scope="row">
             {{
-              ( ( dataPaginated()?.page ?? 1 ) - 1 ) *
-              ( dataPaginated()?.size ?? 1 ) + $index + 1
+              ((dataPaginated()?.page ?? 1) - 1) *
+                (dataPaginated()?.size ?? 1) +
+                $index +
+                1
             }}
           </th>
           <td>{{ company.razonSocial }}</td>
           <td>{{ company.nombreComercial }}</td>
           <td>{{ company.ruc }}</td>
-          <td>{{ company.correo  }}</td>
+          <td>{{ company.correo }}</td>
           <td>{{ company.telefono }}</td>
           <td>
             <div class="d-flex justify-content-center gap-3 action-icons">
+              @if (company.estado) {
               <i
                 class="bi bi-pencil text-warning"
                 title="Modificar"
                 (click)="openModalEdit(company)"
-                >
+              >
               </i>
-              @if (company.estado) {
-                <!-- (click)="openModalChangeState(company.id, true)" -->
-                <i
-                  class="bi bi-trash-fill text-danger"
-                  title="Deshabilitar"
-                  >
-                </i>
+              <i
+                class="bi bi-trash-fill text-danger"
+                title="Deshabilitar"
+                (click)="openModalChangeState(company.id, true)"
+              >
+              </i>
               } @else {
-                <!-- (click)="openModalChangeState(company.id, false)" -->
-                <i
-                  class="bi bi-arrow-up-circle-fill text-success"
-                  title="Habilitar"
-                  >
-                </i>
+              <i
+                class="bi bi-arrow-up-circle-fill text-success"
+                title="Habilitar"
+                (click)="openModalChangeState(company.id, false)"
+              >
+              </i>
               }
             </div>
           </td>
@@ -98,14 +96,11 @@
       [isTableWithoutData]="nothingShowInTable()"
       (nextPage)="nextPage($event)"
       (changePage)="changePage($event)"
-      />
+    />
   </div>
 </article>
 
-<company-add
-  #modalNew
-  (updateTable)="reloadTable($event)"
-/>
+<company-add #modalNew (updateTable)="reloadTable($event)" />
 
 <company-edit
   #modalEdit
@@ -113,14 +108,9 @@
   [dataCompany]="dataCompanyEdit()!"
 />
 
-<!-- <company-modal-info
-  #modalInfoUser
-  [user]="dataInfoUser()!"
-/>
-
-<company-modal-change-state
-  #modalChangeStateUser
-  [idUser]="idUserToChangeState()!"
+<company-change-state
+  #modalChangeState
+  [idCompany]="idCompanyToChangeState()!"
   [isDelete]="isDelete()"
   (updateTable)="reloadTable($event)"
-/> -->
+/>

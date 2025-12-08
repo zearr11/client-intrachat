@@ -1,0 +1,80 @@
+<!-- Modal Registro Sede -->
+<div
+  #modalElement
+  class="modal fade"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="modalHeadquartersLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-xxl-down"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nueva Sede</h5>
+      </div>
+
+      <form autocomplete="off" [formGroup]="myForm" (ngSubmit)="submitForm()">
+        <div class="modal-body">
+          <section class="row mb-3">
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="nombre"
+                  class="form-control"
+                  required
+                  placeholder="Nombre de la sede"
+                  maxlength="100"
+                />
+                <label> Nombre de Sede </label>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="direccion"
+                  class="form-control"
+                  required
+                  placeholder="Dirección"
+                  maxlength="200"
+                />
+                <label> Dirección </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="row mb-3">
+            <div class="col-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="numeroPostal"
+                  class="form-control"
+                  required
+                  placeholder="Código Postal"
+                  minlength="5"
+                  maxlength="5"
+                  pattern="[0-9]{1,5}"
+                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 5);"
+                />
+                <label> Código Postal </label>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" (click)="close()" class="btn btn-danger">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">Registrar Sede</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

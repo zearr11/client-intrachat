@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ViewChild } from '@angular/core';
 import { SearchInputDarkComponent } from '../../../../../shared/common/search-input-dark/search-input-dark.component';
 import { ActivesInactivesSelectDarkComponent } from '../../../../../shared/common/actives-inactives-select-dark/actives-inactives-select-dark.component';
 import { NavTableDarkComponent } from '../../../../../shared/common/nav-table-dark/nav-table-dark.component';
@@ -9,6 +9,9 @@ import { PaginatedResponse } from '../../../../../shared/interfaces/paginated-re
 import { HeadquartersResponse } from '../../interfaces/headquarters.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
+import { HeadquartersAddComponent } from '../../components/headquarters-add/headquarters-add.component';
+import { HeadquartersChangeStateComponent } from '../../components/headquarters-change-state/headquarters-change-state.component';
+import { HeadquartersEditComponent } from '../../components/headquarters-edit/headquarters-edit.component';
 
 @Component({
   selector: 'sede-page',
@@ -16,7 +19,10 @@ import { tap } from 'rxjs';
     SearchInputDarkComponent,
     ActivesInactivesSelectDarkComponent,
     NavTableDarkComponent,
-  ],
+    HeadquartersAddComponent,
+    HeadquartersEditComponent,
+    HeadquartersChangeStateComponent
+],
   templateUrl: './headquarters-page.component.html',
   styleUrl: './headquarters-page.component.css',
 })
@@ -74,7 +80,7 @@ export class HeadquartersPageComponent {
   }
 
   /* Peticion HTTP Paginada y asignacion a un signal */
-  httpCampaignsPaginated = rxResource({
+  httpHeadquartersPaginated = rxResource({
     request: () => ({ options: this.optionsPaginated() }),
     loader: ({ request }) => {
       return this.headquartersService
@@ -94,4 +100,42 @@ export class HeadquartersPageComponent {
         );
     },
   });
+
+  // ------------------- Modales --------------------------------
+
+  /* Declaracion de modales */
+  @ViewChild('modalNew') modalNew!: HeadquartersAddComponent;
+  @ViewChild('modalEdit') modalEdit!: HeadquartersEditComponent;
+  @ViewChild('modalChangeState')
+  modalChangeState!: HeadquartersChangeStateComponent;
+
+  /* Atributos de Change State */
+  idHeadquartersToChangeState = signal<number | null>(null);
+  isDelete = signal<boolean>(false);
+
+  /* Atributos de Edit */
+  dataHeadquartersEdit = signal<HeadquartersResponse | null>(null);
+
+  /* Apertura de modal ADD */
+  openModalNew() {
+    this.modalNew.show();
+  }
+
+  /* Apertura de modal modificar */
+  openModalEdit(data: HeadquartersResponse) {
+    this.dataHeadquartersEdit.set(data);
+    this.modalEdit.show();
+  }
+
+  /* Apertura de modal cambiar estado */
+  openModalChangeState(id: number, isDelete: boolean) {
+    this.idHeadquartersToChangeState.set(id);
+    this.isDelete.set(isDelete);
+    this.modalChangeState.show();
+  }
+
+  reloadTable(reload: boolean) {
+    if (!reload) return;
+    this.httpHeadquartersPaginated.reload();
+  }
 }

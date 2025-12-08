@@ -4,9 +4,12 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, of } from 'rxjs';
+import { catchError, map, of, throwError } from 'rxjs';
 import {
   CampaignEspecialResponse,
+  CampaignRequest,
+  CampaignRequest2,
+  CampaignResponse,
   CampaignSimpleResponse,
 } from '../interfaces/campaign.interface';
 import { environment } from '../../../../../environments/environment';
@@ -21,14 +24,16 @@ export class CampaignService {
   private http = inject(HttpClient);
 
   getCampaignById = (id: number) => {
-    return this.http.get<ResponseGeneric<any>>(`${baseUrl}/${id}`);
+    return this.http.get<ResponseGeneric<CampaignResponse>>(`${baseUrl}/${id}`);
   };
 
+  /*
   getCampaignByIdCompany = (idCompany: number) => {
-    return this.http.get<ResponseGeneric<any[]>>(
+    return this.http.get<ResponseGeneric<CampaignResponse[]>>(
       `${baseUrl}/empresas/${idCompany}`
     );
   };
+  */
 
   getCampaignSimpleList = () => {
     return this.http.get<ResponseGeneric<CampaignSimpleResponse[]>>(
@@ -44,18 +49,18 @@ export class CampaignService {
     >(`${baseUrl}/paginacion`, { params });
   };
 
-  registerCampaign = (newCampaign: any) => {
+  registerCampaign = (newCampaign: CampaignRequest) => {
     return this.http.post<ResponseGeneric<null>>(baseUrl, newCampaign).pipe(
       map((resp) => resp.message!),
       catchError((err: HttpErrorResponse) => {
         const messageError =
           err.error?.message ?? 'Error inesperado, inténtelo mas tarde.';
-        return of(messageError);
+        return throwError(() => new Error(messageError));
       })
     );
   };
 
-  updateCampaign = (id: number, compaignToUpdate: any) => {
+  updateCampaign = (id: number, compaignToUpdate: CampaignRequest2) => {
     return this.http
       .put<ResponseGeneric<null>>(`${baseUrl}/${id}`, compaignToUpdate)
       .pipe(
@@ -63,7 +68,7 @@ export class CampaignService {
         catchError((err: HttpErrorResponse) => {
           const messageError =
             err.error?.message ?? 'Error inesperado, inténtelo mas tarde.';
-          return of(messageError);
+          return throwError(() => new Error(messageError));
         })
       );
   };

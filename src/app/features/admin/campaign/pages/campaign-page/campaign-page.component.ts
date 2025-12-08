@@ -23,6 +23,9 @@ import { CampaignChangeStateComponent } from '../../components/campaign-change-s
     NavTableDarkComponent,
     RemoveUnderScorePipe,
     DatePipe,
+    CampaignAddComponent,
+    CampaignChangeStateComponent,
+    CampaignEditComponent,
   ],
   templateUrl: './campaign-page.component.html',
   styleUrl: './campaign-page.component.css',
@@ -124,28 +127,25 @@ export class CampaignPageComponent {
   modalChangeState!: CampaignChangeStateComponent;
 
   /* Atributos de Change State */
-  idCampaignToChangeState = signal<number | null>(null);
+  idCampaignManagement = signal<number | null>(null);
   isDelete = signal<boolean>(false);
-
-  /* Atributos de Edit */
-  dataCampaignEdit = signal<any | null>(null);
 
   /* Apertura de modal nueva campaña */
   openModalNew() {
-    // this.modalNew.show();
+    this.modalNew.show();
   }
 
   /* Apertura de modal modificar campaña */
-  openModalEdit(data: any) {
-    this.dataCampaignEdit.set(data);
-    // this.modalEdit.show();
+  openModalEdit(id: number) {
+    this.idCampaignManagement.set(id);
+    this.modalEdit.show();
   }
 
   /* Apertura de modal cambiar estado de campaña */
   openModalChangeState(id: number, isDelete: boolean) {
-    this.idCampaignToChangeState.set(id);
+    this.idCampaignManagement.set(id);
     this.isDelete.set(isDelete);
-    // this.modalChangeState.show();
+    this.modalChangeState.show();
   }
 
   reloadTable(reload: boolean) {

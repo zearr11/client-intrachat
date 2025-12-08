@@ -3,18 +3,16 @@ import { MediaOutlet } from '../../../../core/enums/media-outlet.enum';
 import { CompanyResponse } from '../../company/interfaces/company.interface';
 
 export interface CampaignRequest {
-  nombre: string;
   idEmpresa: number;
   areaAtencion: AreaAttention;
   medioComunicacion: MediaOutlet;
 }
 
 export interface CampaignRequest2 {
-  nombre: string;
-  idEmpresa: number;
-  areaAtencion: AreaAttention;
-  medioComunicacion: MediaOutlet;
-  estado: boolean;
+  idEmpresa?: number;
+  areaAtencion?: AreaAttention;
+  medioComunicacion?: MediaOutlet;
+  estado?: boolean;
 }
 
 /*
@@ -55,7 +53,7 @@ export interface CampaignEspecialResponse {
   ultimaModificacion: Date;
 }
 
-export interface CampaniaResponse {
+export interface CampaignResponse {
   idCampania: number;
   nombre: string;
   areaAtencion: AreaAttention;

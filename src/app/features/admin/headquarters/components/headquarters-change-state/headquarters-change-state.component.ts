@@ -8,28 +8,29 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { CompanyService } from '../../services/company.service';
+import { HeadquartersService } from '../../services/headquarters.service';
 import { ToastMessageService } from '../../../../../shared/services/toast-message.service';
-import { CompanyResponse } from '../../interfaces/company.interface';
+import { HeadquartersResponse } from '../../interfaces/headquarters.interface';
 import { Modal } from 'bootstrap';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { map, of, tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ResponseGeneric } from '../../../../../shared/interfaces/general-response.interface';
 
 @Component({
-  selector: 'company-change-state',
+  selector: 'headquarters-change-state',
   imports: [],
-  templateUrl: './company-change-state.component.html',
+  templateUrl: './headquarters-change-state.component.html',
 })
-export class CompanyChangeStateComponent {
-  private companyService = inject(CompanyService);
+export class HeadquartersChangeStateComponent {
+  private headquartersService = inject(HeadquartersService);
   private toastService = inject(ToastMessageService);
 
   isDelete = input.required<boolean>();
-  idCompany = input.required<number>();
+  idHeadquarters = input.required<number>();
   updateTable = output<boolean>();
 
-  dataCompany = signal<CompanyResponse | null>(null);
+  dataHeadquarters = signal<HeadquartersResponse | null>(null);
   newState = signal<boolean | null>(null);
 
   /* Referencia al modal actual */
@@ -53,7 +54,7 @@ export class CompanyChangeStateComponent {
 
   /* Ejecutar cambio de estado */
   confirmAction() {
-    if (!this.idCompany() || !this.dataCompany()) return;
+    if (!this.idHeadquarters() || !this.dataHeadquarters()) return;
 
     this.newState.set(!this.isDelete());
 
@@ -67,37 +68,29 @@ export class CompanyChangeStateComponent {
         this.close();
       },
       error: (err: HttpErrorResponse) => {
-        this.toastService.show(err.message, 'text-bg-danger');
+        const msg = (err.error as ResponseGeneric<null>).message!;
+        this.toastService.show(msg, 'text-bg-danger');
         this.close();
       },
     });
-
-    /*
-    this.updateTable.emit(true);
-      this.toastService.show(
-        this.msgConfirmAction()!,
-        this.colorActionToast()!
-      );
-      this.close();
-    */
   }
 
   /* -------------------------- HTTP Peticiones -------------------------- */
 
-  httpGetCompanyById = rxResource({
-    request: () => ({ id: this.idCompany() }),
+  httpGetHeadqueartersById = rxResource({
+    request: () => ({ id: this.idHeadquarters() }),
     loader: ({ request }) => {
       if (!request.id) return of({ error: true });
 
-      return this.companyService.getCompanyById(request.id).pipe(
-        tap((resp) => this.dataCompany.set(resp.data)),
+      return this.headquartersService.getHeadquartersById(request.id).pipe(
+        tap((data) => this.dataHeadquarters.set(data)),
         map(() => ({ error: false }))
       );
     },
   });
 
   httpChangeState() {
-    return this.companyService.updateCompany(this.idCompany(), {
+    return this.headquartersService.updateHeadquarters(this.idHeadquarters(), {
       estado: this.newState()!,
     });
   }
@@ -107,29 +100,27 @@ export class CompanyChangeStateComponent {
   titleModal = computed(() => {
     if (this.isDelete() == null) return;
 
-    return this.isDelete() ? 'Deshabilitar Empresa' : 'Habilitar Empresa';
+    return this.isDelete() ? 'Deshabilitar Sede' : 'Habilitar Sede';
   });
 
   messageModal = computed(() => {
     if (this.isDelete() == null) return;
 
     return this.isDelete()
-      ? '¿Estás seguro de querer deshabilitar la empresa'
-      : '¿Estás seguro de querer habilitar la empresa';
+      ? '¿Estás seguro de querer deshabilitar la sede'
+      : '¿Estás seguro de querer habilitar la sede';
   });
 
-  fullNameCompany = computed(() => {
-    return (
-      this.dataCompany()?.razonSocial + ' - RUC: ' + this.dataCompany()?.ruc
-    );
+  fullNameHeadquarters = computed(() => {
+    return this.dataHeadquarters()?.nombre;
   });
 
   messageFooter = computed(() => {
     if (this.isDelete() == null) return;
 
     return this.isDelete()
-      ? 'Nota: La empresa no podrá seleccionarse al gestionar operaciones.'
-      : 'Nota: La empresa podrá seleccionarse nuevamente al gestionar operaciones.';
+      ? 'Nota: La sede no podrá seleccionarse al gestionar operaciones.'
+      : 'Nota: La sede podrá seleccionarse nuevamente al gestionar operaciones.';
   });
 
   msgConfirmDelete = computed(() => {
@@ -144,8 +135,8 @@ export class CompanyChangeStateComponent {
     if (this.isDelete() == null) return '';
 
     return this.isDelete()
-      ? 'Empresa deshabilitada satisfactoriamente.'
-      : 'Empresa habilitada satisfactoriamente.';
+      ? 'Sede deshabilitada satisfactoriamente.'
+      : 'Sede habilitada satisfactoriamente.';
   });
 
   colorActionToast = computed(() => {

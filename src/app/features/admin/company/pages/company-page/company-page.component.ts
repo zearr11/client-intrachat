@@ -102,10 +102,9 @@ export class CompanyPageComponent {
   // ------------------- Modales --------------------------------
 
   /* Declaracion de modales */
-  // @ViewChild('modalInfo') modalInfo!: CompanyModalInfoComponent;
   @ViewChild('modalNew') modalNew!: CompanyAddComponent;
   @ViewChild('modalEdit') modalEdit!: CompanyEditComponent;
-  // @ViewChild('modalChangeState') modalChangeState!: CompanyModalChangeStateComponent;
+  @ViewChild('modalChangeState') modalChangeState!: CompanyChangeStateComponent;
 
   /* Atributos de Change State */
   idCompanyToChangeState = signal<number | null>(null);
@@ -126,11 +125,11 @@ export class CompanyPageComponent {
   }
 
   /* Apertura de modal cambiar estado de empresa */
-  // openModalChangeState(id: number, isDelete: boolean) {
-  //   this.idCompanyToChangeState.set(id);
-  //   this.isDelete.set(isDelete);
-  //   // this.modalChangeState.show();
-  // }
+  openModalChangeState(id: number, isDelete: boolean) {
+    this.idCompanyToChangeState.set(id);
+    this.isDelete.set(isDelete);
+    this.modalChangeState.show();
+  }
 
   reloadTable(reload: boolean) {
     if (!reload) return;

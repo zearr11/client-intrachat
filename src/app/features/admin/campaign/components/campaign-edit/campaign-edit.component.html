@@ -1,1 +1,145 @@
-<p>campaign-modal-edit.component works!</p>,
+<div
+  #modalElement
+  class="modal fade"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-xxl-down"
+  >
+    <div class="modal-content">
+      <!-- Header con título y X de cierre -->
+      <div class="modal-header">
+        <h5 class="modal-title">Nueva Campaña</h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="close()"
+        ></button>
+      </div>
+
+      <form autocomplete="off" [formGroup]="myForm" (ngSubmit)="submitForm()">
+        <div class="modal-body">
+          <section class="row g-4">
+            <!-- Columna izquierda: listado de empresas -->
+            <div class="col-12 col-md-6">
+              <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-3">
+                  <h6 class="fw-bold text-secondary mb-3">
+                    Selecciona una empresa
+                  </h6>
+
+                  <div
+                    class="list-container"
+                    style="max-height: 400px; overflow-y: auto"
+                  >
+                    @for (op of companys(); track op.id) {
+                    <div
+                      class="d-flex align-items-center py-2 border-bottom small hover-row"
+                      (click)="myForm.patchValue({ idEmpresa: op.id })"
+                      [class.selected]="myForm.value.idEmpresa === op.id"
+                      style="cursor: pointer"
+                    >
+                      <input
+                        type="radio"
+                        class="form-check-input me-2 mt-0"
+                        [checked]="myForm.value.idEmpresa === op.id"
+                      />
+                      <span>{{
+                        op.nombreComercial + " - RUC: " + op.ruc
+                      }}</span>
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna derecha: selects -->
+            <div class="col-12 col-md-6">
+              <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-3">
+                  <h6 class="fw-bold text-secondary mb-3">
+                    Detalles de la campaña
+                  </h6>
+
+                  <!-- Área de atención -->
+                  <div class="mb-3">
+                    <label for="areaAtencion" class="form-label"
+                      >Área de Atención</label
+                    >
+                    <select
+                      id="areaAtencion"
+                      class="form-select"
+                      formControlName="areaAtencion"
+                    >
+                      <option value="">Seleccione un área</option>
+                      @for (area of areasAttention; track $index) {
+                      <option>{{ area | removeunderscore }}</option>
+                      }
+                    </select>
+                  </div>
+
+                  <!-- Medio de comunicación -->
+                  <div class="mb-3">
+                    <label for="medioComunicacion" class="form-label"
+                      >Medio de Comunicación</label
+                    >
+                    <select
+                      id="medioComunicacion"
+                      class="form-select"
+                      formControlName="medioComunicacion"
+                    >
+                      <option value="">Seleccione un medio</option>
+                      @for (medio of mediaOutlets; track $index) {
+                      <option>{{ medio | removeunderscore }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Footer con botones -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" (click)="close()">
+            Cancelar
+          </button>
+          <!-- [disabled]="myForm.invalid" -->
+          <button type="submit" class="btn btn-success">
+            Registrar Campaña
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Scroll fino */
+  .list-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .list-container::-webkit-scrollbar-thumb {
+    background: #c7c7c7;
+    border-radius: 4px;
+  }
+
+  /* Hover en filas */
+  .hover-row:hover {
+    background: #f5f5f5;
+    cursor: pointer;
+  }
+
+  /* Resaltar empresa seleccionada */
+  .selected {
+    background-color: #e2f0ff;
+  }
+</style>

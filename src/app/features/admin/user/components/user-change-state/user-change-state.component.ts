@@ -1,4 +1,13 @@
-import { Component, computed, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  output,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Modal } from 'bootstrap';
 import { UserResponse } from '../../../../../core/interfaces/user.interface';
@@ -12,7 +21,6 @@ import { UserService } from '../../../../../core/services/user.service';
   templateUrl: './user-change-state.component.html',
 })
 export class UserChangeStateComponent {
-
   private userService = inject(UserService);
   private toastService = inject(ToastMessageService);
 
@@ -46,47 +54,48 @@ export class UserChangeStateComponent {
   confirmAction() {
     if (!this.idUser() || !this.dataUser()) return;
 
-    this.newState.set(!this.isDelete())
+    this.newState.set(!this.isDelete());
 
     this.httpChangeState().subscribe(() => {
       this.updateTable.emit(true);
-      this.toastService.show(this.msgConfirmAction()!, this.colorActionToast()!);
+      this.toastService.show(
+        this.msgConfirmAction()!,
+        this.colorActionToast()!
+      );
       this.close();
     });
   }
 
   /* -------------------------- HTTP Peticiones -------------------------- */
 
-  httpGetUserById = rxResource(({
+  httpGetUserById = rxResource({
     request: () => ({ id: this.idUser() }),
     loader: ({ request }) => {
       if (!request.id) return of({ error: true });
 
       return this.userService.getUserById(request.id).pipe(
-        tap(resp => this.dataUser.set(resp)),
+        tap((resp) => this.dataUser.set(resp)),
         map(() => ({ error: false }))
       );
-    }
-  }));
+    },
+  });
 
   httpChangeState() {
-    return this.userService.updateDataUser(
-      this.idUser(), { estado: this.newState()! }
-    );
+    return this.userService.updateDataUser(this.idUser(), {
+      estado: this.newState()!,
+    });
   }
 
   /* ---------------------- Atributos del modal -------------------------- */
 
   titleModal = computed(() => {
-    if (this.isDelete() == null)
-      return;
+    if (this.isDelete() == null) return;
 
     return this.isDelete() ? 'Deshabilitar Usuario' : 'Habilitar Usuario';
   });
 
   messageModal = computed(() => {
-    if (this.isDelete() == null)
-      return;
+    if (this.isDelete() == null) return;
 
     return this.isDelete()
       ? '¿Estás seguro de querer deshabilitar la cuenta del usuario'
@@ -98,8 +107,7 @@ export class UserChangeStateComponent {
   });
 
   messageFooter = computed(() => {
-    if (this.isDelete() == null)
-      return;
+    if (this.isDelete() == null) return;
 
     return this.isDelete()
       ? 'Nota: El usuario dejará de tener acceso a la plataforma.'
@@ -107,17 +115,15 @@ export class UserChangeStateComponent {
   });
 
   msgConfirmDelete = computed(() => {
-    if (this.isDelete() == null)
-      return;
+    if (this.isDelete() == null) return;
 
     return this.isDelete()
       ? 'Si, quiero deshabilitarlo.'
       : 'Si, quiero habilitarlo.';
-  })
+  });
 
   msgConfirmAction = computed(() => {
-    if (this.isDelete() == null)
-      return;
+    if (this.isDelete() == null) return;
 
     return this.isDelete()
       ? 'Usuario deshabilitado satisfactoriamente.'
@@ -125,12 +131,8 @@ export class UserChangeStateComponent {
   });
 
   colorActionToast = computed(() => {
-    if (this.isDelete() == null)
-      return;
+    if (this.isDelete() == null) return;
 
-    return this.isDelete()
-      ? 'text-bg-danger'
-      : 'text-bg-primary';
-  })
-
+    return this.isDelete() ? 'text-bg-danger' : 'text-bg-primary';
+  });
 }

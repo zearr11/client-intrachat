@@ -19,8 +19,9 @@
         >
           Quitar filtros
         </button>
-        <!-- (click)="openModalNew()" -->
-        <button type="button" class="btn btn-primary">Nueva Sede</button>
+        <button type="button" class="btn btn-primary" (click)="openModalNew()">
+          Nueva Sede
+        </button>
       </section>
 
       <section class="col-3">
@@ -58,16 +59,24 @@
           <td>{{ headquarters.codigoPostal }}</td>
           <td>
             <div class="d-flex justify-content-center gap-3 action-icons">
-              <!-- (click)="openModalEdit(campaign)" -->
-              <i class="bi bi-pencil text-warning" title="Modificar"> </i>
               @if (headquarters.estado) {
-              <!-- (click)="openModalChangeState(campaign.id, true)" -->
-              <i class="bi bi-trash-fill text-danger" title="Deshabilitar"> </i>
+              <i
+                class="bi bi-pencil text-warning"
+                title="Modificar"
+                (click)="openModalEdit(headquarters)"
+              >
+              </i>
+              <i
+                class="bi bi-trash-fill text-danger"
+                title="Deshabilitar"
+                (click)="openModalChangeState(headquarters.id, true)"
+              >
+              </i>
               } @else {
-              <!-- (click)="openModalChangeState(campaign.id, false)" -->
               <i
                 class="bi bi-arrow-up-circle-fill text-success"
                 title="Habilitar"
+                (click)="openModalChangeState(headquarters.id, false)"
               >
               </i>
               }
@@ -88,3 +97,16 @@
     />
   </div>
 </article>
+
+<headquarters-add #modalNew (updateTable)="reloadTable($event)" />
+<headquarters-edit
+  #modalEdit
+  [dataHeadquarters]="dataHeadquartersEdit()!"
+  (updateTable)="reloadTable($event)"
+/>
+<headquarters-change-state
+  #modalChangeState
+  [idHeadquarters]="idHeadquartersToChangeState()!"
+  [isDelete]="isDelete()"
+  (updateTable)="reloadTable($event)"
+/>

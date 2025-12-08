@@ -8,49 +8,48 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
+import { HeadquartersService } from '../../services/headquarters.service';
+import { ToastMessageService } from '../../../../../shared/services/toast-message.service';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ToastMessageService } from '../../../../../shared/services/toast-message.service';
-import { CompanyService } from '../../services/company.service';
+import {
+  HeadquartersRequest2,
+  HeadquartersResponse,
+} from '../../interfaces/headquarters.interface';
 import { Modal } from 'bootstrap';
-import { Patterns } from '../../../../../shared/utils/patterns.class';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { catchError, map, of, tap } from 'rxjs';
-import {
-  CompanyRequest2,
-  CompanyResponse,
-} from '../../interfaces/company.interface';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ResponseGeneric } from '../../../../../shared/interfaces/general-response.interface';
 
 @Component({
-  selector: 'company-edit',
+  selector: 'headquarters-edit',
   imports: [ReactiveFormsModule],
-  templateUrl: './company-edit.component.html',
+  templateUrl: './headquarters-edit.component.html',
 })
-export class CompanyEditComponent {
+export class HeadquartersEditComponent {
   /* Servicios necesarios */
   private formGroup = inject(FormBuilder);
   private toastService = inject(ToastMessageService);
-  private companyService = inject(CompanyService);
+  private headquartersService = inject(HeadquartersService);
 
   /* Signals */
-  dataCompany = input.required<CompanyResponse>();
-  updateCompany = signal<CompanyRequest2 | null>(null);
+  dataHeadquarters = input.required<HeadquartersResponse>();
+  updateHeadquarters = signal<HeadquartersRequest2 | null>(null);
   updateTable = output<boolean>();
 
   /* Carga de data */
   setData = effect(() => {
-    if (!this.dataCompany()) return;
+    if (!this.dataHeadquarters()) return;
 
     this.myForm.reset({
-      razonSocial: this.dataCompany().razonSocial,
-      nombreComercial: this.dataCompany().nombreComercial,
-      ruc: this.dataCompany().ruc,
-      correo: this.dataCompany().correo,
-      telefono: this.dataCompany().telefono,
+      nombre: this.dataHeadquarters().nombre,
+      direccion: this.dataHeadquarters().direccion,
+      numeroPostal: this.dataHeadquarters().codigoPostal,
     });
   });
 
@@ -75,18 +74,12 @@ export class CompanyEditComponent {
 
   /* Formulario reactivo */
   myForm: FormGroup = this.formGroup.group({
-    razonSocial: ['', [Validators.required, Validators.maxLength(150)]],
-    nombreComercial: ['', [Validators.required, Validators.maxLength(150)]],
-    ruc: ['', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
-    correo: [
+    nombre: ['', [Validators.required, Validators.maxLength(100)]],
+    direccion: ['', [Validators.required, Validators.maxLength(200)]],
+    numeroPostal: [
       '',
-      [
-        Validators.required,
-        Validators.pattern(Patterns.emailPattern),
-        Validators.maxLength(100),
-      ],
+      [Validators.required, Validators.minLength(5), Validators.maxLength(5)],
     ],
-    telefono: ['', [Validators.pattern(/^[0-9]{7,9}$/)]],
   });
 
   submitForm() {
@@ -106,29 +99,40 @@ export class CompanyEditComponent {
       return;
     }
 
-    this.updateCompany.set(this.myForm.value);
+    const newData: HeadquartersRequest2 = {
+      nombre: this.myForm.value.nombre,
+      direccion: this.myForm.value.direccion,
+      numeroPostal: this.myForm.value.numeroPostal,
+    };
+
+    this.updateHeadquarters.set(newData);
   }
 
-  httpUpdateCompany = rxResource({
+  httpUpdateHeadquarters = rxResource({
     request: () => ({
-      id: this.dataCompany()?.id,
-      dataUpdated: this.updateCompany(),
+      id: this.dataHeadquarters()?.id,
+      dataUpdated: this.updateHeadquarters(),
     }),
     loader: ({ request }) => {
       if (!request.id || !request.dataUpdated) return of({ error: true });
 
-      return this.companyService
-        .updateCompany(request.id, request.dataUpdated)
+      return this.headquartersService
+        .updateHeadquarters(request.id, request.dataUpdated)
         .pipe(
           tap((msg) => {
-            this.updateCompany.set(null);
-            this.toastService.show(msg, 'text-bg-success');
+            this.updateHeadquarters.set(null);
+            this.toastService.show(
+              'Sede actualizada satisfactoriamente.',
+              'text-bg-success'
+            );
             this.updateTable.emit(true);
             this.close();
           }),
           map((msg) => ({ error: false, message: msg })),
-          catchError((err) => {
-            const message = err.message ?? 'Error.';
+          catchError((err: HttpErrorResponse) => {
+            const message =
+              (err.error as ResponseGeneric<null>).message ?? 'Error.';
+
             this.toastService.show(message, 'text-bg-danger');
             return of({ error: true, message });
           })

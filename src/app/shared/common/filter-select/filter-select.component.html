@@ -16,7 +16,7 @@
 <select
   #dpId
   class="form-select select-personalized"
-  [value]="selectedValue() ?? dataToShow()[0]?.id"
+  [value]="selectedValue() ?? dataToShow()[0].id"
   (change)="changeEmit.emit(dpId.value)"
 >
   @for (item of dataToShow(); track item.id) {
