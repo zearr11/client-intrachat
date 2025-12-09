@@ -1,1 +1,539 @@
-<p>dashboard-page.component works!</p>,
+<div class="dashboard-scroll">
+  <section class="container-fluid mt-4 mb-4">
+    <!-- Banner -->
+    <div
+      class="welcome-banner-dark d-flex justify-content-between align-items-center p-4 mb-4"
+    >
+      <div>
+        <h3 class="fw-bold text-white m-0">Dashboard</h3>
+        <p class="text-light opacity-75 m-0">
+          Resumen general del sistema - Visor consolidado de alertas, actividad
+          diaria y métricas operativas
+        </p>
+      </div>
+
+      <div class="date-box-dark">
+        <i class="bi bi-calendar3 me-2"></i>
+        {{ currentDate() | date : "fullDate" }}
+      </div>
+    </div>
+
+    <!-- TÍTULO DE LA SECCIÓN -->
+    <h4 class="text-white fw-bold mb-3 mt-2 section-title-dark">
+      <i
+        class="bi bi-exclamation-triangle-fill me-2"
+        style="color: #fff200"
+      ></i>
+      Alertas de Usuarios Sin Asignación
+    </h4>
+
+    <!-- ALERTAS -->
+    <div class="row g-4">
+      <!-- CARD 1 -->
+      <div class="col-md-4">
+        <div class="alert-card-dark p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-white m-0">Jefes sin asignación</h5>
+
+            <div class="d-flex align-items-center gap-2">
+              <span class="custom-badge">
+                {{ alertsUsers()?.jefesOperacionSinAsignar?.length || 0 }}
+              </span>
+              <i class="bi bi-person-gear icon-alert"></i>
+            </div>
+          </div>
+
+          <p class="subtitle-alert">Usuarios pendientes de asignación</p>
+
+          <div class="alert-list mt-2">
+            @if (alertsUsers()?.jefesOperacionSinAsignar?.length) { @for (user
+            of alertsUsers()?.jefesOperacionSinAsignar; track user.id) {
+            <div class="alert-item">
+              <i class="bi bi-person-circle me-2 opacity-75"></i>
+              {{ user.nombres }} {{ user.apellidos }} — {{ user.tipoDoc }}
+              {{ user.numeroDoc }}
+            </div>
+            } } @else {
+            <p class="text-secondary text-center m-0">
+              No hay usuarios pendientes.
+            </p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="col-md-4">
+        <div class="alert-card-dark p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-white m-0">Supervisores sin asignación</h5>
+
+            <div class="d-flex align-items-center gap-2">
+              <span class="custom-badge">
+                {{ alertsUsers()?.supervisoresSinAsignar?.length || 0 }}
+              </span>
+              <i class="bi bi-people icon-alert"></i>
+            </div>
+          </div>
+
+          <p class="subtitle-alert">Supervisión sin equipo asignado</p>
+
+          <div class="alert-list mt-2">
+            @if (alertsUsers()?.supervisoresSinAsignar?.length) { @for (user of
+            alertsUsers()?.supervisoresSinAsignar; track user.id) {
+            <div class="alert-item">
+              <i class="bi bi-person-circle me-2 opacity-75"></i>
+              {{ user.nombres }} {{ user.apellidos }} — {{ user.tipoDoc }}
+              {{ user.numeroDoc }}
+            </div>
+            } } @else {
+            <p class="text-secondary text-center m-0">
+              No hay usuarios pendientes.
+            </p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="col-md-4">
+        <div class="alert-card-dark p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-white m-0">Colaboradores sin asignación</h5>
+
+            <div class="d-flex align-items-center gap-2">
+              <span class="custom-badge">
+                {{ alertsUsers()?.colaboradoresSinAsignar?.length || 0 }}
+              </span>
+              <i class="bi bi-person-lines-fill icon-alert"></i>
+            </div>
+          </div>
+
+          <p class="subtitle-alert">Colaboradores sin equipo asignado</p>
+
+          <div class="alert-list mt-2">
+            @if (alertsUsers()?.colaboradoresSinAsignar?.length) { @for (user of
+            alertsUsers()?.colaboradoresSinAsignar; track user.id) {
+            <div class="alert-item">
+              <i class="bi bi-person-circle me-2 opacity-75"></i>
+              {{ user.nombres }} {{ user.apellidos }} — {{ user.tipoDoc }}
+              {{ user.numeroDoc }}
+            </div>
+            } } @else {
+            <p class="text-secondary text-center m-0">
+              No hay usuarios pendientes.
+            </p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO GENERAL -->
+    <h4 class="text-white fw-bold mb-3 mt-4 section-title-dark-info">
+      <i class="bi bi-bar-chart-line-fill me-2" style="color: #00c8ff"></i>
+      Información General del Sistema
+    </h4>
+
+    <div class="row g-3 justify-content-between">
+      <!-- CARD USUARIOS -->
+      <div class="col-6 col-md-2">
+        <div class="info-card-dark compact p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Usuarios</h5>
+            <i class="bi bi-people-fill info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Activos</span>
+              <span class="value-active">{{
+                infoGeneral()?.usuariosActivos
+              }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Inactivos</span>
+              <span class="value-inactive">{{
+                infoGeneral()?.usuariosInactivos
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMPRESAS -->
+      <div class="col-6 col-md-2">
+        <div class="info-card-dark compact p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Empresas</h5>
+            <i class="bi bi-building info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Activas</span>
+              <span class="value-active">{{
+                infoGeneral()?.empresasActivas
+              }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Inactivas</span>
+              <span class="value-inactive">{{
+                infoGeneral()?.empresasInactivas
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEDES -->
+      <div class="col-6 col-md-2">
+        <div class="info-card-dark compact p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Sedes</h5>
+            <i class="bi bi-geo-alt-fill info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Operativas</span>
+              <span class="value-active">{{
+                infoGeneral()?.sedesActivas
+              }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Inactivas</span>
+              <span class="value-inactive">{{
+                infoGeneral()?.sedesInactivas
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAMPAÑAS -->
+      <div class="col-6 col-md-2">
+        <div class="info-card-dark compact p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Campañas</h5>
+            <i class="bi bi-megaphone-fill info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Activas</span>
+              <span class="value-active">{{
+                infoGeneral()?.campaniasActivas
+              }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Inactivas</span>
+              <span class="value-inactive">{{
+                infoGeneral()?.campaniasInactivas
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPERACIONES -->
+      <div class="col-6 col-md-2">
+        <div class="info-card-dark compact p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Operaciones</h5>
+            <i class="bi bi-diagram-3-fill info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Activas</span>
+              <span class="value-active">{{
+                infoGeneral()?.operacionesActivas
+              }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Inactivas</span>
+              <span class="value-inactive">{{
+                infoGeneral()?.operacionesInactivas
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EQUIPOS -->
+      <div class="col-6 col-md-2">
+        <div class="info-card-dark compact p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Equipos</h5>
+            <i class="bi bi-people info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Activos</span>
+              <span class="value-active">{{
+                infoGeneral()?.equiposActivos
+              }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Inactivos</span>
+              <span class="value-inactive">{{
+                infoGeneral()?.equiposInactivos
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO DIARIA -->
+    <h4 class="text-white fw-bold mb-3 mt-4 section-title-dark-daily">
+      <i class="bi bi-calendar2-week-fill me-2" style="color: #87ff36"></i>
+      Actividad Diaria del Sistema
+    </h4>
+
+    <div class="row g-3 justify-content-between">
+      <!-- USUARIOS DESHABILITADOS HOY -->
+      <div class="col-6 col-md-3">
+        <div class="info-card-dark compact-daily p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Usuarios</h5>
+            <i class="bi bi-person-x-fill info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Deshabilitados hoy</span>
+              <span class="value-inactive">
+                {{ infoDaily()?.usuariosDeshabilitadosHoy }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPERACIONES FINALIZADAS HOY -->
+      <div class="col-6 col-md-3">
+        <div class="info-card-dark compact-daily p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Operaciones</h5>
+            <i class="bi bi-diagram-3 info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Finalizadas hoy</span>
+              <span class="value-active">
+                {{ infoDaily()?.operacionesFinalizadasHoy }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EQUIPOS FINALIZADOS HOY -->
+      <div class="col-6 col-md-3">
+        <div class="info-card-dark compact-daily p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Equipos</h5>
+            <i class="bi bi-people-fill info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Finalizados hoy</span>
+              <span class="value-active">
+                {{ infoDaily()?.equiposFinalizadosHoy }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MENSAJES ENVIADOS HOY -->
+      <div class="col-6 col-md-3">
+        <div class="info-card-dark compact-daily p-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="fw-bold text-white m-0">Mensajes</h5>
+            <i class="bi bi-chat-left-dots-fill info-icon"></i>
+          </div>
+          <div class="info-stats small">
+            <div class="stat-item">
+              <span class="label">Enviados hoy</span>
+              <span class="value-active">
+                {{ infoDaily()?.mensajesEnviadosHoy }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  /* Banner */
+  .welcome-banner-dark {
+    background: linear-gradient(90deg, #2b3035, #1f2327, #232a31);
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+    color: #fff;
+  }
+
+  /* Fecha */
+  .date-box-dark {
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(6px);
+    color: #eee;
+  }
+
+  /* Título sección */
+  .section-title-dark {
+    border-left: 4px solid #fff42c;
+    padding-left: 10px;
+    color: #f8f9fa;
+  }
+
+  /* Card */
+  .alert-card-dark {
+    background: #282b2f;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+    height: 360px;
+    transition: 0.25s ease;
+    padding: 16px;
+  }
+
+  .alert-card-dark:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Iconos */
+  .icon-alert {
+    font-size: 1.4rem;
+    color: #bbc2ca;
+  }
+
+  /* Badge alineado con icono */
+  .custom-badge {
+    background: #495057;
+    color: #fff;
+    padding: 4px 12px;
+    font-weight: 600;
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+
+  /* Subtítulo */
+  .subtitle-alert {
+    font-size: 0.8rem;
+    color: #adb5bd;
+  }
+
+  /* Lista */
+  .alert-list {
+    overflow-y: auto;
+    max-height: 240px;
+  }
+
+  .alert-item {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.9rem;
+    color: #e1e3e6;
+  }
+
+  /* Scrollbar */
+  .alert-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .alert-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+  }
+
+  /* CARD GENERAL */
+  /* ---- INFO GENERAL ---- */
+  .info-card-dark {
+    background: #1f2226;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.45);
+    transition: 0.25s ease;
+    padding: 16px;
+  }
+
+  .info-card-dark.compact {
+    height: 120px;
+  }
+
+  .info-card-dark.compact-daily {
+    height: 95px;
+  }
+
+  .info-card-dark:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Íconos */
+  .info-icon {
+    font-size: 1.3rem;
+    color: #a8b3bd;
+  }
+
+  /* Estadísticas */
+  .info-stats.small .stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    font-size: 0.9rem;
+  }
+
+  .label {
+    color: #bfc4c9;
+  }
+
+  .value-active {
+    color: #4cd964;
+    font-weight: 700;
+  }
+
+  .value-inactive {
+    color: #ff5757;
+    font-weight: 700;
+  }
+
+  /* Título */
+  .section-title-dark-info {
+    border-left: 4px solid #00c8ff;
+    padding-left: 10px;
+  }
+
+  .section-title-dark-daily {
+    border-left: 4px solid #87ff36;
+    padding-left: 10px;
+  }
+
+  /* SCROLL GENERAL DEL DASHBOARD */
+  .dashboard-scroll {
+    height: 100vh;
+    overflow-y: auto;
+    padding-right: 12px;
+    padding-left: 6px;
+  }
+
+  /* Scrollbar estilo oscuro */
+  .dashboard-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .dashboard-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+
+  .dashboard-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .dashboard-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+</style>
