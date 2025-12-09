@@ -360,6 +360,57 @@
         </div>
       </div>
     </div>
+
+    <div class="row mt-4">
+      <!-- GRAFICA 1 - USUARIOS -->
+      <div class="col-12 col-md-6">
+        <div class="chart-card-dark position-relative">
+          <div class="chart-select-year">
+            <select
+              class="form-select form-select-sm year-select-dark"
+              [ngModel]="anioUsers()"
+              (ngModelChange)="onChangeYearAnioUser($event)"
+            >
+              @for (y of years; track y) {
+              <option [ngValue]="y">{{ y }}</option>
+              }
+            </select>
+          </div>
+
+          <h4 class="chart-title-dark">
+            <i class="bi bi-person-check-fill me-2" style="color: #889198"></i>
+            Usuarios Nuevos por Mes
+          </h4>
+          <canvas #chartCanvasUsuarios></canvas>
+        </div>
+      </div>
+
+      <!-- GRAFICA 2 - MENSAJES -->
+      <div class="col-12 col-md-6">
+        <div class="chart-card-dark position-relative">
+          <div class="chart-select-year">
+            <select
+              class="form-select form-select-sm year-select-dark"
+              [ngModel]="anioMessage()"
+              (ngModelChange)="onChangeYearAnioMessage($event)"
+            >
+              @for (y of years; track y) {
+              <option [ngValue]="y">{{ y }}</option>
+              }
+            </select>
+          </div>
+
+          <h4 class="chart-title-dark">
+            <i
+              class="bi bi-chat-left-dots-fill me-2"
+              style="color: #889198"
+            ></i>
+            Mensajes por Mes
+          </h4>
+          <canvas #chartCanvasMessages></canvas>
+        </div>
+      </div>
+    </div>
   </section>
 </div>
 
@@ -412,7 +463,7 @@
 
   /* Badge alineado con icono */
   .custom-badge {
-    background: #495057;
+    background: #625f31;
     color: #fff;
     padding: 4px 12px;
     font-weight: 600;
@@ -535,5 +586,49 @@
 
   .dashboard-scroll::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* GRAFICAS */
+  .chart-card-dark {
+    background: #282b2f; /* el mismo tono de tus cards */
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+    padding: 20px;
+    height: 460px;
+    transition: 0.25s ease;
+  }
+
+  .chart-card-dark:hover {
+    transform: translateY(-3px);
+  }
+
+  .chart-title-dark {
+    color: #e6e9ec;
+    border-left: 4px solid #6c757d;
+    padding-left: 10px;
+    margin-bottom: 15px;
+    font-weight: 700;
+  }
+
+  .chart-select-year {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    z-index: 10;
+  }
+
+  .year-select-dark {
+    background: #2a2e33;
+    color: #f2f3f5;
+    border: 1px solid #3a3f45;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 13px;
+  }
+
+  .year-select-dark:focus {
+    border-color: #00c8ff;
+    box-shadow: 0 0 4px #00c8ff40;
   }
 </style>
