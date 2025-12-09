@@ -1,0 +1,193 @@
+<!--   aria-hidden="true" aria-labelledby="staticBackdropLabel" -->
+<div
+  #modalElement
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  class="modal fade"
+>
+  <div
+    class="modal-dialog modal-dialog-centered modal-xxl"
+    style="max-width: 95%"
+  >
+    <div class="modal-content shadow-lg rounded-3 border-0">
+      <!-- HEADER -->
+      <div class="modal-header border-bottom">
+        <h4 class="modal-title">Nueva Operación</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body bg-white">
+        <div class="row g-4">
+          <!-- JEFE DE OPERACION -->
+          <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body p-3">
+                <h6 class="fw-bold text-secondary mb-3">
+                  Seleccione el Jefe de Operación
+                </h6>
+
+                <input
+                  #txtOperationManager
+                  type="text"
+                  class="form-control form-control-sm mb-3"
+                  placeholder="Buscar jefe de operación..."
+                  (input)="filterOperationManager(txtOperationManager.value)"
+                />
+
+                <div
+                  class="list-container"
+                  (scroll)="onScrollOperationManager($event)"
+                >
+                  @for (op of operationsManagers(); track op.id) {
+                  <div
+                    class="d-flex align-items-center py-2 border-bottom small hover-row"
+                  >
+                    <input
+                      #operationManagerSelected
+                      type="checkbox"
+                      class="form-check-input me-2 mt-0"
+                      [checked]="op.isSelected"
+                      (change)="
+                        selectOperationManager(
+                          op,
+                          operationManagerSelected.checked
+                        )
+                      "
+                    />
+                    <span>{{ op.descripcion }}</span>
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAMPAÑAS -->
+          <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body p-3">
+                <h6 class="fw-bold text-secondary mb-3">
+                  Selecciona la campaña
+                </h6>
+
+                <input
+                  #txtCampaign
+                  type="text"
+                  class="form-control form-control-sm mb-3"
+                  placeholder="Buscar campaña..."
+                  (input)="filterCampaign(txtCampaign.value)"
+                />
+
+                <div
+                  class="list-container"
+                  (scroll)="onScrollCampaigns($event)"
+                >
+                  @for (camp of campaigns(); track camp.id) {
+                  <div
+                    class="d-flex align-items-center py-2 border-bottom small hover-row"
+                  >
+                    <input
+                      #campaignSelected
+                      type="checkbox"
+                      class="form-check-input me-2 mt-0"
+                      [checked]="camp.isSelected"
+                      (change)="selectCampaign(camp, campaignSelected.checked)"
+                    />
+                    <span>{{ camp.descripcion }}</span>
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEDES -->
+          <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body p-3">
+                <h6 class="fw-bold text-secondary mb-3">Selecciona la sede</h6>
+
+                <input
+                  #txtMember
+                  type="text"
+                  class="form-control form-control-sm mb-3"
+                  placeholder="Buscar miembro..."
+                  (input)="filterHeadquarters(txtMember.value)"
+                />
+
+                <div
+                  class="list-container"
+                  (scroll)="onScrollHeadquarters($event)"
+                >
+                  @for (hq of headquarters(); track hq.id) {
+
+                  <div
+                    class="d-flex align-items-center py-2 border-bottom small hover-row"
+                  >
+                    <input
+                      #headquartersSelected
+                      type="checkbox"
+                      class="form-check-input me-2 mt-0"
+                      [checked]="hq.isSelected"
+                      (click)="
+                        selectHeadquarters(hq, headquartersSelected.checked)
+                      "
+                    />
+                    <!-- class="me-2 flex-grow-1" -->
+                    <span>{{ hq.descripcion }}</span>
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+        <button
+          type="button"
+          class="btn btn-success px-4"
+          (click)="registerOperation()"
+        >
+          Registrar Operación
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .list-container {
+    height: 380px;
+    overflow-y: auto;
+    border-radius: 6px;
+    border: 1px solid #e3e3e3;
+    padding: 6px;
+  }
+
+  /* Scroll fino */
+  .list-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .list-container::-webkit-scrollbar-thumb {
+    background: #c7c7c7;
+    border-radius: 4px;
+  }
+
+  /* Hover en filas */
+  .hover-row:hover {
+    background: #f5f5f5;
+    cursor: pointer;
+  }
+</style>

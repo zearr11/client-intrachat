@@ -5,6 +5,19 @@ export interface OptionsPaginated {
   filtro?: string;
 }
 
+export interface OptionsPaginatedSimple {
+  page?: number;
+  size?: number;
+  filtro?: string;
+}
+
+export interface OptionsPaginatedUserOperation {
+  page?: number;
+  size?: number;
+  filtro?: string;
+  idOperacion?: number;
+}
+
 export interface OptionsPaginatedMessage {
   page?: number;
   size?: number;

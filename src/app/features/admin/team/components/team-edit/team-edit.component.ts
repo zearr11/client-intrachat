@@ -16,7 +16,6 @@ import { Modal } from 'bootstrap';
 import { EntitySimple } from '../../interfaces/entity-simple.interface';
 import { EnumsList } from '../../../../../shared/utils/enums-list.class';
 import { OptionsPaginatedOperation } from '../../../../../shared/interfaces/options-paginated.interface';
-import { OptionsPaginatedUser } from '../team-add/team-add.component';
 import { Position } from '../../../../../core/enums/position-user.enum';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';

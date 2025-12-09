@@ -38,6 +38,7 @@ export interface CampaignEspecialResponse {
   nombreComercialEmpresa: string;
   areaAtencion: AreaAttention;
   medioComunicacion: MediaOutlet;
+  nombre: string;
 
   totalOperacionesActivas: number;
   totalOperacionesInactivas: number;

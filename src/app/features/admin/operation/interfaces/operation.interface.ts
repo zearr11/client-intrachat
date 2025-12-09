@@ -2,6 +2,12 @@ import { UserResponse } from '../../../../core/interfaces/user.interface';
 import { CampaignResponse } from '../../campaign/interfaces/campaign.interface';
 import { HeadquartersResponse } from '../../headquarters/interfaces/headquarters.interface';
 
+export interface OperationRequest {
+  idCampania?: number;
+  idJefeOperacion?: number;
+  idSede?: number;
+}
+
 export interface OperationSpecialResponse {
   id: number;
   empresa: string;

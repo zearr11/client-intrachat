@@ -1,0 +1,68 @@
+<div #modalElement class="modal fade" data-bs-backdrop="static" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cierre de Operación</h5>
+      </div>
+
+      <div class="modal-body">
+        <p>
+          ¿Estás seguro de que deseas
+          <strong>cerrar de manera definitiva</strong> la operación
+          correspondiente a la campaña
+          <strong>{{ operation()?.datosCampania?.nombre }}</strong>
+          en la sede
+          <strong>{{ operation()?.datosSede?.nombre }}</strong>
+          dirigida por
+          <strong>{{
+            operation()?.datosJefeOperacion?.nombres +
+              " " +
+              operation()?.datosJefeOperacion?.apellidos
+          }}</strong>
+          ?
+        </p>
+
+        <div class="alert alert-warning mt-3">
+          <h6 class="fw-bold">Advertencia importante</h6>
+          <p class="mb-1">Al cerrar esta operación de forma permanente:</p>
+          <ul class="mb-0">
+            <li>
+              Todos los equipos asociados serán
+              <strong>cerrados definitivamente</strong>.
+            </li>
+            <li>
+              Sus miembros quedarán <strong>disueltos</strong> y sin acceso al
+              chat grupal.
+            </li>
+            <li>
+              Los miembros ya no estarán vinculados a ninguna campaña y deberán
+              ser <strong>reasignados posteriormente</strong> a un nuevo equipo.
+            </li>
+            <li>
+              El jefe de operación quedará disponible para asignarse a otra
+              operación si se requiere.
+            </li>
+          </ul>
+        </div>
+
+        <p class="text-muted mt-3">
+          Esta acción es irreversible. Asegúrate de que deseas continuar.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmDisableOperation()"
+        >
+          Deshabilitar operación definitivamente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -17,6 +17,11 @@ import { ResponseGeneric } from '../../shared/interfaces/general-response.interf
 import { PaginatedResponse } from '../../shared/interfaces/paginated-response.interface';
 import { Position } from '../enums/position-user.enum';
 import { OptionsPaginatedUserTeam } from '../../features/admin/team/components/team-edit/team-edit.component';
+import {
+  OptionsPaginatedOperation,
+  OptionsPaginatedSimple,
+  OptionsPaginatedUserOperation,
+} from '../../shared/interfaces/options-paginated.interface';
 
 const baseUrlUser = `${environment.baseUrl}/usuarios`;
 
@@ -73,6 +78,26 @@ export class UserService {
     );
   }
 
+  getUsersWhitoutOperationAndWithOperationPaginated = (
+    options?: OptionsPaginatedUserOperation
+  ) => {
+    const params = new HttpParams({ fromObject: options as any });
+
+    return this.http.get<ResponseGeneric<PaginatedResponse<UserResponse>>>(
+      `${baseUrlUser}/paginacion/operaciones/asociados`,
+      { params }
+    );
+  };
+
+  getUsersWhitoutOperationPaginated = (options?: OptionsPaginatedSimple) => {
+    const params = new HttpParams({ fromObject: options as any });
+
+    return this.http.get<ResponseGeneric<PaginatedResponse<UserResponse>>>(
+      `${baseUrlUser}/paginacion/operaciones`,
+      { params }
+    );
+  };
+
   // Paginacion
   getUsersWithTeamAndWithoutCampaignPaginated(
     options?: OptionsPaginatedUserTeam
@@ -93,7 +118,7 @@ export class UserService {
       .pipe(map((resp) => resp.data!));
   }
 
-  // Paginacion
+  // Paginacion regular
   getUsersPaginated(options?: {
     page?: number;
     size?: number;

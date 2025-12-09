@@ -1,7 +1,14 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ActivesInactivesSelectDarkComponent } from '../../../../../shared/common/actives-inactives-select-dark/actives-inactives-select-dark.component';
 import { NavTableDarkComponent } from '../../../../../shared/common/nav-table-dark/nav-table-dark.component';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import {
   EntitySimpleGeneric,
   FilterSelectComponent,
@@ -15,6 +22,9 @@ import { OperationSpecialResponse } from '../../interfaces/operation.interface';
 import { CampaignSimpleResponse } from '../../../campaign/interfaces/campaign.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
+import { OperationAddComponent } from '../../components/operation-add/operation-add.component';
+import { OperationEditComponent } from '../../components/operation-edit/operation-edit.component';
+import { OperationDeleteComponent } from '../../components/operation-delete/operation-delete.component';
 
 @Component({
   selector: 'operation-page',
@@ -23,6 +33,9 @@ import { tap } from 'rxjs';
     NavTableDarkComponent,
     DatePipe,
     FilterSelectComponent,
+    OperationAddComponent,
+    OperationEditComponent,
+    OperationDeleteComponent,
   ],
   templateUrl: './operation-page.component.html',
   styleUrl: './operation-page.component.css',
@@ -145,4 +158,36 @@ export class OperationPageComponent {
       );
     },
   });
+
+  // ------------------- Modales --------------------------------
+
+  /* Declaracion de modales */
+  modalNew = viewChild<OperationAddComponent>('modalNew');
+  modalEdit = viewChild<OperationEditComponent>('modalEdit');
+  modalDelete = viewChild<OperationDeleteComponent>('modalDelete');
+
+  /* Id generico */
+  idOperationManagement = signal<number | null>(null);
+
+  /* Apertura de modal nuevo */
+  openModalAdd() {
+    this.modalNew()!.show();
+  }
+
+  /* Apertura de modal edit */
+  openModalEdit(id: number) {
+    this.idOperationManagement.set(id);
+    this.modalEdit()!.show();
+  }
+
+  /* Apertura de modal delete */
+  openModalDelete(id: number) {
+    this.idOperationManagement.set(id);
+    this.modalDelete()!.show();
+  }
+
+  reloadTable(reload: boolean) {
+    if (!reload) return;
+    this.httpCampaignsPaginated.reload();
+  }
 }

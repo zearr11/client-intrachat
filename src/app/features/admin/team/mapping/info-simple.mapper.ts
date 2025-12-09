@@ -1,5 +1,7 @@
 import { Permission } from '../../../../core/enums/permission.enum';
 import { UserResponse } from '../../../../core/interfaces/user.interface';
+import { CampaignEspecialResponse } from '../../campaign/interfaces/campaign.interface';
+import { HeadquartersResponse } from '../../headquarters/interfaces/headquarters.interface';
 import { OperationSpecialResponse } from '../../operation/interfaces/operation.interface';
 import { EntitySimple } from '../interfaces/entity-simple.interface';
 
@@ -20,6 +22,26 @@ export class InfoSimpleMapper {
       descripcion: `${user.nombres} ${user.apellidos} - ${user.tipoDoc} ${user.numeroDoc}`,
       isSelected: false,
       permission: Permission.USUARIO_REGULAR
+    };
+
+    return data;
+  }
+
+  static transformCampaign(campaign: CampaignEspecialResponse) {
+    const data: EntitySimple = {
+      id: campaign.id,
+      descripcion: campaign.nombre,
+      isSelected: false,
+    };
+
+    return data;
+  }
+
+  static transformHeadquarters(headquarters: HeadquartersResponse) {
+    const data: EntitySimple = {
+      id: headquarters.id,
+      descripcion: headquarters.nombre,
+      isSelected: false,
     };
 
     return data;
